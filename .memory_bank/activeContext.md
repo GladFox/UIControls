@@ -1,0 +1,67 @@
+﻿# Active Context
+
+## Текущие задачи
+- [x] [REQUIREMENTS_OWNER] Формализовать требования и критерии приемки v0.1
+- [x] [ARCHITECT] Подтвердить архитектуру Core + Controls на uGUI + DOTween
+- [x] [IMPLEMENTER] Реализовать runtime-контролы и общие анимационные примитивы
+- [x] [IMPLEMENTER] Подготовить статичную demo-сцену для UIButtonControl, UIToggleControl, UIProgressBarControl
+- [x] [IMPLEMENTER] Убрать runtime-генерацию UI из demo и перейти на сериализуемые ссылки
+- [x] [IMPLEMENTER] Добавить SO-пресеты визуальных состояний кнопки и SO-хуки для кастомной логики
+- [x] [IMPLEMENTER] Расширить `UIButtonCustomAction` на события hover/down/up/click/submit/state
+- [x] [REVIEWER/QA] Проверить сборку после расширения событий
+- [x] [DOCS_WRITER] Синхронизировать local/README.md, systemPatterns.md, Memory Bank
+- [x] [REQUIREMENTS_OWNER] Подготовить ТЗ для `UIProgressBarControl` v2 (segmented + hitbar echo)
+- [x] [ARCHITECT] Зафиксировать API/события/режимы совместимости для v2 ProgressBar
+- [x] [DOCS_WRITER] Оформить ТЗ в отдельный документ `local/TZ_UIProgressBarControl_Segmented_Hitbar.md`
+- [x] [IMPLEMENTER] Реализовать `UIProgressBarControl` v2 c суммированием `useSegments + useHitBar`
+- [x] [IMPLEMENTER] Добавить `UIProgressBarCustomAction` для value/segment/echo событий
+- [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после реализации ProgressBar v2
+- [x] [REQUIREMENTS_OWNER] Зафиксировать сценарий полноценного demo использования ProgressBar v2
+- [x] [ARCHITECT] Подтвердить статичный demo-flow (контролы на сцене, без runtime создания)
+- [x] [IMPLEMENTER] Обновить `UIControlsDemoPresenter` под сценарий damage/heal/reset/auto-damage
+- [x] [IMPLEMENTER] Пересобрать `UIControlsDemoSceneBuilder` под hitbar + segments + event status
+- [x] [IMPLEMENTER] Добавить пример `UIProgressBarDebugLogAction` и интеграцию в demo builder
+- [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после demo-изменений
+- [x] [REQUIREMENTS_OWNER] Уточнить формат: вынести ProgressBar demo в отдельную сцену
+- [x] [ARCHITECT] Разделить базовый `UIControlsDemo` и специализированный `UIProgressBarDemo`
+- [x] [IMPLEMENTER] Восстановить базовые `UIControlsDemoPresenter/UIControlsDemoSceneBuilder`
+- [x] [IMPLEMENTER] Добавить `UIProgressBarDemoPresenter/UIProgressBarDemoSceneBuilder`
+- [x] [DOCS_WRITER] Синхронизировать README/systemPatterns/Memory Bank под две demo-сцены
+- [x] [REQUIREMENTS_OWNER] Уточнить demo: добавить `Auto Heal` как взаимоисключающий режим с `Auto Damage`
+- [x] [ARCHITECT] Подтвердить стратегию: взаимоисключение на уровне `UIProgressBarDemoPresenter`, два отдельных `UIToggleControl` на сцене
+- [x] [IMPLEMENTER] Расширить `UIProgressBarDemoPresenter` и `UIProgressBarDemoSceneBuilder` под `Auto Damage + Auto Heal`
+- [x] [IMPLEMENTER] Перевести ProgressBar demo на авто-генерацию делений и добавить fallback sprite для `Image.Type.Filled`
+- [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
+- [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
+- [x] [REQUIREMENTS_OWNER] Уточнить доработки demo: убрать echo-артефакт на heal и показать режим плавного заполнения делений
+- [x] [ARCHITECT] Подтвердить решение: два синхронных demo-бара (HitBar + FillBlocks) на одном сценарии ввода
+- [x] [IMPLEMENTER] Расширить `UIProgressBarControl` полями `segmentFillSprite/segmentDividerSprite/hideEchoOnIncrease`
+- [x] [IMPLEMENTER] Обновить `UIProgressBarDemoPresenter` для синхронизации второго demo-бара
+- [x] [IMPLEMENTER] Обновить `UIProgressBarDemoSceneBuilder` с использованием текстур `Slider_HealthBar_Boss`
+- [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок
+- [x] [DOCS_WRITER] Синхронизировать README и Memory Bank
+
+## Последние изменения
+- `UIProgressBarDemoPresenter` расширен вторым toggle:
+  - добавлен `autoHealToggle` и периодический heal-шаг (`autoHealStep`);
+  - `Auto Damage` и `Auto Heal` теперь взаимоисключаются через безопасное переключение без рекурсивных callback.
+- `UIProgressBarDemoSceneBuilder` обновлен:
+  - создаются два toggle-блока (`AutoDamageToggle`, `AutoHealToggle`);
+  - оба toggle привязываются к сериализуемым полям презентера;
+  - верхний demo-bar настроен как `useSegments + useHitBar` в `DividersOnly` с текстурами `Slider_HealthBar_Boss`;
+  - добавлен нижний demo-bar в режиме `FillBlocks` для визуализации плавного заполнения делений;
+  - оба бара синхронизируются от общих кнопок/auto-тогглов.
+- `UIProgressBarControl` доработан для стабильной визуализации:
+  - fallback sprite для `Image.Type.Filled`, чтобы `fillAmount` и echo работали даже при пустом `sprite`;
+  - поддержка авто-генерации сегментов/разделителей и pulse-таргета для `DividersOnly`;
+  - добавлены `segmentFillSprite` и `segmentDividerSprite` для стилизации автогенерации;
+  - добавлен `hideEchoOnIncrease`, чтобы убрать эхо-артефакт при heal.
+- Выполнена проверка коммитов от контрольной точки:
+  - `git log 44a0367... --oneline` -> `ec465dd docs: refresh memory bank checkpoint`.
+
+## Следующие шаги
+- Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:
+  - `UIControls/Create ProgressBar Demo Scene`
+- Визуально проверить обе сцены в Unity Editor:
+  - `Assets/Scenes/UIControlsDemo.unity`
+  - `Assets/Scenes/UIProgressBarDemo.unity`
