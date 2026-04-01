@@ -325,7 +325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 051130ca3340412b9f6f0a8c73346e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UIControls.Runtime::UIControls.Runtime.Controls.UIToggleControl
-  isOn: 0
+  isOn: 1
   interactable: 1
   handle: {fileID: 1161296609}
   backgroundGraphic: {fileID: 65573033}
@@ -15555,7 +15555,7 @@ MonoBehaviour:
   autoDamageToggle: {fileID: 748925102}
   autoHealToggle: {fileID: 65573031}
   statusLabel: {fileID: 358672133}
-  startValue: 1
+  startValue: 0.35
   damageStep: 0.12
   heavyDamageStep: 0.35
   healStep: 0.08

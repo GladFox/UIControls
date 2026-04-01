@@ -65,6 +65,12 @@
     - нижний `FillBlocks` (плавное заполнение делений на восстановлении);
   - в demo используются текстуры `Slider_HealthBar_Boss` (`Slider_Basic04_*`, `Slider_Icon04_Fill_Red`);
   - demo builder автоматически создает/назначает `DemoProgressBarDebug.action.asset`.
+- Исправлено размножение автогенерируемых `AutoSegment/AutoDivider`:
+  - генерация идет в отдельный служебный контейнер `AutoSegments`;
+  - добавлена зачистка legacy-детей с префиксами `AutoSegment`/`AutoDivider`.
+- Добавлен видимый с первого запуска сценарий автонабора энергии:
+  - `Auto Heal` включен по умолчанию в `UIProgressBarDemo`;
+  - стартовое значение демо выставлено в `0.35`.
 - Выполнена проверка сборки после изменений:
   - `dotnet build UIControls.Runtime.csproj` (успешно, с известными предупреждениями Unity/SDK).
 
@@ -80,5 +86,5 @@
 - Добавить prefab-набор для типовых сценариев ProgressBar v2 (segmented, hitbar, combined).
 
 ## Контроль изменений
-- last_checked_commit: ec465dd
-- last_checked_date: 2026-03-30
+- last_checked_commit: 1987c18
+- last_checked_date: 2026-04-01

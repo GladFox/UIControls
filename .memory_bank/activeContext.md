@@ -31,6 +31,8 @@
 - [x] [ARCHITECT] Подтвердить стратегию: взаимоисключение на уровне `UIProgressBarDemoPresenter`, два отдельных `UIToggleControl` на сцене
 - [x] [IMPLEMENTER] Расширить `UIProgressBarDemoPresenter` и `UIProgressBarDemoSceneBuilder` под `Auto Damage + Auto Heal`
 - [x] [IMPLEMENTER] Перевести ProgressBar demo на авто-генерацию делений и добавить fallback sprite для `Image.Type.Filled`
+- [x] [IMPLEMENTER] Исправить бесконечное размножение `AutoSegment/AutoDivider` при авто-генерации делений
+- [x] [IMPLEMENTER] Обновить ProgressBar demo так, чтобы пример автонабора энергии был виден сразу при запуске
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
 - [x] [REQUIREMENTS_OWNER] Уточнить доработки demo: убрать echo-артефакт на heal и показать режим плавного заполнения делений
@@ -55,7 +57,12 @@
   - fallback sprite для `Image.Type.Filled`, чтобы `fillAmount` и echo работали даже при пустом `sprite`;
   - поддержка авто-генерации сегментов/разделителей и pulse-таргета для `DividersOnly`;
   - добавлены `segmentFillSprite` и `segmentDividerSprite` для стилизации автогенерации;
-  - добавлен `hideEchoOnIncrease`, чтобы убрать эхо-артефакт при heal.
+  - добавлен `hideEchoOnIncrease`, чтобы убрать эхо-артефакт при heal;
+  - авто-генерация переведена на отдельный служебный контейнер, добавлена очистка legacy-объектов, устранено бесконечное накопление `AutoSegment/AutoDivider`.
+- `UIProgressBarDemo` обновлен для демонстрации автонабора энергии из коробки:
+  - `Auto Heal` включен по умолчанию;
+  - стартовое значение снижено (`startValue = 0.35`), чтобы рост был виден сразу;
+  - в презентер добавлен fallback-сценарий `enableAutoHealExampleOnStart`.
 - Выполнена проверка коммитов от контрольной точки:
   - `git log 44a0367... --oneline` -> `ec465dd docs: refresh memory bank checkpoint`.
 

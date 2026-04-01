@@ -86,12 +86,12 @@ namespace UIControls.Editor
             var healButton = CreateActionButton(panel, "HealButton", new Vector2(85f, -15f), "Heal +8%", new Color(0.2f, 0.62f, 0.35f, 1f));
             var resetButton = CreateActionButton(panel, "ResetButton", new Vector2(255f, -15f), "Reset", new Color(0.24f, 0.47f, 0.82f, 1f));
 
-            var autoDamageToggle = CreateToggle(panel, "AutoDamage", new Vector2(-130f, -105f));
+            var autoDamageToggle = CreateToggle(panel, "AutoDamage", new Vector2(-130f, -105f), false);
             var autoDamageToggleLabel = CreateText("AutoDamageLabel", panel, new Vector2(-300f, -105f), new Vector2(320f, 54f),
                 "Auto Damage", 24, FontStyle.Normal, TextAnchor.MiddleRight);
             autoDamageToggleLabel.color = new Color(0.9f, 0.94f, 1f, 1f);
 
-            var autoHealToggle = CreateToggle(panel, "AutoHeal", new Vector2(250f, -105f));
+            var autoHealToggle = CreateToggle(panel, "AutoHeal", new Vector2(250f, -105f), true);
             var autoHealToggleLabel = CreateText("AutoHealLabel", panel, new Vector2(80f, -105f), new Vector2(320f, 54f),
                 "Auto Heal", 24, FontStyle.Normal, TextAnchor.MiddleRight);
             autoHealToggleLabel.color = new Color(0.9f, 0.94f, 1f, 1f);
@@ -101,7 +101,7 @@ namespace UIControls.Editor
             statusLabel.color = new Color(0.98f, 0.86f, 0.5f, 1f);
 
             var hint = CreateText("Hint", panel, new Vector2(0f, -245f), new Vector2(860f, 70f),
-                "Top bar: echo trail appears on damage only. Bottom bar: smooth fill blocks on heal.\nAuto Damage and Auto Heal are mutually exclusive.",
+                "Top bar: echo trail appears on damage only. Bottom bar: smooth fill blocks on heal.\nAuto Heal starts enabled for the demo. Auto Damage and Auto Heal are mutually exclusive.",
                 18, FontStyle.Italic, TextAnchor.MiddleCenter);
             hint.color = new Color(0.75f, 0.8f, 0.95f, 1f);
 
@@ -115,6 +115,7 @@ namespace UIControls.Editor
             SetObjectReference(presenter, "autoDamageToggle", autoDamageToggle.GetComponent<UIToggleControl>());
             SetObjectReference(presenter, "autoHealToggle", autoHealToggle.GetComponent<UIToggleControl>());
             SetObjectReference(presenter, "statusLabel", statusLabel);
+            SetFloat(presenter, "startValue", 0.35f);
 
             EditorSceneManager.SaveScene(scene, ScenePath, true);
             AddSceneToBuildSettings(ScenePath);
@@ -218,7 +219,7 @@ namespace UIControls.Editor
             return buttonGo;
         }
 
-        private static GameObject CreateToggle(RectTransform parent, string namePrefix, Vector2 anchoredPosition)
+        private static GameObject CreateToggle(RectTransform parent, string namePrefix, Vector2 anchoredPosition, bool isOn)
         {
             var holder = new GameObject($"{namePrefix}ToggleHolder", typeof(RectTransform));
             var holderRect = holder.GetComponent<RectTransform>();
@@ -262,7 +263,7 @@ namespace UIControls.Editor
             SetObjectReference(toggleControl, "canvasGroup", toggleGo.GetComponent<CanvasGroup>());
             SetVector2(toggleControl, "offHandlePosition", new Vector2(-42f, 0f));
             SetVector2(toggleControl, "onHandlePosition", new Vector2(42f, 0f));
-            SetBool(toggleControl, "isOn", false);
+            SetBool(toggleControl, "isOn", isOn);
 
             return toggleGo;
         }

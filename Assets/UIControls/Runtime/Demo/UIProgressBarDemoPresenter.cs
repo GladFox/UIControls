@@ -38,6 +38,12 @@ namespace UIControls.Runtime.Demo
 
         [SerializeField] private bool randomizeAutoDamage = true;
 
+        [Header("Auto Demo")]
+        [SerializeField] private bool enableAutoHealExampleOnStart = true;
+
+        [Range(0f, 1f)]
+        [SerializeField] private float autoHealDemoStartValue = 0.35f;
+
         private float autoActionTimer;
         private bool suppressToggleCallbacks;
 
@@ -83,9 +89,27 @@ namespace UIControls.Runtime.Demo
                 progressBarControl.OnEchoCompleted.AddListener(HandleEchoCompleted);
             }
 
+            if (enableAutoHealExampleOnStart &&
+                autoHealToggle != null &&
+                !autoHealToggle.IsOn &&
+                (autoDamageToggle == null || !autoDamageToggle.IsOn))
+            {
+                SetToggleWithoutCallback(autoHealToggle, true);
+                HandleAutoHealToggled(true);
+            }
+
             if (ResolveValueSource() != null)
             {
-                ApplyValueToProgressBars(startValue, false, true);
+                var initialValue = startValue;
+                if (enableAutoHealExampleOnStart &&
+                    autoHealToggle != null &&
+                    autoHealToggle.IsOn &&
+                    initialValue >= 1f - Mathf.Epsilon)
+                {
+                    initialValue = Mathf.Clamp01(autoHealDemoStartValue);
+                }
+
+                ApplyValueToProgressBars(initialValue, false, true);
             }
         }
 

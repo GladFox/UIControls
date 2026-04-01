@@ -119,6 +119,7 @@ namespace UIControls.Runtime.Controls
         private readonly List<Image> generatedSegmentImages = new List<Image>();
         private readonly List<Graphic> generatedDividers = new List<Graphic>();
         private readonly Dictionary<int, Tween> segmentPulseTweens = new Dictionary<int, Tween>();
+        private RectTransform generatedSegmentsContainer;
 
         private float displayedPrimaryValue;
         private float displayedEchoValue;
@@ -659,7 +660,7 @@ namespace UIControls.Runtime.Controls
                 return;
             }
 
-            ClearGeneratedVisuals();
+            ClearGeneratedVisuals(root);
 
             if (segmentVisualMode == SegmentVisualMode.FillBlocks)
             {
@@ -750,25 +751,40 @@ namespace UIControls.Runtime.Controls
 
         private RectTransform ResolveGeneratedSegmentsRoot()
         {
-            if (generatedSegmentsRoot != null)
+            if (generatedSegmentsContainer != null)
             {
-                return generatedSegmentsRoot;
+                return generatedSegmentsContainer;
             }
 
-            var reference = primaryFillImage != null
-                ? primaryFillImage.rectTransform
-                : fillImage != null
-                    ? fillImage.rectTransform
-                    : transform as RectTransform;
+            var anchor = generatedSegmentsRoot != null
+                ? generatedSegmentsRoot
+                : primaryFillImage != null
+                    ? primaryFillImage.rectTransform
+                    : fillImage != null
+                        ? fillImage.rectTransform
+                        : transform as RectTransform;
 
-            if (reference == null)
+            if (anchor == null)
             {
                 return null;
             }
 
+            if (string.Equals(anchor.name, AutoSegmentsRootName, StringComparison.Ordinal))
+            {
+                generatedSegmentsContainer = anchor;
+                return generatedSegmentsContainer;
+            }
+
+            var existing = anchor.Find(AutoSegmentsRootName) as RectTransform;
+            if (existing != null)
+            {
+                generatedSegmentsContainer = existing;
+                return generatedSegmentsContainer;
+            }
+
             var rootGo = new GameObject(AutoSegmentsRootName, typeof(RectTransform));
             var rootRect = rootGo.GetComponent<RectTransform>();
-            rootRect.SetParent(reference, false);
+            rootRect.SetParent(anchor, false);
             rootRect.anchorMin = Vector2.zero;
             rootRect.anchorMax = Vector2.one;
             rootRect.pivot = new Vector2(0.5f, 0.5f);
@@ -777,11 +793,16 @@ namespace UIControls.Runtime.Controls
             rootRect.offsetMax = Vector2.zero;
             rootRect.SetAsLastSibling();
 
-            generatedSegmentsRoot = rootRect;
-            return rootRect;
+            generatedSegmentsContainer = rootRect;
+            return generatedSegmentsContainer;
         }
 
         private void ClearGeneratedVisuals()
+        {
+            ClearGeneratedVisuals(null);
+        }
+
+        private void ClearGeneratedVisuals(RectTransform container)
         {
             for (var i = 0; i < generatedSegmentImages.Count; i++)
             {
@@ -804,6 +825,53 @@ namespace UIControls.Runtime.Controls
             }
 
             generatedDividers.Clear();
+
+            var targetContainer = container ?? generatedSegmentsContainer;
+            if (targetContainer == null &&
+                generatedSegmentsRoot != null &&
+                string.Equals(generatedSegmentsRoot.name, AutoSegmentsRootName, StringComparison.Ordinal))
+            {
+                targetContainer = generatedSegmentsRoot;
+            }
+            if (targetContainer != null)
+            {
+                for (var i = targetContainer.childCount - 1; i >= 0; i--)
+                {
+                    var child = targetContainer.GetChild(i);
+                    if (child != null)
+                    {
+                        DestroyGeneratedObject(child.gameObject);
+                    }
+                }
+            }
+
+            CleanupLegacyGeneratedChildren();
+        }
+
+        private void CleanupLegacyGeneratedChildren()
+        {
+            if (generatedSegmentsRoot == null || string.Equals(generatedSegmentsRoot.name, AutoSegmentsRootName, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            for (var i = generatedSegmentsRoot.childCount - 1; i >= 0; i--)
+            {
+                var child = generatedSegmentsRoot.GetChild(i);
+                if (child == null)
+                {
+                    continue;
+                }
+
+                var childName = child.name;
+                if (!childName.StartsWith(AutoSegmentPrefix, StringComparison.Ordinal) &&
+                    !childName.StartsWith(AutoDividerPrefix, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                DestroyGeneratedObject(child.gameObject);
+            }
         }
 
         private void DestroyGeneratedObject(UnityEngine.Object target)
