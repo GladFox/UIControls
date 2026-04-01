@@ -233,7 +233,8 @@ namespace UIControls.Runtime.Controls
             {
                 if (rebuild)
                 {
-                    ForceSyncVisual();
+                    ResetSegmentTracking();
+                    ApplyVisualImmediate(value, false);
                 }
 
                 return;
@@ -245,7 +246,7 @@ namespace UIControls.Runtime.Controls
 
             if (rebuild)
             {
-                ForceSyncVisual();
+                ApplyVisualImmediate(value, false);
             }
         }
 
@@ -299,6 +300,19 @@ namespace UIControls.Runtime.Controls
             if (primaryFillImage == null)
             {
                 primaryFillImage = fillImage;
+            }
+
+            if (useHitBar && Application.isPlaying)
+            {
+                if (primaryFillImage == null)
+                {
+                    Debug.LogError("[UIProgressBarControl] useHitBar is enabled but primaryFillImage is not assigned.", this);
+                }
+
+                if (echoFillImage == null)
+                {
+                    Debug.LogError("[UIProgressBarControl] useHitBar is enabled but echoFillImage is not assigned.", this);
+                }
             }
         }
 
@@ -516,7 +530,6 @@ namespace UIControls.Runtime.Controls
                     segmentFills[i] != null)
                 {
                     var segmentFill = segmentFills[i];
-                    EnsureFilledImageSprite(segmentFill);
                     segmentFill.fillAmount = localFill;
                     segmentFill.color = nowCompleted ? filledColor : fillingColor;
                 }
