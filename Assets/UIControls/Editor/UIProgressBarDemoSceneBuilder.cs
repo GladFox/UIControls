@@ -89,13 +89,14 @@ namespace UIControls.Editor
             var heavyDamageButton = CreateActionButton(panel, "HeavyDamageButton", new Vector2(-85f, -110f), "Heavy -35%", new Color(0.75f, 0.17f, 0.17f, 1f));
             var healButton = CreateActionButton(panel, "HealButton", new Vector2(85f, -110f), "Heal +8%", new Color(0.2f, 0.62f, 0.35f, 1f));
             var resetButton = CreateActionButton(panel, "ResetButton", new Vector2(255f, -110f), "Reset", new Color(0.24f, 0.47f, 0.82f, 1f));
-            var spendSuperButton = CreateActionButton(panel, "SpendSuperButton", new Vector2(0f, -72f), "Spend 1 Super", new Color(0.92f, 0.74f, 0.18f, 1f));
+            var spendSuperButton = CreateActionButton(panel, "SpendSuperButton", new Vector2(0f, -172f), "Spend 1 Super", new Color(0.92f, 0.74f, 0.18f, 1f));
+            ConfigureButtonSize(spendSuperButton, new Vector2(220f, 54f), 20);
 
-            var statusLabel = CreateText("Status", panel, new Vector2(0f, -190f), new Vector2(860f, 54f),
+            var statusLabel = CreateText("Status", panel, new Vector2(0f, -228f), new Vector2(860f, 54f),
                 "HitBar: damage has echo, heal updates HP immediately. Energy recharges automatically.", 20, FontStyle.Normal, TextAnchor.MiddleCenter);
             statusLabel.color = new Color(0.98f, 0.86f, 0.5f, 1f);
 
-            var hint = CreateText("Hint", panel, new Vector2(0f, -245f), new Vector2(860f, 70f),
+            var hint = CreateText("Hint", panel, new Vector2(0f, -275f), new Vector2(860f, 56f),
                 "Top bar: apply damage/heal/reset with buttons.\nBottom bar: segmented energy 0->3 for super-hit charge, use Spend 1 Super button.",
                 18, FontStyle.Italic, TextAnchor.MiddleCenter);
             hint.color = new Color(0.75f, 0.8f, 0.95f, 1f);
@@ -215,6 +216,39 @@ namespace UIControls.Editor
             }
 
             return buttonGo;
+        }
+
+        private static void ConfigureButtonSize(GameObject buttonGo, Vector2 size, int labelFontSize)
+        {
+            if (buttonGo == null)
+            {
+                return;
+            }
+
+            var rect = buttonGo.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                rect.sizeDelta = size;
+            }
+
+            var label = buttonGo.transform.Find("Label");
+            if (label == null)
+            {
+                return;
+            }
+
+            var labelRect = label.GetComponent<RectTransform>();
+            if (labelRect != null)
+            {
+                labelRect.sizeDelta = size;
+                labelRect.anchoredPosition = Vector2.zero;
+            }
+
+            var labelText = label.GetComponent<Text>();
+            if (labelText != null && labelFontSize > 0)
+            {
+                labelText.fontSize = labelFontSize;
+            }
         }
 
         private static GameObject CreateToggle(RectTransform parent, string namePrefix, Vector2 anchoredPosition, bool isOn)
