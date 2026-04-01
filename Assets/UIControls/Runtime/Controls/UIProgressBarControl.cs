@@ -725,8 +725,53 @@ namespace UIControls.Runtime.Controls
             BuildGeneratedSegments(Mathf.Max(1, segmentsCount));
         }
 
+        private bool IsSegmentBuildCurrent(int count)
+        {
+            if (generatedSegmentsContainer == null)
+            {
+                return false;
+            }
+
+            if (segmentVisualMode == SegmentVisualMode.FillBlocks)
+            {
+                if (generatedSegmentImages.Count != count)
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < generatedSegmentImages.Count; i++)
+                {
+                    if (generatedSegmentImages[i] == null)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            var expectedDividers = count > 1 && dividerWidth > Mathf.Epsilon ? count - 1 : 0;
+            if (generatedDividers.Count != expectedDividers)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < generatedDividers.Count; i++)
+            {
+                if (generatedDividers[i] == null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private void BuildGeneratedSegments(int count)
         {
+            if (IsSegmentBuildCurrent(count))
+            {
+                return;
+            }
+
             var root = ResolveGeneratedSegmentsRoot();
             if (root == null)
             {
