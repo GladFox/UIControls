@@ -33,6 +33,11 @@
 - [x] [IMPLEMENTER] Перевести ProgressBar demo на авто-генерацию делений и добавить fallback sprite для `Image.Type.Filled`
 - [x] [IMPLEMENTER] Исправить бесконечное размножение `AutoSegment/AutoDivider` при авто-генерации делений
 - [x] [IMPLEMENTER] Обновить ProgressBar demo так, чтобы пример автонабора энергии был виден сразу при запуске
+- [x] [REQUIREMENTS_OWNER] Пересобрать сценарий ProgressBar demo под два независимых потока: `Health HitBar` + `Energy Charge`
+- [x] [ARCHITECT] Зафиксировать целевое поведение: урон с echo rollback, лечение с мгновенным HP-applied, энергия `0..3` за `6s` с сегментами
+- [x] [IMPLEMENTER] Переработать `UIProgressBarDemoPresenter` под независимую логику `Health` и `Energy`
+- [x] [IMPLEMENTER] Обновить `UIProgressBarDemoSceneBuilder` под новую компоновку и визуализацию energy-режима
+- [x] [IMPLEMENTER] Добавить в `UIProgressBarControl` флаг `useEchoTimingOnIncrease` для echo-анимации при росте
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
 - [x] [REQUIREMENTS_OWNER] Уточнить доработки demo: убрать echo-артефакт на heal и показать режим плавного заполнения делений
@@ -63,12 +68,22 @@
   - `Auto Heal` включен по умолчанию;
   - стартовое значение снижено (`startValue = 0.35`), чтобы рост был виден сразу;
   - в презентер добавлен fallback-сценарий `enableAutoHealExampleOnStart`.
+- `UIProgressBarDemoPresenter` переписан под отдельные режимы:
+  - `Health` (`Damage/Heavy/Heal/Reset`) работает как hitbar: при уроне visible echo, при лечении HP применяется мгновенно;
+  - `Energy` автоматически заполняется от `0` до `3` за `6` секунд, сегменты фиксируются по событию заполнения;
+  - legacy toggle/label из старой сцены скрываются на старте, чтобы не мешать новому сценарию.
+- `UIProgressBarDemoSceneBuilder` обновлен:
+  - удалены `Auto Damage/Auto Heal` toggle из генерации;
+  - добавлен отдельный `Energy` label;
+  - нижний бар строится как `3` сегмента с echo-поведением на росте.
+- `UIProgressBarControl` расширен полем `useEchoTimingOnIncrease`:
+  - позволяет для роста использовать `echoDelay/echoDuration` вместо обычной `tween` длительности.
 - Выполнена проверка коммитов от контрольной точки:
-  - `git log 44a0367... --oneline` -> `ec465dd docs: refresh memory bank checkpoint`.
+  - `git log 1987c18... --oneline` -> `754f1f9 fix progressbar demo auto-heal visibility and segment generation cleanup`.
 
 ## Следующие шаги
 - Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:
   - `UIControls/Create ProgressBar Demo Scene`
-- Визуально проверить обе сцены в Unity Editor:
-  - `Assets/Scenes/UIControlsDemo.unity`
-  - `Assets/Scenes/UIProgressBarDemo.unity`
+- Визуально проверить в Unity Editor новую конфигурацию `UIProgressBarDemo`:
+  - верхний `Health` бар (damage/heal semantics);
+  - нижний `Energy` бар (`0..3` за `6s`, сегментная фиксация цветов).

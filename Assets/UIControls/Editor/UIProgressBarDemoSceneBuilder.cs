@@ -49,8 +49,8 @@ namespace UIControls.Editor
                 "UIControls ProgressBar v2 Demo", 36, FontStyle.Bold, TextAnchor.MiddleCenter);
             title.color = new Color(0.92f, 0.95f, 1f, 1f);
 
-            var subtitle = CreateText("Subtitle", panel, new Vector2(0f, 225f), new Vector2(840f, 44f),
-                "Segmented + HitBar + CustomAction (SO)", 22, FontStyle.Italic, TextAnchor.MiddleCenter);
+            var subtitle = CreateText("Subtitle", panel, new Vector2(0f, 225f), new Vector2(900f, 44f),
+                "Top: Health HitBar. Bottom: auto Energy (3 segments / 6 seconds).", 22, FontStyle.Italic, TextAnchor.MiddleCenter);
             subtitle.color = new Color(0.73f, 0.82f, 0.95f, 1f);
 
             var sliderBackgroundSprite = AssetDatabase.LoadAssetAtPath<Sprite>(SliderBackgroundSpritePath);
@@ -63,9 +63,9 @@ namespace UIControls.Editor
                 sliderBackgroundSprite,
                 sliderFillSprite,
                 sliderDividerSprite);
-            var segmentFillBar = CreateSegmentFillProgressBar(
+            var segmentFillBar = CreateEnergyProgressBar(
                 panel,
-                new Vector2(0f, 58f),
+                new Vector2(0f, 30f),
                 sliderBackgroundSprite,
                 sliderFillSprite,
                 sliderDividerSprite);
@@ -73,35 +73,29 @@ namespace UIControls.Editor
             var segmentModeLabel = CreateText(
                 "SegmentModeLabel",
                 panel,
-                new Vector2(0f, 25f),
+                new Vector2(0f, -8f),
                 new Vector2(860f, 34f),
-                "Bottom bar: FillBlocks mode (smooth per-segment refill)",
+                "Energy recharge: 0 -> 3 in 6s, each completed segment locks to main color.",
                 18,
                 FontStyle.Italic,
                 TextAnchor.MiddleCenter);
             segmentModeLabel.color = new Color(0.8f, 0.88f, 0.98f, 1f);
 
-            var damageButton = CreateActionButton(panel, "DamageButton", new Vector2(-255f, -15f), "Damage -12%", new Color(0.85f, 0.28f, 0.28f, 1f));
-            var heavyDamageButton = CreateActionButton(panel, "HeavyDamageButton", new Vector2(-85f, -15f), "Heavy -35%", new Color(0.75f, 0.17f, 0.17f, 1f));
-            var healButton = CreateActionButton(panel, "HealButton", new Vector2(85f, -15f), "Heal +8%", new Color(0.2f, 0.62f, 0.35f, 1f));
-            var resetButton = CreateActionButton(panel, "ResetButton", new Vector2(255f, -15f), "Reset", new Color(0.24f, 0.47f, 0.82f, 1f));
+            var energyLabel = CreateText("EnergyValue", panel, new Vector2(0f, -42f), new Vector2(460f, 34f),
+                "Energy 0.00/3", 20, FontStyle.Bold, TextAnchor.MiddleCenter);
+            energyLabel.color = new Color(0.98f, 0.92f, 0.55f, 1f);
 
-            var autoDamageToggle = CreateToggle(panel, "AutoDamage", new Vector2(-130f, -105f), false);
-            var autoDamageToggleLabel = CreateText("AutoDamageLabel", panel, new Vector2(-300f, -105f), new Vector2(320f, 54f),
-                "Auto Damage", 24, FontStyle.Normal, TextAnchor.MiddleRight);
-            autoDamageToggleLabel.color = new Color(0.9f, 0.94f, 1f, 1f);
-
-            var autoHealToggle = CreateToggle(panel, "AutoHeal", new Vector2(250f, -105f), true);
-            var autoHealToggleLabel = CreateText("AutoHealLabel", panel, new Vector2(80f, -105f), new Vector2(320f, 54f),
-                "Auto Heal", 24, FontStyle.Normal, TextAnchor.MiddleRight);
-            autoHealToggleLabel.color = new Color(0.9f, 0.94f, 1f, 1f);
+            var damageButton = CreateActionButton(panel, "DamageButton", new Vector2(-255f, -110f), "Damage -12%", new Color(0.85f, 0.28f, 0.28f, 1f));
+            var heavyDamageButton = CreateActionButton(panel, "HeavyDamageButton", new Vector2(-85f, -110f), "Heavy -35%", new Color(0.75f, 0.17f, 0.17f, 1f));
+            var healButton = CreateActionButton(panel, "HealButton", new Vector2(85f, -110f), "Heal +8%", new Color(0.2f, 0.62f, 0.35f, 1f));
+            var resetButton = CreateActionButton(panel, "ResetButton", new Vector2(255f, -110f), "Reset", new Color(0.24f, 0.47f, 0.82f, 1f));
 
             var statusLabel = CreateText("Status", panel, new Vector2(0f, -190f), new Vector2(860f, 54f),
-                "Use buttons, Auto Damage, or Auto Heal to test hitbar + segment refill modes", 20, FontStyle.Normal, TextAnchor.MiddleCenter);
+                "HitBar: damage has echo, heal updates HP immediately. Energy recharges automatically.", 20, FontStyle.Normal, TextAnchor.MiddleCenter);
             statusLabel.color = new Color(0.98f, 0.86f, 0.5f, 1f);
 
             var hint = CreateText("Hint", panel, new Vector2(0f, -245f), new Vector2(860f, 70f),
-                "Top bar: echo trail appears on damage only. Bottom bar: smooth fill blocks on heal.\nAuto Heal starts enabled for the demo. Auto Damage and Auto Heal are mutually exclusive.",
+                "Top bar: apply damage/heal/reset with buttons.\nBottom bar: segmented energy 0->3 for super-hit charge, filled in 6 seconds.",
                 18, FontStyle.Italic, TextAnchor.MiddleCenter);
             hint.color = new Color(0.75f, 0.8f, 0.95f, 1f);
 
@@ -112,10 +106,12 @@ namespace UIControls.Editor
             SetObjectReference(presenter, "heavyDamageButton", heavyDamageButton.GetComponent<UIButtonControl>());
             SetObjectReference(presenter, "healButton", healButton.GetComponent<UIButtonControl>());
             SetObjectReference(presenter, "resetButton", resetButton.GetComponent<UIButtonControl>());
-            SetObjectReference(presenter, "autoDamageToggle", autoDamageToggle.GetComponent<UIToggleControl>());
-            SetObjectReference(presenter, "autoHealToggle", autoHealToggle.GetComponent<UIToggleControl>());
             SetObjectReference(presenter, "statusLabel", statusLabel);
-            SetFloat(presenter, "startValue", 0.35f);
+            SetObjectReference(presenter, "energyLabel", energyLabel);
+            SetFloat(presenter, "startValue", 1f);
+            SetInt(presenter, "energySegments", 3);
+            SetFloat(presenter, "energyFillDuration", 6f);
+            SetFloat(presenter, "energyVisualUpdateInterval", 0.08f);
 
             EditorSceneManager.SaveScene(scene, ScenePath, true);
             AddSceneToBuildSettings(ScenePath);
@@ -329,25 +325,26 @@ namespace UIControls.Editor
             return progressGo;
         }
 
-        private static GameObject CreateSegmentFillProgressBar(
+        private static GameObject CreateEnergyProgressBar(
             RectTransform parent,
             Vector2 anchoredPosition,
             Sprite backgroundSprite,
             Sprite fillSprite,
             Sprite dividerSprite)
         {
-            const int segmentCount = 10;
+            const int segmentCount = 3;
 
-            var progressGo = CreateProgressBarRoot("DemoSegmentFillProgress", parent, anchoredPosition, new Vector2(820f, 58f), backgroundSprite);
+            var progressGo = CreateProgressBarRoot("DemoSegmentFillProgress", parent, anchoredPosition, new Vector2(820f, 64f), backgroundSprite);
             var rect = progressGo.GetComponent<RectTransform>();
-            var primaryFill = CreateFillLayer(rect, "PrimaryFill", new Color(0.2f, 0.78f, 0.37f, 1f), fillSprite, 4f);
+            var echoFill = CreateFillLayer(rect, "EchoFill", new Color(0.98f, 0.82f, 0.22f, 0.35f), fillSprite, 4f);
+            var primaryFill = CreateFillLayer(rect, "PrimaryFill", new Color(1f, 0.86f, 0.22f, 0.92f), fillSprite, 4f);
 
             var progressControl = progressGo.GetComponent<UIProgressBarControl>();
             SetObjectReference(progressControl, "fillImage", primaryFill);
             SetObjectReference(progressControl, "primaryFillImage", primaryFill);
-            SetObjectReference(progressControl, "echoFillImage", null);
+            SetObjectReference(progressControl, "echoFillImage", echoFill);
             SetObjectReference(progressControl, "valueLabel", null);
-            SetFloat(progressControl, "value", 1f);
+            SetFloat(progressControl, "value", 0f);
             SetBool(progressControl, "useSegments", true);
             SetInt(progressControl, "segmentsCount", segmentCount);
             SetBool(progressControl, "autoGenerateSegments", true);
@@ -355,17 +352,25 @@ namespace UIControls.Editor
             SetObjectReference(progressControl, "generatedSegmentsRoot", primaryFill.rectTransform);
             SetFloat(progressControl, "segmentGap", 2f);
             SetFloat(progressControl, "dividerWidth", 2f);
-            SetColor(progressControl, "dividerColor", new Color(0.05f, 0.2f, 0.4f, 0.95f));
+            SetColor(progressControl, "dividerColor", new Color(0.22f, 0.16f, 0.05f, 0.95f));
             SetObjectReference(progressControl, "segmentFillSprite", fillSprite);
             SetObjectReference(progressControl, "segmentDividerSprite", dividerSprite);
             SetObjectReferenceArray(progressControl, "segmentFills", Array.Empty<UnityEngine.Object>());
-            SetColor(progressControl, "fillingColor", new Color(0.95f, 0.78f, 0.28f, 1f));
-            SetColor(progressControl, "filledColor", new Color(0.17f, 0.72f, 0.33f, 1f));
+            SetColor(progressControl, "fillingColor", new Color(1f, 0.82f, 0.26f, 1f));
+            SetColor(progressControl, "filledColor", new Color(0.18f, 0.78f, 0.38f, 1f));
             SetBool(progressControl, "triggerControlStateOnSegmentCompleted", false);
             SetBool(progressControl, "triggerSegmentStateOnSegmentCompleted", false);
             ConfigureSegmentPulse(progressControl, 1.06f, 0.12f, Ease.OutQuad, false);
+            ConfigureTween(progressControl, 0.08f, Ease.Linear, 0f, false);
 
-            SetBool(progressControl, "useHitBar", false);
+            SetBool(progressControl, "useHitBar", true);
+            SetFloat(progressControl, "primaryDropDuration", 0f);
+            SetFloat(progressControl, "echoDelay", 0f);
+            SetFloat(progressControl, "echoDuration", 0.22f);
+            SetEnum(progressControl, "echoEase", (int)Ease.OutSine);
+            SetEnum(progressControl, "increaseMode", (int)UIProgressBarControl.HitBarIncreaseMode.SyncBoth);
+            SetBool(progressControl, "hideEchoOnIncrease", false);
+            SetBool(progressControl, "useEchoTimingOnIncrease", true);
             return progressGo;
         }
 
@@ -578,6 +583,17 @@ namespace UIControls.Editor
             pulseProperty.FindPropertyRelative("duration").floatValue = duration;
             pulseProperty.FindPropertyRelative("ease").enumValueIndex = (int)ease;
             pulseProperty.FindPropertyRelative("independentUpdate").boolValue = independentUpdate;
+            serializedObject.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void ConfigureTween(UnityEngine.Object target, float duration, Ease ease, float delay, bool independentUpdate)
+        {
+            var serializedObject = new SerializedObject(target);
+            var tweenProperty = serializedObject.FindProperty("tween");
+            tweenProperty.FindPropertyRelative("duration").floatValue = duration;
+            tweenProperty.FindPropertyRelative("ease").enumValueIndex = (int)ease;
+            tweenProperty.FindPropertyRelative("delay").floatValue = delay;
+            tweenProperty.FindPropertyRelative("independentUpdate").boolValue = independentUpdate;
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
 

@@ -46,7 +46,8 @@
   - авто-генерация divider/segment объектов без ручной раскладки;
   - fallback sprite для `Image.Type.Filled`, чтобы `fillAmount`/echo корректно работали при пустом `sprite`.
   - добавлены sprite override-поля для авто-генерации (`segmentFillSprite`, `segmentDividerSprite`);
-  - добавлен флаг `hideEchoOnIncrease` для устранения echo-артефактов при heal.
+  - добавлен флаг `hideEchoOnIncrease` для устранения echo-артефактов при heal;
+  - добавлен флаг `useEchoTimingOnIncrease`, позволяющий использовать `echoDelay/echoDuration` и на росте прогресса.
 - Добавлен `UIProgressBarCustomAction` для кастомной логики:
   - `OnValueChanged`
   - `OnSegmentCompleted`
@@ -57,14 +58,15 @@
   - `UIControlsDemo` оставлен как базовый пример контролов;
   - `UIProgressBarDemo` выделен как специализированный сценарий ProgressBar v2.
 - Для `UIProgressBarDemo`:
-  - `UIProgressBarDemoPresenter` управляет `Damage/Heavy/Heal/Reset` + `Auto Damage`/`Auto Heal`;
-  - `Auto Damage` и `Auto Heal` работают как взаимоисключающие режимы;
-  - `UIProgressBarDemoPresenter` синхронизирует два прогрессбара в одном сценарии;
+  - `UIProgressBarDemoPresenter` разделяет два независимых сценария:
+    - `Health HitBar`: `Damage/Heavy/Heal/Reset`, урон с echo rollback, лечение с мгновенным обновлением HP;
+    - `Energy Charge`: авто-набор `0..3` за `6` секунд с сегментацией.
   - `UIProgressBarDemoSceneBuilder` строит два режима:
-    - верхний `useSegments + useHitBar` (`DividersOnly`, echo только на уроне);
-    - нижний `FillBlocks` (плавное заполнение делений на восстановлении);
+    - верхний `Health` bar: `useSegments + useHitBar` (`DividersOnly`);
+    - нижний `Energy` bar: `3` сегмента, плавное заполнение и фиксация завершенных сегментов в основном цвете;
   - в demo используются текстуры `Slider_HealthBar_Boss` (`Slider_Basic04_*`, `Slider_Icon04_Fill_Red`);
-  - demo builder автоматически создает/назначает `DemoProgressBarDebug.action.asset`.
+  - demo builder автоматически создает/назначает `DemoProgressBarDebug.action.asset`;
+  - legacy `Auto Damage/Auto Heal` UI из старой сцены скрывается презентером для обратной совместимости.
 - Исправлено размножение автогенерируемых `AutoSegment/AutoDivider`:
   - генерация идет в отдельный служебный контейнер `AutoSegments`;
   - добавлена зачистка legacy-детей с префиксами `AutoSegment`/`AutoDivider`.
@@ -77,7 +79,6 @@
 ## Известные проблемы
 - Полноценная визуальная проверка UX demo-сцены требует запуска в Unity Editor.
 - `dotnet build` выводит предупреждения по конфликтам `System.Net.Http`/`System.Security.Cryptography.*` в Unity окружении.
-- `git push` пока невозможен без настройки удаленного `origin`.
 - Невозможно выполнить Unity `-batchmode` для этого проекта, пока он открыт во втором инстансе Unity.
 
 ## Развитие решений
@@ -86,5 +87,5 @@
 - Добавить prefab-набор для типовых сценариев ProgressBar v2 (segmented, hitbar, combined).
 
 ## Контроль изменений
-- last_checked_commit: 1987c18
+- last_checked_commit: 754f1f9
 - last_checked_date: 2026-04-01

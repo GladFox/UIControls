@@ -15555,13 +15555,15 @@ MonoBehaviour:
   autoDamageToggle: {fileID: 748925102}
   autoHealToggle: {fileID: 65573031}
   statusLabel: {fileID: 358672133}
-  startValue: 0.35
+  energyLabel: {fileID: 1112952051}
+  startValue: 1
   damageStep: 0.12
   heavyDamageStep: 0.35
   healStep: 0.08
-  autoDamageInterval: 1.2
-  autoHealStep: 0.06
-  randomizeAutoDamage: 1
+  energySegments: 3
+  energyFillDuration: 6
+  energyVisualUpdateInterval: 0.08
+  loopEnergyCharge: 0
 --- !u!225 &1206001356
 CanvasGroup:
   m_ObjectHideFlags: 0

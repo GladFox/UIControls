@@ -103,6 +103,7 @@ namespace UIControls.Runtime.Controls
         [SerializeField] private Ease echoEase = Ease.OutQuad;
         [SerializeField] private HitBarIncreaseMode increaseMode = HitBarIncreaseMode.SyncBoth;
         [SerializeField] private bool hideEchoOnIncrease = true;
+        [SerializeField] private bool useEchoTimingOnIncrease;
 
         [Header("Events")]
         [SerializeField] private ValueChangedEvent onValueChanged = new ValueChangedEvent();
@@ -344,7 +345,11 @@ namespace UIControls.Runtime.Controls
             }
             else if (increaseMode == HitBarIncreaseMode.SyncBoth)
             {
-                StartEchoTween(displayedEchoValue, targetValue, 0f, increaseDuration);
+                var increaseEchoDelay = useEchoTimingOnIncrease ? Mathf.Max(0f, echoDelay) : 0f;
+                var increaseEchoDuration = useEchoTimingOnIncrease
+                    ? Mathf.Max(0f, echoDuration)
+                    : increaseDuration;
+                StartEchoTween(displayedEchoValue, targetValue, increaseEchoDelay, increaseEchoDuration);
             }
             else
             {

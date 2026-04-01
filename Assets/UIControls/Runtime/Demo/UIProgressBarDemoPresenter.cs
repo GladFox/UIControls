@@ -1,4 +1,4 @@
-﻿using UIControls.Runtime.Controls;
+using UIControls.Runtime.Controls;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,8 +15,9 @@ namespace UIControls.Runtime.Demo
         [SerializeField] private UIToggleControl autoDamageToggle;
         [SerializeField] private UIToggleControl autoHealToggle;
         [SerializeField] private Text statusLabel;
+        [SerializeField] private Text energyLabel;
 
-        [Header("Demo Values")]
+        [Header("Health (HitBar)")]
         [Range(0f, 1f)]
         [SerializeField] private float startValue = 1f;
 
@@ -29,23 +30,22 @@ namespace UIControls.Runtime.Demo
         [Range(0.01f, 1f)]
         [SerializeField] private float healStep = 0.08f;
 
-        [Header("Auto Damage")]
-        [Range(0.1f, 10f)]
-        [SerializeField] private float autoDamageInterval = 1.2f;
+        [Header("Energy (Auto Recharge)")]
+        [Min(1)]
+        [SerializeField] private int energySegments = 3;
 
-        [Range(0.01f, 1f)]
-        [SerializeField] private float autoHealStep = 0.06f;
+        [Min(0.1f)]
+        [SerializeField] private float energyFillDuration = 6f;
 
-        [SerializeField] private bool randomizeAutoDamage = true;
+        [Min(0.01f)]
+        [SerializeField] private float energyVisualUpdateInterval = 0.08f;
 
-        [Header("Auto Demo")]
-        [SerializeField] private bool enableAutoHealExampleOnStart = true;
+        [SerializeField] private bool loopEnergyCharge;
 
-        [Range(0f, 1f)]
-        [SerializeField] private float autoHealDemoStartValue = 0.35f;
-
-        private float autoActionTimer;
-        private bool suppressToggleCallbacks;
+        private float healthValue;
+        private float energyValueNormalized;
+        private float energyElapsed;
+        private float energyUpdateTimer;
 
         private void OnEnable()
         {
@@ -69,48 +69,17 @@ namespace UIControls.Runtime.Demo
                 resetButton.OnClick.AddListener(HandleResetClick);
             }
 
-            if (autoDamageToggle != null)
+            if (segmentFillProgressBarControl != null)
             {
-                autoDamageToggle.OnValueChanged.AddListener(HandleAutoDamageToggled);
-                HandleAutoDamageToggled(autoDamageToggle.IsOn);
+                segmentFillProgressBarControl.OnSegmentCompleted.AddListener(HandleEnergySegmentCompleted);
             }
 
-            if (autoHealToggle != null)
-            {
-                autoHealToggle.OnValueChanged.AddListener(HandleAutoHealToggled);
-                HandleAutoHealToggled(autoHealToggle.IsOn);
-            }
+            ConfigureLegacyScenePresentation();
+            SetLegacyToggleActive(autoDamageToggle, false);
+            SetLegacyToggleActive(autoHealToggle, false);
 
-            if (progressBarControl != null)
-            {
-                progressBarControl.OnValueChanged.AddListener(HandleProgressValueChanged);
-                progressBarControl.OnSegmentCompleted.AddListener(HandleSegmentCompleted);
-                progressBarControl.OnEchoStarted.AddListener(HandleEchoStarted);
-                progressBarControl.OnEchoCompleted.AddListener(HandleEchoCompleted);
-            }
-
-            if (enableAutoHealExampleOnStart &&
-                autoHealToggle != null &&
-                !autoHealToggle.IsOn &&
-                (autoDamageToggle == null || !autoDamageToggle.IsOn))
-            {
-                SetToggleWithoutCallback(autoHealToggle, true);
-                HandleAutoHealToggled(true);
-            }
-
-            if (ResolveValueSource() != null)
-            {
-                var initialValue = startValue;
-                if (enableAutoHealExampleOnStart &&
-                    autoHealToggle != null &&
-                    autoHealToggle.IsOn &&
-                    initialValue >= 1f - Mathf.Epsilon)
-                {
-                    initialValue = Mathf.Clamp01(autoHealDemoStartValue);
-                }
-
-                ApplyValueToProgressBars(initialValue, false, true);
-            }
+            InitializeDemoState();
+            SetStatus("HitBar: damage has echo, heal updates HP immediately. Energy starts auto-recharge.");
         }
 
         private void OnDisable()
@@ -135,168 +104,111 @@ namespace UIControls.Runtime.Demo
                 resetButton.OnClick.RemoveListener(HandleResetClick);
             }
 
-            if (autoDamageToggle != null)
+            if (segmentFillProgressBarControl != null)
             {
-                autoDamageToggle.OnValueChanged.RemoveListener(HandleAutoDamageToggled);
-            }
-
-            if (autoHealToggle != null)
-            {
-                autoHealToggle.OnValueChanged.RemoveListener(HandleAutoHealToggled);
-            }
-
-            if (progressBarControl != null)
-            {
-                progressBarControl.OnValueChanged.RemoveListener(HandleProgressValueChanged);
-                progressBarControl.OnSegmentCompleted.RemoveListener(HandleSegmentCompleted);
-                progressBarControl.OnEchoStarted.RemoveListener(HandleEchoStarted);
-                progressBarControl.OnEchoCompleted.RemoveListener(HandleEchoCompleted);
+                segmentFillProgressBarControl.OnSegmentCompleted.RemoveListener(HandleEnergySegmentCompleted);
             }
         }
 
         private void Update()
         {
-            if (ResolveValueSource() == null)
+            if (segmentFillProgressBarControl == null || energyFillDuration <= Mathf.Epsilon)
             {
                 return;
             }
 
-            var autoDamageEnabled = autoDamageToggle != null && autoDamageToggle.IsOn;
-            var autoHealEnabled = autoHealToggle != null && autoHealToggle.IsOn;
-            if (!autoDamageEnabled && !autoHealEnabled)
+            var duration = Mathf.Max(0.01f, energyFillDuration);
+            energyElapsed += Time.unscaledDeltaTime;
+            energyUpdateTimer += Time.unscaledDeltaTime;
+
+            var targetValue = loopEnergyCharge
+                ? Mathf.Repeat(energyElapsed / duration, 1f)
+                : Mathf.Clamp01(energyElapsed / duration);
+
+            var needsFlush = energyUpdateTimer >= energyVisualUpdateInterval ||
+                             targetValue >= 1f - Mathf.Epsilon ||
+                             targetValue <= Mathf.Epsilon;
+            if (!needsFlush)
             {
                 return;
             }
 
-            autoActionTimer += Time.unscaledDeltaTime;
-            if (autoActionTimer < autoDamageInterval)
+            energyUpdateTimer = 0f;
+            if (Mathf.Approximately(targetValue, energyValueNormalized))
             {
                 return;
             }
 
-            autoActionTimer = 0f;
-            if (autoDamageEnabled)
-            {
-                var step = randomizeAutoDamage && Random.value > 0.5f ? heavyDamageStep : damageStep;
-                ApplyDelta(-step, $"Auto Damage -{step:P0}");
-                return;
-            }
+            var wasFull = energyValueNormalized >= 1f - Mathf.Epsilon;
+            energyValueNormalized = targetValue;
+            segmentFillProgressBarControl.SetValue(energyValueNormalized, true, false);
+            UpdateEnergyLabel();
 
-            ApplyDelta(autoHealStep, $"Auto Heal +{autoHealStep:P0}");
+            if (!loopEnergyCharge && !wasFull && energyValueNormalized >= 1f - Mathf.Epsilon)
+            {
+                SetStatus($"Energy full: {energySegments}/{energySegments}");
+            }
         }
 
         private void HandleDamageClick()
         {
-            ApplyDelta(-damageStep, $"Damage -{damageStep:P0}");
+            ApplyHealthDelta(-damageStep, $"Damage -{damageStep:P0}", true);
         }
 
         private void HandleHeavyDamageClick()
         {
-            ApplyDelta(-heavyDamageStep, $"Heavy Hit -{heavyDamageStep:P0}");
+            ApplyHealthDelta(-heavyDamageStep, $"Heavy -{heavyDamageStep:P0}", true);
         }
 
         private void HandleHealClick()
         {
-            ApplyDelta(healStep, $"Heal +{healStep:P0}");
+            ApplyHealthDelta(healStep, $"Heal +{healStep:P0}", false);
         }
 
         private void HandleResetClick()
         {
-            if (ResolveValueSource() == null)
-            {
-                return;
-            }
-
-            ApplyValueToProgressBars(startValue, true, true);
-            SetStatus($"Reset to {startValue:P0}");
+            InitializeDemoState();
+            SetStatus($"Reset: HP 100%, energy 0/{Mathf.Max(1, energySegments)}");
         }
 
-        private void HandleAutoDamageToggled(bool isOn)
+        private void HandleEnergySegmentCompleted(int segmentIndex)
         {
-            if (suppressToggleCallbacks)
-            {
-                return;
-            }
-
-            if (isOn && autoHealToggle != null && autoHealToggle.IsOn)
-            {
-                SetToggleWithoutCallback(autoHealToggle, false);
-            }
-
-            autoActionTimer = 0f;
-            SetStatus(isOn ? "Auto damage enabled" : "Auto damage disabled");
+            var total = Mathf.Max(1, energySegments);
+            var completed = Mathf.Clamp(segmentIndex + 1, 1, total);
+            SetStatus($"Energy segment ready: {completed}/{total}");
         }
 
-        private void HandleAutoHealToggled(bool isOn)
+        private void InitializeDemoState()
         {
-            if (suppressToggleCallbacks)
-            {
-                return;
-            }
-
-            if (isOn && autoDamageToggle != null && autoDamageToggle.IsOn)
-            {
-                SetToggleWithoutCallback(autoDamageToggle, false);
-            }
-
-            autoActionTimer = 0f;
-            SetStatus(isOn ? "Auto heal enabled" : "Auto heal disabled");
-        }
-
-        private void HandleProgressValueChanged(float currentValue)
-        {
-            SetStatus($"Value changed: {currentValue:P0}");
-        }
-
-        private void HandleSegmentCompleted(int segmentIndex)
-        {
-            SetStatus($"Segment completed: {segmentIndex + 1}");
-        }
-
-        private void HandleEchoStarted(float fromValue, float toValue)
-        {
-            SetStatus($"Echo started: {fromValue:P0} -> {toValue:P0}");
-        }
-
-        private void HandleEchoCompleted(float currentValue)
-        {
-            SetStatus($"Echo completed: {currentValue:P0}");
-        }
-
-        private void ApplyDelta(float delta, string reason)
-        {
-            var source = ResolveValueSource();
-            if (source == null)
-            {
-                return;
-            }
-
-            var nextValue = Mathf.Clamp01(source.Value + delta);
-            ApplyValueToProgressBars(nextValue, true, true);
-            SetStatus($"{reason} -> {nextValue:P0}");
-        }
-
-        private UIProgressBarControl ResolveValueSource()
-        {
+            healthValue = Mathf.Clamp01(startValue);
             if (progressBarControl != null)
             {
-                return progressBarControl;
+                progressBarControl.SetValue(healthValue, false, true);
             }
 
-            return segmentFillProgressBarControl;
+            energyElapsed = 0f;
+            energyUpdateTimer = 0f;
+            energyValueNormalized = 0f;
+            if (segmentFillProgressBarControl != null)
+            {
+                segmentFillProgressBarControl.SetUseHitBar(true, false);
+                segmentFillProgressBarControl.SetSegmentsCount(Mathf.Max(1, energySegments), true);
+                segmentFillProgressBarControl.SetValue(0f, false, false);
+            }
+
+            UpdateEnergyLabel();
         }
 
-        private void ApplyValueToProgressBars(float targetValue, bool animate, bool notify)
+        private void ApplyHealthDelta(float delta, string reason, bool animate)
         {
-            if (progressBarControl != null)
+            if (progressBarControl == null)
             {
-                progressBarControl.SetValue(targetValue, animate, notify);
+                return;
             }
 
-            if (segmentFillProgressBarControl != null && segmentFillProgressBarControl != progressBarControl)
-            {
-                segmentFillProgressBarControl.SetValue(targetValue, animate, notify);
-            }
+            healthValue = Mathf.Clamp01(healthValue + delta);
+            progressBarControl.SetValue(healthValue, animate, true);
+            SetStatus($"{reason} -> HP {healthValue:P0}");
         }
 
         private void SetStatus(string text)
@@ -309,16 +221,75 @@ namespace UIControls.Runtime.Demo
             statusLabel.text = text;
         }
 
-        private void SetToggleWithoutCallback(UIToggleControl toggle, bool value)
+        private void UpdateEnergyLabel()
+        {
+            if (energyLabel == null)
+            {
+                return;
+            }
+
+            var total = Mathf.Max(1, energySegments);
+            var energyValue = energyValueNormalized * total;
+            energyLabel.text = $"Energy {energyValue:0.00}/{total}";
+        }
+
+        private static void SetLegacyToggleActive(UIToggleControl toggle, bool active)
         {
             if (toggle == null)
             {
                 return;
             }
 
-            suppressToggleCallbacks = true;
-            toggle.SetIsOn(value, true, false);
-            suppressToggleCallbacks = false;
+            var root = toggle.transform.parent != null
+                ? toggle.transform.parent.gameObject
+                : toggle.gameObject;
+            root.SetActive(active);
+        }
+
+        private void ConfigureLegacyScenePresentation()
+        {
+            SetLegacyObjectActive("AutoDamageLabel", false);
+            SetLegacyObjectActive("AutoHealLabel", false);
+            SetLegacyText("SegmentModeLabel", "Energy recharge: 0 -> 3 in 6s, each completed segment locks to main color.");
+            SetLegacyText("Hint", "Top bar: damage -> echo rollback, heal -> instant HP update. Bottom bar: energy auto-fills for super hit.");
+        }
+
+        private void SetLegacyObjectActive(string childName, bool active)
+        {
+            if (string.IsNullOrEmpty(childName))
+            {
+                return;
+            }
+
+            var child = transform.Find(childName);
+            if (child == null)
+            {
+                return;
+            }
+
+            child.gameObject.SetActive(active);
+        }
+
+        private void SetLegacyText(string childName, string value)
+        {
+            if (string.IsNullOrEmpty(childName))
+            {
+                return;
+            }
+
+            var child = transform.Find(childName);
+            if (child == null)
+            {
+                return;
+            }
+
+            var text = child.GetComponent<Text>();
+            if (text == null)
+            {
+                return;
+            }
+
+            text.text = value;
         }
     }
 }
