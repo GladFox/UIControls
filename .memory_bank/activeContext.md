@@ -38,6 +38,10 @@
 - [x] [IMPLEMENTER] Переработать `UIProgressBarDemoPresenter` под независимую логику `Health` и `Energy`
 - [x] [IMPLEMENTER] Обновить `UIProgressBarDemoSceneBuilder` под новую компоновку и визуализацию energy-режима
 - [x] [IMPLEMENTER] Добавить в `UIProgressBarControl` флаг `useEchoTimingOnIncrease` для echo-анимации при росте
+- [x] [REQUIREMENTS_OWNER] Добавить в ProgressBar demo действие расхода одного супер-деления энергии
+- [x] [IMPLEMENTER] Добавить кнопку `Spend 1 Super` в `UIProgressBarDemoSceneBuilder` и привязку к презентеру
+- [x] [IMPLEMENTER] Реализовать списание одного energy-сегмента в `UIProgressBarDemoPresenter`
+- [x] [IMPLEMENTER] Добавить fallback для старой сцены: `AutoDamage` toggle работает как триггер `Spend 1 Super`, если кнопка не назначена
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
 - [x] [REQUIREMENTS_OWNER] Уточнить доработки demo: убрать echo-артефакт на heal и показать режим плавного заполнения делений
@@ -78,8 +82,12 @@
   - нижний бар строится как `3` сегмента с echo-поведением на росте.
 - `UIProgressBarControl` расширен полем `useEchoTimingOnIncrease`:
   - позволяет для роста использовать `echoDelay/echoDuration` вместо обычной `tween` длительности.
+- Добавлен сценарий расхода супер-энергии:
+  - в новом builder-flow создается кнопка `Spend 1 Super` и привязывается к `UIProgressBarDemoPresenter`;
+  - при нажатии списывается ровно один сегмент `1 / energySegments`, а авто-набор продолжает заполнение от обновленной точки;
+  - для текущей (legacy) сцены без новой кнопки включен fallback через `AutoDamage` toggle, переименованный в `Spend 1 Super`.
 - Выполнена проверка коммитов от контрольной точки:
-  - `git log 1987c18... --oneline` -> `754f1f9 fix progressbar demo auto-heal visibility and segment generation cleanup`.
+  - `git log 754f1f9... --oneline` -> `9abb48d rework progressbar demo into health hitbar and auto energy flow`.
 
 ## Следующие шаги
 - Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:

@@ -119,9 +119,10 @@ Assets/UIControls/
 - Связи демонстрации настраиваются через сериализуемые поля `UIControlsDemoPresenter`.
 - Отдельная сцена ProgressBar v2: `Assets/Scenes/UIProgressBarDemo.unity`.
 - ProgressBar demo включает полноценный сценарий:
-  - `Damage -12%`, `Heavy -35%`, `Heal +8%`, `Reset`;
+  - `Damage -12%`, `Heavy -35%`, `Heal +8%`, `Reset`, `Spend 1 Super`;
   - верхний бар (`Health`): `useSegments + useHitBar`, при уроне основной слой быстро падает и эхо догоняет, при лечении HP обновляется сразу;
   - нижний бар (`Energy`): авто-набор энергии от `0` до `3` за `6` секунд, `3` сегмента, плавный переход между сегментами с окраской завершенных делений в основной цвет;
+  - кнопка `Spend 1 Super` списывает одно целое деление энергии;
   - текстуры из `Assets/ThirdParty/Layer Lab/.../Slider_*` в качестве визуального примера;
   - вывод статусов по событиям `segment/echo` и текстовый индикатор энергии.
 - `UIControlsDemoSceneBuilder` собирает базовую сцену контролов.

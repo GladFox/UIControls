@@ -89,13 +89,14 @@ namespace UIControls.Editor
             var heavyDamageButton = CreateActionButton(panel, "HeavyDamageButton", new Vector2(-85f, -110f), "Heavy -35%", new Color(0.75f, 0.17f, 0.17f, 1f));
             var healButton = CreateActionButton(panel, "HealButton", new Vector2(85f, -110f), "Heal +8%", new Color(0.2f, 0.62f, 0.35f, 1f));
             var resetButton = CreateActionButton(panel, "ResetButton", new Vector2(255f, -110f), "Reset", new Color(0.24f, 0.47f, 0.82f, 1f));
+            var spendSuperButton = CreateActionButton(panel, "SpendSuperButton", new Vector2(0f, -72f), "Spend 1 Super", new Color(0.92f, 0.74f, 0.18f, 1f));
 
             var statusLabel = CreateText("Status", panel, new Vector2(0f, -190f), new Vector2(860f, 54f),
                 "HitBar: damage has echo, heal updates HP immediately. Energy recharges automatically.", 20, FontStyle.Normal, TextAnchor.MiddleCenter);
             statusLabel.color = new Color(0.98f, 0.86f, 0.5f, 1f);
 
             var hint = CreateText("Hint", panel, new Vector2(0f, -245f), new Vector2(860f, 70f),
-                "Top bar: apply damage/heal/reset with buttons.\nBottom bar: segmented energy 0->3 for super-hit charge, filled in 6 seconds.",
+                "Top bar: apply damage/heal/reset with buttons.\nBottom bar: segmented energy 0->3 for super-hit charge, use Spend 1 Super button.",
                 18, FontStyle.Italic, TextAnchor.MiddleCenter);
             hint.color = new Color(0.75f, 0.8f, 0.95f, 1f);
 
@@ -106,6 +107,7 @@ namespace UIControls.Editor
             SetObjectReference(presenter, "heavyDamageButton", heavyDamageButton.GetComponent<UIButtonControl>());
             SetObjectReference(presenter, "healButton", healButton.GetComponent<UIButtonControl>());
             SetObjectReference(presenter, "resetButton", resetButton.GetComponent<UIButtonControl>());
+            SetObjectReference(presenter, "spendSuperButton", spendSuperButton.GetComponent<UIButtonControl>());
             SetObjectReference(presenter, "statusLabel", statusLabel);
             SetObjectReference(presenter, "energyLabel", energyLabel);
             SetFloat(presenter, "startValue", 1f);

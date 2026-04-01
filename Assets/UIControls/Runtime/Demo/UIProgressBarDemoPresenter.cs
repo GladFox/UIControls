@@ -12,6 +12,7 @@ namespace UIControls.Runtime.Demo
         [SerializeField] private UIButtonControl heavyDamageButton;
         [SerializeField] private UIButtonControl healButton;
         [SerializeField] private UIButtonControl resetButton;
+        [SerializeField] private UIButtonControl spendSuperButton;
         [SerializeField] private UIToggleControl autoDamageToggle;
         [SerializeField] private UIToggleControl autoHealToggle;
         [SerializeField] private Text statusLabel;
@@ -46,6 +47,7 @@ namespace UIControls.Runtime.Demo
         private float energyValueNormalized;
         private float energyElapsed;
         private float energyUpdateTimer;
+        private bool usingLegacySpendToggle;
 
         private void OnEnable()
         {
@@ -69,14 +71,17 @@ namespace UIControls.Runtime.Demo
                 resetButton.OnClick.AddListener(HandleResetClick);
             }
 
+            if (spendSuperButton != null)
+            {
+                spendSuperButton.OnClick.AddListener(HandleSpendSuperClick);
+            }
+
             if (segmentFillProgressBarControl != null)
             {
                 segmentFillProgressBarControl.OnSegmentCompleted.AddListener(HandleEnergySegmentCompleted);
             }
 
-            ConfigureLegacyScenePresentation();
-            SetLegacyToggleActive(autoDamageToggle, false);
-            SetLegacyToggleActive(autoHealToggle, false);
+            ConfigureLegacyScenePresentation(spendSuperButton == null);
 
             InitializeDemoState();
             SetStatus("HitBar: damage has echo, heal updates HP immediately. Energy starts auto-recharge.");
@@ -104,9 +109,19 @@ namespace UIControls.Runtime.Demo
                 resetButton.OnClick.RemoveListener(HandleResetClick);
             }
 
+            if (spendSuperButton != null)
+            {
+                spendSuperButton.OnClick.RemoveListener(HandleSpendSuperClick);
+            }
+
             if (segmentFillProgressBarControl != null)
             {
                 segmentFillProgressBarControl.OnSegmentCompleted.RemoveListener(HandleEnergySegmentCompleted);
+            }
+
+            if (usingLegacySpendToggle && autoDamageToggle != null)
+            {
+                autoDamageToggle.OnValueChanged.RemoveListener(HandleLegacySpendToggleChanged);
             }
         }
 
@@ -171,11 +186,27 @@ namespace UIControls.Runtime.Demo
             SetStatus($"Reset: HP 100%, energy 0/{Mathf.Max(1, energySegments)}");
         }
 
+        private void HandleSpendSuperClick()
+        {
+            SpendOneSuper();
+        }
+
         private void HandleEnergySegmentCompleted(int segmentIndex)
         {
             var total = Mathf.Max(1, energySegments);
             var completed = Mathf.Clamp(segmentIndex + 1, 1, total);
             SetStatus($"Energy segment ready: {completed}/{total}");
+        }
+
+        private void HandleLegacySpendToggleChanged(bool isOn)
+        {
+            if (!isOn)
+            {
+                return;
+            }
+
+            SpendOneSuper();
+            autoDamageToggle.SetIsOn(false, true, false);
         }
 
         private void InitializeDemoState()
@@ -209,6 +240,30 @@ namespace UIControls.Runtime.Demo
             healthValue = Mathf.Clamp01(healthValue + delta);
             progressBarControl.SetValue(healthValue, animate, true);
             SetStatus($"{reason} -> HP {healthValue:P0}");
+        }
+
+        private void SpendOneSuper()
+        {
+            if (segmentFillProgressBarControl == null)
+            {
+                return;
+            }
+
+            var total = Mathf.Max(1, energySegments);
+            var segmentCost = 1f / total;
+            if (energyValueNormalized < segmentCost - 0.0001f)
+            {
+                SetStatus("Not enough energy for super hit");
+                return;
+            }
+
+            energyValueNormalized = Mathf.Clamp01(energyValueNormalized - segmentCost);
+            energyElapsed = Mathf.Max(0f, energyValueNormalized * Mathf.Max(0.01f, energyFillDuration));
+            energyUpdateTimer = 0f;
+
+            segmentFillProgressBarControl.SetValue(energyValueNormalized, true, false);
+            UpdateEnergyLabel();
+            SetStatus($"Super spent: -1 segment ({energyValueNormalized * total:0.00}/{total})");
         }
 
         private void SetStatus(string text)
@@ -246,10 +301,21 @@ namespace UIControls.Runtime.Demo
             root.SetActive(active);
         }
 
-        private void ConfigureLegacyScenePresentation()
+        private void ConfigureLegacyScenePresentation(bool useLegacyToggleAsSpendButton)
         {
-            SetLegacyObjectActive("AutoDamageLabel", false);
+            usingLegacySpendToggle = useLegacyToggleAsSpendButton && autoDamageToggle != null;
+            SetLegacyToggleActive(autoDamageToggle, usingLegacySpendToggle);
+            SetLegacyToggleActive(autoHealToggle, false);
+            SetLegacyObjectActive("AutoDamageLabel", usingLegacySpendToggle);
             SetLegacyObjectActive("AutoHealLabel", false);
+            if (usingLegacySpendToggle)
+            {
+                SetLegacyText("AutoDamageLabel", "Spend 1 Super");
+                autoDamageToggle.SetIsOn(false, true, false);
+                autoDamageToggle.OnValueChanged.RemoveListener(HandleLegacySpendToggleChanged);
+                autoDamageToggle.OnValueChanged.AddListener(HandleLegacySpendToggleChanged);
+            }
+
             SetLegacyText("SegmentModeLabel", "Energy recharge: 0 -> 3 in 6s, each completed segment locks to main color.");
             SetLegacyText("Hint", "Top bar: damage -> echo rollback, heal -> instant HP update. Bottom bar: energy auto-fills for super hit.");
         }
