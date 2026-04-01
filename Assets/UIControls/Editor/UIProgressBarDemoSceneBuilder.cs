@@ -397,6 +397,8 @@ namespace UIControls.Editor
             SetBool(progressControl, "triggerControlStateOnSegmentCompleted", false);
             SetBool(progressControl, "triggerSegmentStateOnSegmentCompleted", false);
             ConfigureSegmentPulse(progressControl, 1.06f, 0.12f, Ease.OutQuad, false);
+            SetBool(progressControl, "triggerControlPulseOnSegmentCompleted", true);
+            ConfigureControlPulse(progressControl, 1.04f, 0.22f, Ease.OutQuad, false);
             ConfigureTween(progressControl, 0.08f, Ease.Linear, 0f, false);
 
             SetBool(progressControl, "useHitBar", true);
@@ -608,6 +610,17 @@ namespace UIControls.Editor
         {
             var serializedObject = new SerializedObject(target);
             serializedObject.FindProperty(propertyName).colorValue = value;
+            serializedObject.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void ConfigureControlPulse(UIProgressBarControl control, float scaleMultiplier, float duration, Ease ease, bool independentUpdate)
+        {
+            var serializedObject = new SerializedObject(control);
+            var pulseProperty = serializedObject.FindProperty("controlPulse");
+            pulseProperty.FindPropertyRelative("scaleMultiplier").floatValue = scaleMultiplier;
+            pulseProperty.FindPropertyRelative("duration").floatValue = duration;
+            pulseProperty.FindPropertyRelative("ease").enumValueIndex = (int)ease;
+            pulseProperty.FindPropertyRelative("independentUpdate").boolValue = independentUpdate;
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
 

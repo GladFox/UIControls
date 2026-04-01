@@ -54,6 +54,15 @@ namespace UIControls.Runtime.Controls
 
             public Ease ease = Ease.OutQuad;
             public bool independentUpdate;
+
+            public SegmentPulseSettings() { }
+
+            public SegmentPulseSettings(float scaleMultiplier, float duration, Ease ease = Ease.OutQuad)
+            {
+                this.scaleMultiplier = scaleMultiplier;
+                this.duration = duration;
+                this.ease = ease;
+            }
         }
 
         [Header("Base")]
@@ -89,6 +98,8 @@ namespace UIControls.Runtime.Controls
         [SerializeField] private UIStateVisualAsset controlSegmentCompletedState;
         [SerializeField] private bool triggerSegmentStateOnSegmentCompleted;
         [SerializeField] private SegmentPulseSettings segmentPulse = new SegmentPulseSettings();
+        [SerializeField] private bool triggerControlPulseOnSegmentCompleted;
+        [SerializeField] private SegmentPulseSettings controlPulse = new SegmentPulseSettings(1.04f, 0.2f);
 
         [Header("HitBar")]
         [SerializeField] private bool useHitBar;
@@ -117,6 +128,7 @@ namespace UIControls.Runtime.Controls
         private Tween primaryTween;
         private Tween echoTween;
         private Tween labelTween;
+        private Tween controlPulseTween;
         private readonly List<Image> generatedSegmentImages = new List<Image>();
         private readonly List<Graphic> generatedDividers = new List<Graphic>();
         private readonly Dictionary<int, Tween> segmentPulseTweens = new Dictionary<int, Tween>();
@@ -560,18 +572,19 @@ namespace UIControls.Runtime.Controls
                 controlSegmentStateAnimator.Animate(controlSegmentCompletedState.State);
             }
 
-            if (!triggerSegmentStateOnSegmentCompleted)
+            if (triggerControlPulseOnSegmentCompleted)
             {
-                return;
+                PlayControlPulse();
             }
 
-            var pulseTarget = ResolveSegmentPulseTarget(segmentIndex);
-            if (pulseTarget == null)
+            if (triggerSegmentStateOnSegmentCompleted)
             {
-                return;
+                var pulseTarget = ResolveSegmentPulseTarget(segmentIndex);
+                if (pulseTarget != null)
+                {
+                    PlaySegmentPulse(segmentIndex, pulseTarget);
+                }
             }
-
-            PlaySegmentPulse(segmentIndex, pulseTarget);
         }
 
         private void PlaySegmentPulse(int segmentIndex, RectTransform target)
@@ -613,6 +626,48 @@ namespace UIControls.Runtime.Controls
             });
 
             segmentPulseTweens[segmentIndex] = sequence;
+        }
+
+        private void PlayControlPulse()
+        {
+            var target = transform as RectTransform;
+            if (target == null)
+            {
+                return;
+            }
+
+            if (controlPulseTween != null && controlPulseTween.IsActive())
+            {
+                controlPulseTween.Kill(false);
+            }
+
+            var duration = Mathf.Max(0f, controlPulse.duration);
+            var baseScale = Vector3.one;
+
+            if (duration <= Mathf.Epsilon)
+            {
+                target.localScale = baseScale;
+                controlPulseTween = null;
+                return;
+            }
+
+            var half = duration * 0.5f;
+            var expanded = baseScale * Mathf.Max(1f, controlPulse.scaleMultiplier);
+            var sequence = DOTween.Sequence()
+                .SetUpdate(UpdateType.Normal, controlPulse.independentUpdate);
+
+            sequence.Append(target.DOScale(expanded, half).SetEase(controlPulse.ease));
+            sequence.Append(target.DOScale(baseScale, half).SetEase(controlPulse.ease));
+            sequence.OnKill(() =>
+            {
+                target.localScale = baseScale;
+                if (controlPulseTween == sequence)
+                {
+                    controlPulseTween = null;
+                }
+            });
+
+            controlPulseTween = sequence;
         }
 
         private void UpdateLabel(float currentValue)
@@ -1037,6 +1092,13 @@ namespace UIControls.Runtime.Controls
         private void KillAllTweens()
         {
             KillValueTweens();
+
+            if (controlPulseTween != null && controlPulseTween.IsActive())
+            {
+                controlPulseTween.Kill(false);
+            }
+
+            controlPulseTween = null;
 
             foreach (var pair in segmentPulseTweens)
             {
