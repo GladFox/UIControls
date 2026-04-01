@@ -211,7 +211,7 @@ namespace UIControls.Runtime.Controls
 
             if (syncVisual)
             {
-                ForceSyncVisual();
+                ApplyVisualImmediate(value, false);
             }
         }
 
@@ -822,6 +822,29 @@ namespace UIControls.Runtime.Controls
             }
         }
 
+        private RectTransform FindExistingSegmentsContainer()
+        {
+            var anchor = generatedSegmentsRoot != null
+                ? generatedSegmentsRoot
+                : primaryFillImage != null
+                    ? primaryFillImage.rectTransform
+                    : fillImage != null
+                        ? fillImage.rectTransform
+                        : transform as RectTransform;
+
+            if (anchor == null)
+            {
+                return null;
+            }
+
+            if (string.Equals(anchor.name, AutoSegmentsRootName, StringComparison.Ordinal))
+            {
+                return anchor;
+            }
+
+            return anchor.Find(AutoSegmentsRootName) as RectTransform;
+        }
+
         private RectTransform ResolveGeneratedSegmentsRoot()
         {
             if (generatedSegmentsContainer != null)
@@ -899,13 +922,7 @@ namespace UIControls.Runtime.Controls
 
             generatedDividers.Clear();
 
-            var targetContainer = container ?? generatedSegmentsContainer;
-            if (targetContainer == null &&
-                generatedSegmentsRoot != null &&
-                string.Equals(generatedSegmentsRoot.name, AutoSegmentsRootName, StringComparison.Ordinal))
-            {
-                targetContainer = generatedSegmentsRoot;
-            }
+            var targetContainer = container ?? generatedSegmentsContainer ?? FindExistingSegmentsContainer();
             if (targetContainer != null)
             {
                 for (var i = targetContainer.childCount - 1; i >= 0; i--)
