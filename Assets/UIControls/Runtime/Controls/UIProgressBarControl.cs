@@ -185,8 +185,26 @@ namespace UIControls.Runtime.Controls
             EnsureFilledImageSprite(fillImage);
             EnsureFilledImageSprite(primaryFillImage);
             EnsureFilledImageSprite(echoFillImage);
+
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += OnValidateDelayed;
+#else
+            EnsureSegmentVisuals();
+#endif
+        }
+
+#if UNITY_EDITOR
+        private void OnValidateDelayed()
+        {
+            UnityEditor.EditorApplication.delayCall -= OnValidateDelayed;
+            if (this == null)
+            {
+                return;
+            }
+
             EnsureSegmentVisuals();
         }
+#endif
 
         private void OnDisable()
         {
