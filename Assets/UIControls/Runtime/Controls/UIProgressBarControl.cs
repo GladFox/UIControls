@@ -133,6 +133,7 @@ namespace UIControls.Runtime.Controls
         private readonly List<Graphic> generatedDividers = new List<Graphic>();
         private readonly Dictionary<int, Tween> segmentPulseTweens = new Dictionary<int, Tween>();
         private RectTransform generatedSegmentsContainer;
+        private bool segmentVisualsRebuildInProgress;
 
         private float displayedPrimaryValue;
         private float displayedEchoValue;
@@ -706,23 +707,36 @@ namespace UIControls.Runtime.Controls
 
         private void EnsureSegmentVisuals()
         {
-            if (!useSegments)
+            if (segmentVisualsRebuildInProgress)
             {
-                if (autoGenerateSegments)
+                return;
+            }
+
+            segmentVisualsRebuildInProgress = true;
+            try
+            {
+                if (!useSegments)
                 {
-                    ClearGeneratedVisuals();
+                    if (autoGenerateSegments)
+                    {
+                        ClearGeneratedVisuals();
+                    }
+
+                    return;
                 }
 
-                return;
-            }
+                if (!autoGenerateSegments)
+                {
+                    EnsureFilledImageSpriteArray(segmentFills);
+                    return;
+                }
 
-            if (!autoGenerateSegments)
+                BuildGeneratedSegments(Mathf.Max(1, segmentsCount));
+            }
+            finally
             {
-                EnsureFilledImageSpriteArray(segmentFills);
-                return;
+                segmentVisualsRebuildInProgress = false;
             }
-
-            BuildGeneratedSegments(Mathf.Max(1, segmentsCount));
         }
 
         private bool IsSegmentBuildCurrent(int count)
@@ -745,6 +759,13 @@ namespace UIControls.Runtime.Controls
                     {
                         return false;
                     }
+                }
+            }
+            else
+            {
+                if (generatedSegmentImages.Count != 0)
+                {
+                    return false;
                 }
             }
 
