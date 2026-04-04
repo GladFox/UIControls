@@ -43,6 +43,12 @@ namespace UIControls.Runtime.Controls
             DividersOnly
         }
 
+        public enum BarFillMode
+        {
+            ImageFill,
+            RectWidth
+        }
+
         [Serializable]
         private sealed class SegmentPulseSettings
         {
@@ -59,6 +65,7 @@ namespace UIControls.Runtime.Controls
 
         [Header("Base")]
         [SerializeField] private Image fillImage;
+        [SerializeField] private BarFillMode fillMode = BarFillMode.ImageFill;
         [SerializeField] private Text valueLabel;
         [SerializeField] private string valueFormat = "{0:0%}";
 
@@ -123,6 +130,7 @@ namespace UIControls.Runtime.Controls
         private readonly Dictionary<int, Tween> segmentPulseTweens = new Dictionary<int, Tween>();
         private RectTransform generatedSegmentsContainer;
         private bool segmentVisualsRebuildInProgress;
+        private BarFillMode lastBuiltFillMode;
 
         private float displayedPrimaryValue;
         private float displayedEchoValue;
@@ -507,12 +515,12 @@ namespace UIControls.Runtime.Controls
         {
             if (primaryFillImage != null)
             {
-                primaryFillImage.fillAmount = currentValue;
+                ApplyFillToImage(primaryFillImage, currentValue);
             }
 
             if (!useHitBar && fillImage != null && fillImage != primaryFillImage)
             {
-                fillImage.fillAmount = currentValue;
+                ApplyFillToImage(fillImage, currentValue);
             }
 
             UpdateSegments(currentValue, raiseSegmentEvents);
@@ -525,7 +533,32 @@ namespace UIControls.Runtime.Controls
                 return;
             }
 
-            echoFillImage.fillAmount = currentValue;
+            ApplyFillToImage(echoFillImage, currentValue);
+        }
+
+        private void ApplyFillToImage(Image image, float fillValue)
+        {
+            if (image == null)
+            {
+                return;
+            }
+
+            if (fillMode == BarFillMode.RectWidth)
+            {
+                var rect = image.rectTransform;
+                var parent = rect.parent as RectTransform;
+                if (parent != null)
+                {
+                    rect.anchorMin = new Vector2(0f, rect.anchorMin.y);
+                    rect.anchorMax = new Vector2(fillValue, rect.anchorMax.y);
+                    rect.offsetMin = new Vector2(0f, rect.offsetMin.y);
+                    rect.offsetMax = new Vector2(0f, rect.offsetMax.y);
+                }
+            }
+            else
+            {
+                image.fillAmount = fillValue;
+            }
         }
 
         private void UpdateSegments(float progressValue, bool raiseEvents)
@@ -550,8 +583,20 @@ namespace UIControls.Runtime.Controls
                     segmentFills[i] != null)
                 {
                     var segmentFill = segmentFills[i];
-                    segmentFill.fillAmount = localFill;
                     segmentFill.color = nowCompleted ? filledColor : fillingColor;
+                    if (fillMode == BarFillMode.RectWidth)
+                    {
+                        var r = segmentFill.rectTransform;
+                        var minAnchorX = r.anchorMin.x;
+                        var fullWidth = 1f / Mathf.Max(1, segmentsCount);
+                        r.anchorMax = new Vector2(minAnchorX + localFill * fullWidth, r.anchorMax.y);
+                        r.offsetMin = new Vector2(0f, r.offsetMin.y);
+                        r.offsetMax = new Vector2(0f, r.offsetMax.y);
+                    }
+                    else
+                    {
+                        segmentFill.fillAmount = localFill;
+                    }
                 }
 
                 var wasCompleted = completedSegments[i];
@@ -706,6 +751,11 @@ namespace UIControls.Runtime.Controls
                 return false;
             }
 
+            if (lastBuiltFillMode != fillMode)
+            {
+                return false;
+            }
+
             if (segmentVisualMode == SegmentVisualMode.FillBlocks)
             {
                 if (generatedSegmentImages.Count != count)
@@ -774,6 +824,7 @@ namespace UIControls.Runtime.Controls
             }
 
             var dividerSprite = segmentDividerSprite != null ? segmentDividerSprite : ResolveFilledSpriteCandidate();
+            var totalCount = Mathf.Max(1, segmentsCount);
 
             for (var i = 0; i < generatedDividers.Count; i++)
             {
@@ -784,7 +835,12 @@ namespace UIControls.Runtime.Controls
                 }
 
                 graphic.color = dividerColor;
-                graphic.rectTransform.sizeDelta = new Vector2(dividerWidth, 0f);
+                var divRect = graphic.rectTransform;
+                divRect.sizeDelta = new Vector2(dividerWidth, 0f);
+
+                var x = (i + 1) / (float)totalCount;
+                divRect.anchorMin = new Vector2(x, 0f);
+                divRect.anchorMax = new Vector2(x, 1f);
 
                 if (dividerSprite != null && graphic is Image divImage)
                 {
@@ -819,6 +875,7 @@ namespace UIControls.Runtime.Controls
             }
 
             BuildGeneratedDividers(root, count);
+            lastBuiltFillMode = fillMode;
         }
 
         private Image[] BuildGeneratedSegmentFillImages(RectTransform root, int count)
@@ -836,20 +893,29 @@ namespace UIControls.Runtime.Controls
                 var minX = i / (float)count;
                 var maxX = (i + 1f) / count;
                 segmentRect.anchorMin = new Vector2(minX, 0f);
-                segmentRect.anchorMax = new Vector2(maxX, 1f);
-                segmentRect.pivot = new Vector2(0.5f, 0.5f);
+                segmentRect.anchorMax = new Vector2(fillMode == BarFillMode.RectWidth ? minX : maxX, 1f);
+                segmentRect.pivot = new Vector2(0f, 0.5f);
                 segmentRect.anchoredPosition = Vector2.zero;
                 segmentRect.offsetMin = new Vector2(i == 0 ? 0f : halfGap, 0f);
                 segmentRect.offsetMax = new Vector2(i == count - 1 ? 0f : -halfGap, 0f);
 
                 var segmentImage = segmentGo.GetComponent<Image>();
                 segmentImage.raycastTarget = false;
-                segmentImage.type = Image.Type.Filled;
-                segmentImage.fillMethod = Image.FillMethod.Horizontal;
-                segmentImage.fillOrigin = 0;
-                segmentImage.fillAmount = 0f;
                 segmentImage.color = fillingColor;
-                if (segmentImage.sprite == null && sprite != null)
+                if (fillMode == BarFillMode.RectWidth)
+                {
+                    segmentImage.type = Image.Type.Simple;
+                    segmentImage.preserveAspect = false;
+                }
+                else
+                {
+                    segmentImage.type = Image.Type.Filled;
+                    segmentImage.fillMethod = Image.FillMethod.Horizontal;
+                    segmentImage.fillOrigin = 0;
+                    segmentImage.fillAmount = 0f;
+                }
+
+                if (sprite != null)
                 {
                     segmentImage.sprite = sprite;
                 }
@@ -1092,7 +1158,7 @@ namespace UIControls.Runtime.Controls
 
         private void EnsureFilledImageSprite(Image image)
         {
-            if (image == null || image.type != Image.Type.Filled || image.sprite != null)
+            if (image == null || image.sprite != null)
             {
                 return;
             }
