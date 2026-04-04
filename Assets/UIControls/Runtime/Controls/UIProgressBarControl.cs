@@ -746,10 +746,58 @@ namespace UIControls.Runtime.Controls
             return true;
         }
 
+        private void SyncGeneratedVisualsInPlace()
+        {
+            var count = generatedSegmentImages.Count;
+            var halfGap = Mathf.Max(0f, segmentGap) * 0.5f;
+            var fillSprite = segmentFillSprite != null ? segmentFillSprite : ResolveFilledSpriteCandidate();
+
+            for (var i = 0; i < count; i++)
+            {
+                var img = generatedSegmentImages[i];
+                if (img == null)
+                {
+                    continue;
+                }
+
+                if (fillSprite != null)
+                {
+                    img.sprite = fillSprite;
+                }
+
+                var isCompleted = completedSegments != null && i < completedSegments.Length && completedSegments[i];
+                img.color = isCompleted ? filledColor : fillingColor;
+
+                var rect = img.rectTransform;
+                rect.offsetMin = new Vector2(i == 0 ? 0f : halfGap, 0f);
+                rect.offsetMax = new Vector2(i == count - 1 ? 0f : -halfGap, 0f);
+            }
+
+            var dividerSprite = segmentDividerSprite != null ? segmentDividerSprite : ResolveFilledSpriteCandidate();
+
+            for (var i = 0; i < generatedDividers.Count; i++)
+            {
+                var graphic = generatedDividers[i];
+                if (graphic == null)
+                {
+                    continue;
+                }
+
+                graphic.color = dividerColor;
+                graphic.rectTransform.sizeDelta = new Vector2(dividerWidth, 0f);
+
+                if (dividerSprite != null && graphic is Image divImage)
+                {
+                    divImage.sprite = dividerSprite;
+                }
+            }
+        }
+
         private void BuildGeneratedSegments(int count)
         {
             if (IsSegmentBuildCurrent(count))
             {
+                SyncGeneratedVisualsInPlace();
                 return;
             }
 
