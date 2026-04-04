@@ -529,11 +529,13 @@ namespace UIControls.Runtime.Controls
             if (primaryFillImage != null)
             {
                 ApplyFillToImage(primaryFillImage, currentValue);
+                primaryFillImage.color = currentValue >= 1f - Mathf.Epsilon ? filledColor : fillingColor;
             }
 
             if (!useHitBar && fillImage != null && fillImage != primaryFillImage)
             {
                 ApplyFillToImage(fillImage, currentValue);
+                fillImage.color = currentValue >= 1f - Mathf.Epsilon ? filledColor : fillingColor;
             }
 
             UpdateSegments(currentValue, raiseSegmentEvents);
