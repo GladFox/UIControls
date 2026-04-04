@@ -154,6 +154,9 @@ namespace UIControls.Runtime.Controls
         private void Awake()
         {
             ResolveImageReferences();
+            SyncFillImageMode(fillImage);
+            SyncFillImageMode(primaryFillImage);
+            SyncFillImageMode(echoFillImage);
             EnsureFilledImageSprite(fillImage);
             EnsureFilledImageSprite(primaryFillImage);
             EnsureFilledImageSprite(echoFillImage);
@@ -199,7 +202,17 @@ namespace UIControls.Runtime.Controls
                 return;
             }
 
+            SyncFillImageMode(fillImage);
+            SyncFillImageMode(primaryFillImage);
+            SyncFillImageMode(echoFillImage);
             EnsureSegmentVisuals();
+
+            displayedPrimaryValue = value;
+            displayedEchoValue = value;
+            displayedLabelValue = value;
+            UpdatePrimaryVisual(value, false);
+            UpdateEchoVisual(value);
+            UpdateLabel(value);
         }
 #endif
 
@@ -534,6 +547,37 @@ namespace UIControls.Runtime.Controls
             }
 
             ApplyFillToImage(echoFillImage, currentValue);
+        }
+
+        private void SyncFillImageMode(Image image)
+        {
+            if (image == null)
+            {
+                return;
+            }
+
+            if (fillMode == BarFillMode.RectWidth)
+            {
+                if (image.type == Image.Type.Filled)
+                {
+                    image.type = Image.Type.Simple;
+                    image.preserveAspect = false;
+                }
+
+                image.rectTransform.anchorMin = new Vector2(0f, image.rectTransform.anchorMin.y);
+                image.rectTransform.pivot = new Vector2(0f, 0.5f);
+            }
+            else
+            {
+                if (image.type != Image.Type.Filled)
+                {
+                    image.type = Image.Type.Filled;
+                    image.fillMethod = Image.FillMethod.Horizontal;
+                    image.fillOrigin = 0;
+                }
+
+                image.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            }
         }
 
         private void ApplyFillToImage(Image image, float fillValue)
