@@ -338,8 +338,8 @@ namespace UIControls.Editor
             SetObjectReference(progressControl, "segmentFillSprite", fillSprite);
             SetObjectReference(progressControl, "segmentDividerSprite", dividerSprite);
             SetObjectReferenceArray(progressControl, "segmentFills", Array.Empty<UnityEngine.Object>());
-            SetColor(progressControl, "fillingColor", new Color(0.47f, 0.86f, 0.35f, 1f));
-            SetColor(progressControl, "filledColor", new Color(0.17f, 0.72f, 0.33f, 1f));
+            SetColor(progressControl, "fillColor", new Color(0.47f, 0.86f, 0.35f, 1f));
+            SetColor(progressControl, "segmentCompletedColor", new Color(0.17f, 0.72f, 0.33f, 1f));
             SetBool(progressControl, "triggerControlStateOnSegmentCompleted", false);
             SetBool(progressControl, "triggerSegmentStateOnSegmentCompleted", true);
             ConfigureSegmentPulse(progressControl, 1.08f, 0.16f, Ease.OutQuad, false);
@@ -393,8 +393,8 @@ namespace UIControls.Editor
             SetObjectReference(progressControl, "segmentFillSprite", fillSprite);
             SetObjectReference(progressControl, "segmentDividerSprite", dividerSprite);
             SetObjectReferenceArray(progressControl, "segmentFills", Array.Empty<UnityEngine.Object>());
-            SetColor(progressControl, "fillingColor", new Color(1f, 0.82f, 0.26f, 1f));
-            SetColor(progressControl, "filledColor", new Color(0.18f, 0.78f, 0.38f, 1f));
+            SetColor(progressControl, "fillColor", new Color(1f, 0.82f, 0.26f, 1f));
+            SetColor(progressControl, "segmentCompletedColor", new Color(0.18f, 0.78f, 0.38f, 1f));
             SetBool(progressControl, "triggerControlStateOnSegmentCompleted", false);
             SetBool(progressControl, "triggerSegmentStateOnSegmentCompleted", false);
             ConfigureSegmentPulse(progressControl, 1.06f, 0.12f, Ease.OutQuad, false);

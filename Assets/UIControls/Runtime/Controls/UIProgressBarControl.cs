@@ -90,8 +90,8 @@ namespace UIControls.Runtime.Controls
         [SerializeField] private Sprite segmentFillSprite;
         [SerializeField] private Sprite segmentDividerSprite;
         [SerializeField] private Image[] segmentFills = Array.Empty<Image>();
-        [SerializeField] private Color fillingColor = new Color(0.28f, 0.9f, 0.42f, 1f);
-        [SerializeField] private Color filledColor = new Color(0.06f, 0.72f, 0.32f, 1f);
+        [SerializeField] private Color fillColor = new Color(0.28f, 0.9f, 0.42f, 1f);
+        [SerializeField] private Color segmentCompletedColor = new Color(0.06f, 0.72f, 0.32f, 1f);
         [SerializeField] private bool triggerControlStateOnSegmentCompleted;
         [SerializeField] private UIStateAnimator controlSegmentStateAnimator = new UIStateAnimator();
         [SerializeField] private UIStateVisualAsset controlSegmentCompletedState;
@@ -529,13 +529,13 @@ namespace UIControls.Runtime.Controls
             if (primaryFillImage != null)
             {
                 ApplyFillToImage(primaryFillImage, currentValue);
-                primaryFillImage.color = currentValue >= 1f - Mathf.Epsilon ? filledColor : fillingColor;
+                primaryFillImage.color = fillColor;
             }
 
             if (!useHitBar && fillImage != null && fillImage != primaryFillImage)
             {
                 ApplyFillToImage(fillImage, currentValue);
-                fillImage.color = currentValue >= 1f - Mathf.Epsilon ? filledColor : fillingColor;
+                fillImage.color = fillColor;
             }
 
             UpdateSegments(currentValue, raiseSegmentEvents);
@@ -629,7 +629,7 @@ namespace UIControls.Runtime.Controls
                     segmentFills[i] != null)
                 {
                     var segmentFill = segmentFills[i];
-                    segmentFill.color = nowCompleted ? filledColor : fillingColor;
+                    segmentFill.color = nowCompleted ? segmentCompletedColor : fillColor;
                     if (fillMode == BarFillMode.RectWidth)
                     {
                         var r = segmentFill.rectTransform;
@@ -862,7 +862,7 @@ namespace UIControls.Runtime.Controls
                 }
 
                 var isCompleted = completedSegments != null && i < completedSegments.Length && completedSegments[i];
-                img.color = isCompleted ? filledColor : fillingColor;
+                img.color = isCompleted ? segmentCompletedColor : fillColor;
 
                 var rect = img.rectTransform;
                 rect.offsetMin = new Vector2(i == 0 ? 0f : halfGap, 0f);
@@ -947,7 +947,7 @@ namespace UIControls.Runtime.Controls
 
                 var segmentImage = segmentGo.GetComponent<Image>();
                 segmentImage.raycastTarget = false;
-                segmentImage.color = fillingColor;
+                segmentImage.color = fillColor;
                 if (fillMode == BarFillMode.RectWidth)
                 {
                     segmentImage.type = Image.Type.Simple;
