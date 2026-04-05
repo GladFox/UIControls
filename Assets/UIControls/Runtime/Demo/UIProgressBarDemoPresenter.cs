@@ -1,3 +1,4 @@
+using TMPro;
 using UIControls.Runtime.Controls;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,8 +16,8 @@ namespace UIControls.Runtime.Demo
         [SerializeField] private UIButtonControl spendSuperButton;
         [SerializeField] private UIToggleControl autoDamageToggle;
         [SerializeField] private UIToggleControl autoHealToggle;
-        [SerializeField] private Text statusLabel;
-        [SerializeField] private Text energyLabel;
+        [SerializeField] private TMP_Text statusLabel;
+        [SerializeField] private TMP_Text energyLabel;
 
         [Header("Health (HitBar)")]
         [Range(0f, 1f)]
@@ -349,7 +350,7 @@ namespace UIControls.Runtime.Demo
                 return;
             }
 
-            var text = child.GetComponent<Text>();
+            var text = child.GetComponent<TMP_Text>();
             if (text == null)
             {
                 return;

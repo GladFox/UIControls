@@ -1,5 +1,6 @@
 ﻿using System;
 using DG.Tweening;
+using TMPro;
 using UIControls.Runtime.Controls;
 using UIControls.Runtime.Controls.Actions;
 using UIControls.Runtime.Demo;
@@ -47,11 +48,11 @@ namespace UIControls.Editor
             var panel = CreatePanel(canvas.transform as RectTransform);
 
             var title = CreateText("Title", panel, new Vector2(0f, 265f), new Vector2(760f, 60f),
-                "UIControls ProgressBar v2 Demo", 36, FontStyle.Bold, TextAnchor.MiddleCenter);
+                "UIControls ProgressBar v2 Demo", 36, FontStyles.Bold, TextAlignmentOptions.Center);
             title.color = new Color(0.92f, 0.95f, 1f, 1f);
 
             var subtitle = CreateText("Subtitle", panel, new Vector2(0f, 225f), new Vector2(900f, 44f),
-                "Top: Health HitBar. Bottom: auto Energy (3 segments / 6 seconds).", 22, FontStyle.Italic, TextAnchor.MiddleCenter);
+                "Top: Health HitBar. Bottom: auto Energy (3 segments / 6 seconds).", 22, FontStyles.Italic, TextAlignmentOptions.Center);
             subtitle.color = new Color(0.73f, 0.82f, 0.95f, 1f);
 
             var sliderBackgroundSprite = AssetDatabase.LoadAssetAtPath<Sprite>(SliderBackgroundSpritePath);
@@ -78,12 +79,12 @@ namespace UIControls.Editor
                 new Vector2(860f, 34f),
                 "Energy recharge: 0 -> 3 in 6s, each completed segment locks to main color.",
                 18,
-                FontStyle.Italic,
-                TextAnchor.MiddleCenter);
+                FontStyles.Italic,
+                TextAlignmentOptions.Center);
             segmentModeLabel.color = new Color(0.8f, 0.88f, 0.98f, 1f);
 
             var energyLabel = CreateText("EnergyValue", panel, new Vector2(0f, -42f), new Vector2(460f, 34f),
-                "Energy 0.00/3", 20, FontStyle.Bold, TextAnchor.MiddleCenter);
+                "Energy 0.00/3", 20, FontStyles.Bold, TextAlignmentOptions.Center);
             energyLabel.color = new Color(0.98f, 0.92f, 0.55f, 1f);
 
             var damageButton = CreateActionButton(panel, "DamageButton", new Vector2(-255f, -110f), "Damage -12%", new Color(0.85f, 0.28f, 0.28f, 1f));
@@ -94,12 +95,12 @@ namespace UIControls.Editor
             ConfigureButtonSize(spendSuperButton, new Vector2(220f, 54f), 20);
 
             var statusLabel = CreateText("Status", panel, new Vector2(0f, -228f), new Vector2(860f, 54f),
-                "HitBar: damage has echo, heal updates HP immediately. Energy recharges automatically.", 20, FontStyle.Normal, TextAnchor.MiddleCenter);
+                "HitBar: damage has echo, heal updates HP immediately. Energy recharges automatically.", 20, FontStyles.Normal, TextAlignmentOptions.Center);
             statusLabel.color = new Color(0.98f, 0.86f, 0.5f, 1f);
 
             var hint = CreateText("Hint", panel, new Vector2(0f, -275f), new Vector2(860f, 56f),
                 "Top bar: apply damage/heal/reset with buttons.\nBottom bar: segmented energy 0->3 for super-hit charge, use Spend 1 Super button.",
-                18, FontStyle.Italic, TextAnchor.MiddleCenter);
+                18, FontStyles.Italic, TextAlignmentOptions.Center);
             hint.color = new Color(0.75f, 0.8f, 0.95f, 1f);
 
             var presenter = panel.gameObject.AddComponent<UIProgressBarDemoPresenter>();
@@ -205,7 +206,7 @@ namespace UIControls.Editor
             image.color = color;
             AssignDefaultSprite(image);
 
-            var text = CreateText("Label", rect, Vector2.zero, rect.sizeDelta, label, 22, FontStyle.Bold, TextAnchor.MiddleCenter);
+            var text = CreateText("Label", rect, Vector2.zero, rect.sizeDelta, label, 22, FontStyles.Bold, TextAlignmentOptions.Center);
             text.raycastTarget = false;
             text.color = Color.white;
 
@@ -245,7 +246,7 @@ namespace UIControls.Editor
                 labelRect.anchoredPosition = Vector2.zero;
             }
 
-            var labelText = label.GetComponent<Text>();
+            var labelText = label.GetComponent<TMP_Text>();
             if (labelText != null && labelFontSize > 0)
             {
                 labelText.fontSize = labelFontSize;
@@ -317,7 +318,7 @@ namespace UIControls.Editor
             var primaryFill = CreateFillLayer(rect, "PrimaryFill", new Color(0.2f, 0.78f, 0.37f, 1f), fillSprite, 4f);
 
             var valueText = CreateText("ValueText", rect, Vector2.zero, rect.sizeDelta,
-                "100%", 24, FontStyle.Bold, TextAnchor.MiddleCenter);
+                "100%", 24, FontStyles.Bold, TextAlignmentOptions.Center);
             valueText.color = Color.white;
             valueText.raycastTarget = false;
 
@@ -525,17 +526,17 @@ namespace UIControls.Editor
             return defaultUiSprite;
         }
 
-        private static Text CreateText(
+        private static TextMeshProUGUI CreateText(
             string name,
             RectTransform parent,
             Vector2 anchoredPosition,
             Vector2 size,
             string content,
             int fontSize,
-            FontStyle fontStyle,
-            TextAnchor alignment)
+            FontStyles fontStyle,
+            TextAlignmentOptions alignment)
         {
-            var textGo = new GameObject(name, typeof(RectTransform), typeof(Text));
+            var textGo = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
             var rect = textGo.GetComponent<RectTransform>();
             rect.SetParent(parent, false);
             rect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -544,14 +545,13 @@ namespace UIControls.Editor
             rect.anchoredPosition = anchoredPosition;
             rect.sizeDelta = size;
 
-            var text = textGo.GetComponent<Text>();
+            var text = textGo.GetComponent<TextMeshProUGUI>();
             text.text = content;
             text.fontSize = fontSize;
             text.fontStyle = fontStyle;
             text.alignment = alignment;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.enableWordWrapping = true;
+            text.overflowMode = TextOverflowModes.Overflow;
             text.color = Color.white;
 
             return text;

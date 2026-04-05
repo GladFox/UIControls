@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UIControls.Runtime.Controls;
 using UIControls.Runtime.Demo;
 using UnityEditor;
@@ -36,7 +37,7 @@ namespace UIControls.Editor
             var panel = CreatePanel(canvas.transform as RectTransform);
 
             var title = CreateText("Title", panel, new Vector2(0f, 200f), new Vector2(460f, 60f),
-                "UIControls Demo", 36, FontStyle.Bold, TextAnchor.MiddleCenter);
+                "UIControls Demo", 36, FontStyles.Bold, TextAlignmentOptions.Center);
             title.color = new Color(0.92f, 0.95f, 1f, 1f);
 
             var button = CreateButton(panel, new Vector2(0f, 105f));
@@ -44,7 +45,7 @@ namespace UIControls.Editor
             var progressBar = CreateProgressBar(panel, new Vector2(0f, -95f));
 
             var hint = CreateText("Hint", panel, new Vector2(0f, -180f), new Vector2(460f, 50f),
-                "Toggle sets a base value. Button adds +10% each click.", 20, FontStyle.Italic, TextAnchor.MiddleCenter);
+                "Toggle sets a base value. Button adds +10% each click.", 20, FontStyles.Italic, TextAlignmentOptions.Center);
             hint.color = new Color(0.75f, 0.8f, 0.95f, 1f);
 
             var presenter = panel.gameObject.AddComponent<UIControlsDemoPresenter>();
@@ -140,7 +141,7 @@ namespace UIControls.Editor
             image.color = new Color(0.19f, 0.41f, 0.82f, 1f);
 
             var text = CreateText("Label", rect, Vector2.zero, rect.sizeDelta,
-                "Increase Progress", 28, FontStyle.Bold, TextAnchor.MiddleCenter);
+                "Increase Progress", 28, FontStyles.Bold, TextAlignmentOptions.Center);
             text.raycastTarget = false;
             text.color = Color.white;
 
@@ -166,7 +167,7 @@ namespace UIControls.Editor
             holderRect.sizeDelta = new Vector2(420f, 82f);
 
             var label = CreateText("ToggleLabel", holderRect, new Vector2(-95f, 0f), new Vector2(220f, 60f),
-                "Base value", 24, FontStyle.Normal, TextAnchor.MiddleLeft);
+                "Base value", 24, FontStyles.Normal, TextAlignmentOptions.MidlineLeft);
             label.color = new Color(0.9f, 0.94f, 1f, 1f);
 
             var toggleGo = new GameObject("DemoToggle", typeof(RectTransform), typeof(Image), typeof(CanvasGroup), typeof(UIToggleControl));
@@ -237,7 +238,7 @@ namespace UIControls.Editor
             fillImage.fillAmount = 0.85f;
 
             var valueText = CreateText("ValueText", rect, Vector2.zero, rect.sizeDelta,
-                "85%", 24, FontStyle.Bold, TextAnchor.MiddleCenter);
+                "85%", 24, FontStyles.Bold, TextAlignmentOptions.Center);
             valueText.color = Color.white;
             valueText.raycastTarget = false;
 
@@ -249,17 +250,17 @@ namespace UIControls.Editor
             return progressGo;
         }
 
-        private static Text CreateText(
+        private static TextMeshProUGUI CreateText(
             string name,
             RectTransform parent,
             Vector2 anchoredPosition,
             Vector2 size,
             string content,
             int fontSize,
-            FontStyle fontStyle,
-            TextAnchor alignment)
+            FontStyles fontStyle,
+            TextAlignmentOptions alignment)
         {
-            var textGo = new GameObject(name, typeof(RectTransform), typeof(Text));
+            var textGo = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
             var rect = textGo.GetComponent<RectTransform>();
             rect.SetParent(parent, false);
             rect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -268,14 +269,13 @@ namespace UIControls.Editor
             rect.anchoredPosition = anchoredPosition;
             rect.sizeDelta = size;
 
-            var text = textGo.GetComponent<Text>();
+            var text = textGo.GetComponent<TextMeshProUGUI>();
             text.text = content;
             text.fontSize = fontSize;
             text.fontStyle = fontStyle;
             text.alignment = alignment;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Truncate;
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.enableWordWrapping = true;
+            text.overflowMode = TextOverflowModes.Truncate;
             text.color = Color.white;
 
             return text;

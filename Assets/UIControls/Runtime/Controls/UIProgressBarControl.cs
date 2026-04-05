@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using DG.Tweening;
+using TMPro;
 using UIControls.Runtime.Core;
 using UnityEngine;
 using UnityEngine.Events;
@@ -66,7 +67,7 @@ namespace UIControls.Runtime.Controls
         [Header("Base")]
         [SerializeField] private Image fillImage;
         [SerializeField] private BarFillMode fillMode = BarFillMode.ImageFill;
-        [SerializeField] private Text valueLabel;
+        [SerializeField] private TMP_Text valueLabel;
         [SerializeField] private string valueFormat = "{0:0%}";
 
         [Range(0f, 1f)]
