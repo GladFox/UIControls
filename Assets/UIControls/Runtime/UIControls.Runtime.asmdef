@@ -1,17 +1,18 @@
-﻿{
-  "name": "UIControls.Runtime",
-  "rootNamespace": "UIControls",
-  "references": [
-    "Unity.ugui",
-    "DOTween.Modules"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+{
+    "name": "UIControls.Runtime",
+    "rootNamespace": "UIControls",
+    "references": [
+        "Unity.ugui",
+        "DOTween.Modules",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
