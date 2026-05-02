@@ -118,12 +118,17 @@ namespace UIControls.Runtime.Controls.Actions
             }
 
             var key = button.GetInstanceID();
+            var hasActiveTween = activeTweens.TryGetValue(key, out var activeTween) && activeTween != null && activeTween.IsActive();
 
             if (pressed)
             {
                 if (!isPressedMap.TryGetValue(key, out var isPressed) || !isPressed)
                 {
-                    basePositions[key] = target.anchoredPosition;
+                    if (!hasActiveTween || !basePositions.ContainsKey(key))
+                    {
+                        basePositions[key] = target.anchoredPosition;
+                    }
+
                     isPressedMap[key] = true;
                 }
             }

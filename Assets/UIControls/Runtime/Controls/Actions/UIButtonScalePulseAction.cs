@@ -27,6 +27,7 @@ namespace UIControls.Runtime.Controls.Actions
         [SerializeField] private bool independentUpdate;
 
         private readonly Dictionary<int, Sequence> activeSequences = new Dictionary<int, Sequence>();
+        private readonly Dictionary<int, Vector3> baseScales = new Dictionary<int, Vector3>();
 
         public override void OnPointerEnter(UIButtonControl button)
         {
@@ -77,9 +78,22 @@ namespace UIControls.Runtime.Controls.Actions
             }
 
             var key = button.GetInstanceID();
+            var hasActive = activeSequences.TryGetValue(key, out var existing) && existing != null && existing.IsActive();
+
+            Vector3 baseScale;
+            if (hasActive && baseScales.TryGetValue(key, out var cachedBase))
+            {
+                baseScale = cachedBase;
+                target.localScale = baseScale;
+            }
+            else
+            {
+                baseScale = target.localScale;
+                baseScales[key] = baseScale;
+            }
+
             KillSequence(key);
 
-            var baseScale = target.localScale;
             var targetScale = baseScale * scaleMultiplier;
 
             if (scaleUpDuration <= Mathf.Epsilon && scaleDownDuration <= Mathf.Epsilon)

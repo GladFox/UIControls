@@ -58,10 +58,7 @@ namespace UIControls.Runtime.Controls
 
         public ButtonVisualState VisualState => visualState;
         public UnityEvent OnClick => onClick;
-
         public UIButtonAnimationProfile AnimationProfile => animationProfile;
-
-        public ButtonVisualState CurrentState => visualState;
 
         private void Awake()
         {

@@ -61,7 +61,6 @@ namespace UIControls.Runtime.Controls
 
             public Ease ease = Ease.OutQuad;
             public bool independentUpdate;
-
         }
 
         [Header("Base")]
