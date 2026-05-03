@@ -19,8 +19,8 @@ namespace UIControls.Editor
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color TabBarBackgroundColor = new Color(0.17f, 0.21f, 0.3f, 1f);
-        private static readonly Color TabHighlightColor = new Color(0.24f, 0.55f, 0.95f, 1f);
-        private static readonly Color TabSecondaryHighlightColor = new Color(0.95f, 0.61f, 0.24f, 1f);
+        private static readonly Color SelectionIndicatorPrimaryColor = new Color(0.24f, 0.55f, 0.95f, 1f);
+        private static readonly Color SelectionIndicatorSecondaryColor = new Color(0.95f, 0.61f, 0.24f, 1f);
         private static readonly Color TabLabelColor = new Color(0.92f, 0.95f, 1f, 1f);
         private static readonly Color StatusColor = new Color(0.82f, 0.88f, 1f, 1f);
 
@@ -89,7 +89,7 @@ namespace UIControls.Editor
                 panel,
                 new Vector2(0f, -300f),
                 new Vector2(900f, 56f),
-                "Top slider toggles three view panels. Bottom slider fires UnityEvents only and updates the status label.",
+                "Selection indicator slides under the chosen tab. Hover/press feedback lives on each button independently.",
                 18,
                 FontStyles.Italic,
                 TextAlignmentOptions.Center);
@@ -135,15 +135,16 @@ namespace UIControls.Editor
                 "SETTINGS — audio, video, controls",
             };
 
-            var highlight = CreateHighlight(tabBar, "Highlight", TabHighlightColor);
+            var indicator = CreateSelectionIndicator(tabBar, "SelectionIndicator", SelectionIndicatorPrimaryColor);
 
+            var tabSize = new Vector2(220f, 64f);
             var buttons = new UIButtonControl[labels.Length];
             for (var i = 0; i < labels.Length; i++)
             {
-                buttons[i] = CreateTabButton(tabBar, $"Tab_{i + 1}", labels[i], i, labels.Length, new Vector2(220f, 64f));
+                buttons[i] = CreateTabButton(tabBar, $"Tab_{i + 1}", labels[i], i, labels.Length, tabSize);
             }
 
-            AlignHighlightToButton(highlight, buttons[0]);
+            AlignIndicatorToButton(indicator, buttons[0]);
 
             var viewsRoot = CreateViewsRoot(rootRect, new Vector2(0f, -60f), new Vector2(720f, 130f));
             var views = new GameObject[labels.Length];
@@ -154,7 +155,7 @@ namespace UIControls.Editor
             }
 
             var control = rootGo.GetComponent<UITabSliderControl>();
-            ConfigureTabSlider(control, highlight, true, 0, true, 0.28f, Ease.OutCubic);
+            ConfigureTabSlider(control, indicator, true, 0, true, 0.28f, Ease.OutCubic);
             ConfigureTabs(control, buttons, views);
 
             return control;
@@ -173,18 +174,19 @@ namespace UIControls.Editor
 
             var tabBar = CreateTabBar(rootRect, Vector2.zero, new Vector2(820f, 70f));
             var labels = new[] { "Day", "Week", "Month", "All time" };
-            var highlight = CreateHighlight(tabBar, "Highlight", TabSecondaryHighlightColor);
+            var indicator = CreateSelectionIndicator(tabBar, "SelectionIndicator", SelectionIndicatorSecondaryColor);
 
+            var tabSize = new Vector2(190f, 64f);
             var buttons = new UIButtonControl[labels.Length];
             for (var i = 0; i < labels.Length; i++)
             {
-                buttons[i] = CreateTabButton(tabBar, $"Range_{i + 1}", labels[i], i, labels.Length, new Vector2(190f, 64f));
+                buttons[i] = CreateTabButton(tabBar, $"Range_{i + 1}", labels[i], i, labels.Length, tabSize);
             }
 
-            AlignHighlightToButton(highlight, buttons[0]);
+            AlignIndicatorToButton(indicator, buttons[0]);
 
             var control = rootGo.GetComponent<UITabSliderControl>();
-            ConfigureTabSlider(control, highlight, true, 0, false, 0.22f, Ease.OutQuad);
+            ConfigureTabSlider(control, indicator, true, 0, false, 0.22f, Ease.OutQuad);
             ConfigureTabs(control, buttons, null);
 
             return control;
@@ -208,7 +210,7 @@ namespace UIControls.Editor
             return rect;
         }
 
-        private static RectTransform CreateHighlight(RectTransform parent, string name, Color color)
+        private static RectTransform CreateSelectionIndicator(RectTransform parent, string name, Color color)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(Image));
             var rect = go.GetComponent<RectTransform>();
@@ -227,9 +229,15 @@ namespace UIControls.Editor
             return rect;
         }
 
-        private static UIButtonControl CreateTabButton(RectTransform parent, string name, string label, int index, int count, Vector2 size)
+        private static UIButtonControl CreateTabButton(
+            RectTransform parent,
+            string name,
+            string label,
+            int index,
+            int count,
+            Vector2 size)
         {
-            var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(UIButtonControl));
+            var go = new GameObject(name, typeof(RectTransform), typeof(UIButtonControl));
             var rect = go.GetComponent<RectTransform>();
             rect.SetParent(parent, false);
             rect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -241,14 +249,13 @@ namespace UIControls.Editor
             var startX = -totalWidth * 0.5f + size.x * 0.5f;
             rect.anchoredPosition = new Vector2(startX + index * size.x, 0f);
 
-            var image = go.GetComponent<Image>();
-            image.color = new Color(1f, 1f, 1f, 0f);
-            image.raycastTarget = true;
-
-            var text = CreateText("Label", rect, Vector2.zero, size,
+            // No Image on the button itself — UIButtonControl auto-binds the first Graphic
+            // it finds as a color animation target. The Label is the raycast target instead;
+            // pointer events bubble up to UIButtonControl on the parent.
+            var labelText = CreateText("Label", rect, Vector2.zero, size,
                 label, 22, FontStyles.Bold, TextAlignmentOptions.Center);
-            text.color = TabLabelColor;
-            text.raycastTarget = false;
+            labelText.color = TabLabelColor;
+            labelText.raycastTarget = true;
 
             var control = go.GetComponent<UIButtonControl>();
             var tapProfile = AssetDatabase.LoadAssetAtPath<UIButtonAnimationProfile>(TapProfilePath);
@@ -296,9 +303,9 @@ namespace UIControls.Editor
             return go;
         }
 
-        private static void AlignHighlightToButton(RectTransform highlight, UIButtonControl button)
+        private static void AlignIndicatorToButton(RectTransform indicator, UIButtonControl button)
         {
-            if (highlight == null || button == null)
+            if (indicator == null || button == null)
             {
                 return;
             }
@@ -309,22 +316,22 @@ namespace UIControls.Editor
                 return;
             }
 
-            highlight.anchoredPosition = buttonRect.anchoredPosition;
-            highlight.sizeDelta = buttonRect.rect.size;
+            indicator.anchoredPosition = buttonRect.anchoredPosition;
+            indicator.sizeDelta = buttonRect.rect.size;
         }
 
         private static void ConfigureTabSlider(
             UITabSliderControl control,
-            RectTransform highlight,
-            bool matchHighlightSize,
+            RectTransform indicator,
+            bool matchIndicatorSize,
             int initialIndex,
             bool autoToggleViews,
             float duration,
             Ease ease)
         {
             var serializedObject = new SerializedObject(control);
-            serializedObject.FindProperty("highlight").objectReferenceValue = highlight;
-            serializedObject.FindProperty("matchHighlightSize").boolValue = matchHighlightSize;
+            serializedObject.FindProperty("selectionIndicator").objectReferenceValue = indicator;
+            serializedObject.FindProperty("matchIndicatorSize").boolValue = matchIndicatorSize;
             serializedObject.FindProperty("initialIndex").intValue = initialIndex;
             serializedObject.FindProperty("autoToggleViews").boolValue = autoToggleViews;
 
@@ -337,7 +344,10 @@ namespace UIControls.Editor
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void ConfigureTabs(UITabSliderControl control, IReadOnlyList<UIButtonControl> buttons, IReadOnlyList<GameObject> views)
+        private static void ConfigureTabs(
+            UITabSliderControl control,
+            IReadOnlyList<UIButtonControl> buttons,
+            IReadOnlyList<GameObject> views)
         {
             var serializedObject = new SerializedObject(control);
             var tabsProperty = serializedObject.FindProperty("tabs");
@@ -348,6 +358,7 @@ namespace UIControls.Editor
                 var element = tabsProperty.GetArrayElementAtIndex(i);
                 element.FindPropertyRelative("button").objectReferenceValue = buttons[i];
                 element.FindPropertyRelative("view").objectReferenceValue = views != null && i < views.Count ? views[i] : null;
+                element.FindPropertyRelative("selectedVisual").objectReferenceValue = null;
             }
 
             serializedObject.ApplyModifiedPropertiesWithoutUndo();

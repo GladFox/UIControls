@@ -14,11 +14,13 @@ namespace UIControls.Runtime.Controls
         {
             [SerializeField] private UIButtonControl button;
             [SerializeField] private GameObject view;
+            [SerializeField] private GameObject selectedVisual;
             [SerializeField] private UnityEvent onActivated = new UnityEvent();
             [SerializeField] private UnityEvent onDeactivated = new UnityEvent();
 
             public UIButtonControl Button => button;
             public GameObject View => view;
+            public GameObject SelectedVisual => selectedVisual;
             public UnityEvent OnActivated => onActivated;
             public UnityEvent OnDeactivated => onDeactivated;
         }
@@ -30,9 +32,10 @@ namespace UIControls.Runtime.Controls
 
         [SerializeField] private List<Tab> tabs = new List<Tab>();
 
-        [Header("Highlight")]
-        [SerializeField] private RectTransform highlight;
-        [SerializeField] private bool matchHighlightSize = true;
+        [Header("Selection Indicator")]
+        [Tooltip("Optional RectTransform that slides under the currently selected tab. Use it to draw the selection background — independent of pointer hover/press visuals on the buttons themselves.")]
+        [SerializeField] private RectTransform selectionIndicator;
+        [SerializeField] private bool matchIndicatorSize = true;
 
         [Header("Initial")]
         [SerializeField] private int initialIndex;
@@ -75,7 +78,8 @@ namespace UIControls.Runtime.Controls
             }
             else
             {
-                AnimateHighlight(true);
+                ApplySelectedVisuals();
+                AnimateIndicator(true);
             }
         }
 
@@ -92,47 +96,62 @@ namespace UIControls.Runtime.Controls
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            UnityEditor.EditorApplication.delayCall += SyncHighlightInEditor;
+            UnityEditor.EditorApplication.delayCall += SyncIndicatorInEditor;
         }
 
-        private void SyncHighlightInEditor()
+        private void SyncIndicatorInEditor()
         {
-            UnityEditor.EditorApplication.delayCall -= SyncHighlightInEditor;
+            UnityEditor.EditorApplication.delayCall -= SyncIndicatorInEditor;
             if (this == null || Application.isPlaying)
             {
                 return;
             }
 
-            if (highlight == null || TabsCount == 0)
+            if (TabsCount == 0)
             {
                 return;
             }
 
             var index = Mathf.Clamp(initialIndex, 0, TabsCount - 1);
-            var tab = tabs[index];
-            if (tab?.Button == null)
+
+            for (var i = 0; i < tabs.Count; i++)
+            {
+                var tab = tabs[i];
+                if (tab?.SelectedVisual != null)
+                {
+                    tab.SelectedVisual.SetActive(i == index);
+                }
+            }
+
+            if (selectionIndicator == null)
             {
                 return;
             }
 
-            var targetRect = tab.Button.transform as RectTransform;
+            var current = tabs[index];
+            if (current?.Button == null)
+            {
+                return;
+            }
+
+            var targetRect = current.Button.transform as RectTransform;
             if (targetRect == null)
             {
                 return;
             }
 
-            if (highlight.parent == targetRect.parent)
+            if (selectionIndicator.parent == targetRect.parent)
             {
-                highlight.anchoredPosition = targetRect.anchoredPosition;
+                selectionIndicator.anchoredPosition = targetRect.anchoredPosition;
             }
             else
             {
-                highlight.position = targetRect.position;
+                selectionIndicator.position = targetRect.position;
             }
 
-            if (matchHighlightSize)
+            if (matchIndicatorSize)
             {
-                highlight.sizeDelta = targetRect.rect.size;
+                selectionIndicator.sizeDelta = targetRect.rect.size;
             }
         }
 #endif
@@ -161,7 +180,8 @@ namespace UIControls.Runtime.Controls
             }
 
             UpdateViews(selectedIndex);
-            AnimateHighlight(true);
+            ApplySelectedVisuals();
+            AnimateIndicator(true);
         }
 
         private void ApplyTab(int index, bool instant, bool notify)
@@ -170,7 +190,8 @@ namespace UIControls.Runtime.Controls
             selectedIndex = index;
 
             UpdateViews(previous);
-            AnimateHighlight(instant);
+            ApplySelectedVisuals();
+            AnimateIndicator(instant);
 
             var tab = tabs[selectedIndex];
             tab?.OnActivated?.Invoke();
@@ -210,9 +231,27 @@ namespace UIControls.Runtime.Controls
             }
         }
 
-        private void AnimateHighlight(bool instant)
+        private void ApplySelectedVisuals()
         {
-            if (highlight == null)
+            for (var i = 0; i < tabs.Count; i++)
+            {
+                var tab = tabs[i];
+                if (tab?.SelectedVisual == null)
+                {
+                    continue;
+                }
+
+                var shouldBeActive = i == selectedIndex;
+                if (tab.SelectedVisual.activeSelf != shouldBeActive)
+                {
+                    tab.SelectedVisual.SetActive(shouldBeActive);
+                }
+            }
+        }
+
+        private void AnimateIndicator(bool instant)
+        {
+            if (selectionIndicator == null)
             {
                 return;
             }
@@ -236,7 +275,7 @@ namespace UIControls.Runtime.Controls
 
             KillTweens();
 
-            var sameParent = highlight.parent == targetRect.parent;
+            var sameParent = selectionIndicator.parent == targetRect.parent;
             var targetSize = targetRect.rect.size;
             var duration = slideTween != null ? Mathf.Max(0f, slideTween.Duration) : 0f;
 
@@ -244,16 +283,16 @@ namespace UIControls.Runtime.Controls
             {
                 if (sameParent)
                 {
-                    highlight.anchoredPosition = targetRect.anchoredPosition;
+                    selectionIndicator.anchoredPosition = targetRect.anchoredPosition;
                 }
                 else
                 {
-                    highlight.position = targetRect.position;
+                    selectionIndicator.position = targetRect.position;
                 }
 
-                if (matchHighlightSize)
+                if (matchIndicatorSize)
                 {
-                    highlight.sizeDelta = targetSize;
+                    selectionIndicator.sizeDelta = targetSize;
                 }
 
                 return;
@@ -261,18 +300,18 @@ namespace UIControls.Runtime.Controls
 
             if (sameParent)
             {
-                positionTween = highlight.DOAnchorPos(targetRect.anchoredPosition, duration);
+                positionTween = selectionIndicator.DOAnchorPos(targetRect.anchoredPosition, duration);
             }
             else
             {
-                positionTween = highlight.DOMove(targetRect.position, duration);
+                positionTween = selectionIndicator.DOMove(targetRect.position, duration);
             }
 
             slideTween.Apply(positionTween);
 
-            if (matchHighlightSize)
+            if (matchIndicatorSize)
             {
-                sizeTween = highlight.DOSizeDelta(targetSize, duration);
+                sizeTween = selectionIndicator.DOSizeDelta(targetSize, duration);
                 slideTween.Apply(sizeTween);
             }
         }
