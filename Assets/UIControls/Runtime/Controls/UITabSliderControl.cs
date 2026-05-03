@@ -89,6 +89,54 @@ namespace UIControls.Runtime.Controls
             UnbindButtons();
         }
 
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            UnityEditor.EditorApplication.delayCall += SyncHighlightInEditor;
+        }
+
+        private void SyncHighlightInEditor()
+        {
+            UnityEditor.EditorApplication.delayCall -= SyncHighlightInEditor;
+            if (this == null || Application.isPlaying)
+            {
+                return;
+            }
+
+            if (highlight == null || TabsCount == 0)
+            {
+                return;
+            }
+
+            var index = Mathf.Clamp(initialIndex, 0, TabsCount - 1);
+            var tab = tabs[index];
+            if (tab?.Button == null)
+            {
+                return;
+            }
+
+            var targetRect = tab.Button.transform as RectTransform;
+            if (targetRect == null)
+            {
+                return;
+            }
+
+            if (highlight.parent == targetRect.parent)
+            {
+                highlight.anchoredPosition = targetRect.anchoredPosition;
+            }
+            else
+            {
+                highlight.position = targetRect.position;
+            }
+
+            if (matchHighlightSize)
+            {
+                highlight.sizeDelta = targetRect.rect.size;
+            }
+        }
+#endif
+
         public void SelectTab(int index, bool animate = true, bool notify = true)
         {
             if (TabsCount == 0)

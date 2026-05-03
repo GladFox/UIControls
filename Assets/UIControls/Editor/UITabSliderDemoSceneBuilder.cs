@@ -143,6 +143,8 @@ namespace UIControls.Editor
                 buttons[i] = CreateTabButton(tabBar, $"Tab_{i + 1}", labels[i], i, labels.Length, new Vector2(220f, 64f));
             }
 
+            AlignHighlightToButton(highlight, buttons[0]);
+
             var viewsRoot = CreateViewsRoot(rootRect, new Vector2(0f, -60f), new Vector2(720f, 130f));
             var views = new GameObject[labels.Length];
             for (var i = 0; i < labels.Length; i++)
@@ -178,6 +180,8 @@ namespace UIControls.Editor
             {
                 buttons[i] = CreateTabButton(tabBar, $"Range_{i + 1}", labels[i], i, labels.Length, new Vector2(190f, 64f));
             }
+
+            AlignHighlightToButton(highlight, buttons[0]);
 
             var control = rootGo.GetComponent<UITabSliderControl>();
             ConfigureTabSlider(control, highlight, true, 0, false, 0.22f, Ease.OutQuad);
@@ -290,6 +294,23 @@ namespace UIControls.Editor
             text.raycastTarget = false;
 
             return go;
+        }
+
+        private static void AlignHighlightToButton(RectTransform highlight, UIButtonControl button)
+        {
+            if (highlight == null || button == null)
+            {
+                return;
+            }
+
+            var buttonRect = button.transform as RectTransform;
+            if (buttonRect == null)
+            {
+                return;
+            }
+
+            highlight.anchoredPosition = buttonRect.anchoredPosition;
+            highlight.sizeDelta = buttonRect.rect.size;
         }
 
         private static void ConfigureTabSlider(
