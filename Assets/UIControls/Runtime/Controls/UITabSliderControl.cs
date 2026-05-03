@@ -54,6 +54,9 @@ namespace UIControls.Runtime.Controls
         private Tween positionTween;
         private Tween sizeTween;
         private readonly List<UnityAction> tabClickHandlers = new List<UnityAction>();
+        private Vector2[] tabRestAnchoredPositions = Array.Empty<Vector2>();
+        private Vector3[] tabRestWorldPositions = Array.Empty<Vector3>();
+        private Vector2[] tabRestSizes = Array.Empty<Vector2>();
 
         public int SelectedIndex => selectedIndex;
         public int TabsCount => tabs?.Count ?? 0;
@@ -62,6 +65,7 @@ namespace UIControls.Runtime.Controls
         private void Awake()
         {
             BindButtons();
+            CacheTabRestLayout();
         }
 
         private void OnEnable()
@@ -184,6 +188,11 @@ namespace UIControls.Runtime.Controls
             AnimateIndicator(true);
         }
 
+        public void RefreshTabRestLayout()
+        {
+            CacheTabRestLayout();
+        }
+
         private void ApplyTab(int index, bool instant, bool notify)
         {
             var previous = selectedIndex;
@@ -276,18 +285,28 @@ namespace UIControls.Runtime.Controls
             KillTweens();
 
             var sameParent = selectionIndicator.parent == targetRect.parent;
-            var targetSize = targetRect.rect.size;
+            // Use cached rest layout instead of the live RectTransform — button hover/press
+            // animations may temporarily offset or scale the button while the indicator slides.
+            var targetAnchored = selectedIndex < tabRestAnchoredPositions.Length
+                ? tabRestAnchoredPositions[selectedIndex]
+                : targetRect.anchoredPosition;
+            var targetWorld = selectedIndex < tabRestWorldPositions.Length
+                ? tabRestWorldPositions[selectedIndex]
+                : targetRect.position;
+            var targetSize = selectedIndex < tabRestSizes.Length
+                ? tabRestSizes[selectedIndex]
+                : targetRect.rect.size;
             var duration = slideTween != null ? Mathf.Max(0f, slideTween.Duration) : 0f;
 
             if (instant || duration <= Mathf.Epsilon)
             {
                 if (sameParent)
                 {
-                    selectionIndicator.anchoredPosition = targetRect.anchoredPosition;
+                    selectionIndicator.anchoredPosition = targetAnchored;
                 }
                 else
                 {
-                    selectionIndicator.position = targetRect.position;
+                    selectionIndicator.position = targetWorld;
                 }
 
                 if (matchIndicatorSize)
@@ -300,11 +319,11 @@ namespace UIControls.Runtime.Controls
 
             if (sameParent)
             {
-                positionTween = selectionIndicator.DOAnchorPos(targetRect.anchoredPosition, duration);
+                positionTween = selectionIndicator.DOAnchorPos(targetAnchored, duration);
             }
             else
             {
-                positionTween = selectionIndicator.DOMove(targetRect.position, duration);
+                positionTween = selectionIndicator.DOMove(targetWorld, duration);
             }
 
             slideTween.Apply(positionTween);
@@ -313,6 +332,36 @@ namespace UIControls.Runtime.Controls
             {
                 sizeTween = selectionIndicator.DOSizeDelta(targetSize, duration);
                 slideTween.Apply(sizeTween);
+            }
+        }
+
+        private void CacheTabRestLayout()
+        {
+            var count = tabs?.Count ?? 0;
+            if (tabRestAnchoredPositions.Length != count)
+            {
+                tabRestAnchoredPositions = new Vector2[count];
+                tabRestWorldPositions = new Vector3[count];
+                tabRestSizes = new Vector2[count];
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                var tab = tabs[i];
+                if (tab?.Button == null)
+                {
+                    continue;
+                }
+
+                var rect = tab.Button.transform as RectTransform;
+                if (rect == null)
+                {
+                    continue;
+                }
+
+                tabRestAnchoredPositions[i] = rect.anchoredPosition;
+                tabRestWorldPositions[i] = rect.position;
+                tabRestSizes[i] = rect.rect.size;
             }
         }
 
