@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UIProgressBarDemo.unity
     guid: 1c70d866f009c9a4b9c0b90b608edd7f
+  - enabled: 1
+    path: Assets/Scenes/UITabSliderDemo.unity
+    guid: b9cb951b53931a54bb759af7cfa84668
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
   m_UseUCBPForAssetBundles: 0
