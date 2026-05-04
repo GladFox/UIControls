@@ -199,11 +199,9 @@ namespace UIControls.Editor
             CreateText(rect, "RubberLabel", Vector2.zero, size,
                 label, 28, FontStyles.Bold, TextAlignmentOptions.Center, RubberLabelColor);
 
-            // Indicator must render on top of the station bar but below the station buttons —
-            // putting it as the first sibling under the bar means it's behind the stations,
-            // letting the station Image color show outside the rubber rect. We want stations on
-            // top so they remain clickable AND the indicator visibly slides under them.
-            rect.SetAsFirstSibling();
+            // Render on top of the stations: the rubber rect carries its own label that must stay
+            // visible while it slides between stations. Last sibling = drawn last = on top.
+            rect.SetAsLastSibling();
             return rect;
         }
 

@@ -44,6 +44,14 @@ namespace UIControls.Runtime.Controls
         [Header("Animation")]
         [SerializeField] private UITweenSettings slideTween = new UITweenSettings();
 
+        [Tooltip("Rubber-band slide: the leading edge (in the direction of motion) starts moving first; the trailing edge catches up after a lag. The indicator stretches mid-flight, then settles. All children inside the indicator stretch with it (driven via localScale), so this works fine when the indicator contains text or other UI.\n\nRequires matchIndicatorSize and same-parent placement to be effective.")]
+        [SerializeField] private bool rubberBand;
+        [Range(0f, 0.9f)]
+        [Tooltip("How long the trailing edge waits before catching up, as a fraction of the slide duration.")]
+        [SerializeField] private float rubberBandLag = 0.35f;
+        [SerializeField] private Ease rubberBandLeadEase = Ease.OutCubic;
+        [SerializeField] private Ease rubberBandTrailEase = Ease.OutCubic;
+
         [Header("Events")]
         [SerializeField] private TabChangedEvent onTabChanged = new TabChangedEvent();
 
@@ -53,6 +61,9 @@ namespace UIControls.Runtime.Controls
         private int selectedIndex = -1;
         private Tween positionTween;
         private Tween sizeTween;
+        private Sequence rubberBandSequence;
+        private Vector2 baseIndicatorSize = Vector2.one;
+        private float rubberMinX, rubberMaxX, rubberMinY, rubberMaxY;
         private readonly List<UnityAction> tabClickHandlers = new List<UnityAction>();
         private Vector2[] tabRestAnchoredPositions = Array.Empty<Vector2>();
         private Vector3[] tabRestWorldPositions = Array.Empty<Vector3>();
@@ -66,6 +77,7 @@ namespace UIControls.Runtime.Controls
         {
             BindButtons();
             CacheTabRestLayout();
+            CaptureBaseIndicatorSize();
         }
 
         private void OnEnable()
@@ -193,6 +205,11 @@ namespace UIControls.Runtime.Controls
             CacheTabRestLayout();
         }
 
+        public void RefreshIndicatorBaseSize()
+        {
+            CaptureBaseIndicatorSize();
+        }
+
         private void ApplyTab(int index, bool instant, bool notify)
         {
             var previous = selectedIndex;
@@ -298,6 +315,12 @@ namespace UIControls.Runtime.Controls
                 : targetRect.rect.size;
             var duration = slideTween != null ? Mathf.Max(0f, slideTween.Duration) : 0f;
 
+            var useRubberBand = rubberBand
+                && sameParent
+                && matchIndicatorSize
+                && baseIndicatorSize.x > Mathf.Epsilon
+                && baseIndicatorSize.y > Mathf.Epsilon;
+
             if (instant || duration <= Mathf.Epsilon)
             {
                 if (sameParent)
@@ -311,9 +334,28 @@ namespace UIControls.Runtime.Controls
 
                 if (matchIndicatorSize)
                 {
-                    selectionIndicator.sizeDelta = targetSize;
+                    if (useRubberBand)
+                    {
+                        // Rubber-band path drives localScale instead of sizeDelta. Reset sizeDelta
+                        // to the captured base so scale=1 corresponds to a known reference size.
+                        selectionIndicator.sizeDelta = baseIndicatorSize;
+                        var scale = selectionIndicator.localScale;
+                        scale.x = targetSize.x / baseIndicatorSize.x;
+                        scale.y = targetSize.y / baseIndicatorSize.y;
+                        selectionIndicator.localScale = scale;
+                    }
+                    else
+                    {
+                        selectionIndicator.sizeDelta = targetSize;
+                    }
                 }
 
+                return;
+            }
+
+            if (useRubberBand)
+            {
+                StartRubberBandSequence(targetAnchored, targetSize, duration);
                 return;
             }
 
@@ -333,6 +375,99 @@ namespace UIControls.Runtime.Controls
                 sizeTween = selectionIndicator.DOSizeDelta(targetSize, duration);
                 slideTween.Apply(sizeTween);
             }
+        }
+
+        private void StartRubberBandSequence(Vector2 toCenter, Vector2 toSize, float duration)
+        {
+            // Make sure the indicator's sizeDelta matches the captured base — we drive localScale
+            // from here on, and the rubber math assumes "size = baseIndicatorSize * localScale".
+            if (selectionIndicator.sizeDelta != baseIndicatorSize)
+            {
+                selectionIndicator.sizeDelta = baseIndicatorSize;
+            }
+
+            var fromCenter = selectionIndicator.anchoredPosition;
+            var currentScale = selectionIndicator.localScale;
+            var fromSize = new Vector2(
+                baseIndicatorSize.x * currentScale.x,
+                baseIndicatorSize.y * currentScale.y);
+
+            var fromMin = fromCenter - fromSize * 0.5f;
+            var fromMax = fromCenter + fromSize * 0.5f;
+            var toMin = toCenter - toSize * 0.5f;
+            var toMax = toCenter + toSize * 0.5f;
+
+            rubberMinX = fromMin.x;
+            rubberMaxX = fromMax.x;
+            rubberMinY = fromMin.y;
+            rubberMaxY = fromMax.y;
+
+            var lagSeconds = duration * Mathf.Clamp(rubberBandLag, 0f, 0.9f);
+
+            // For each axis: the edge moving toward the destination is the "lead" — starts at t=0
+            // with the lead ease. The opposite edge waits `lagSeconds`, then catches up with the
+            // trail ease. Lag = 0 makes both edges tween together (no stretch).
+            var xMovesPositive = toCenter.x >= fromCenter.x;
+            var yMovesPositive = toCenter.y >= fromCenter.y;
+
+            var sequence = DOTween.Sequence();
+
+            sequence.Insert(xMovesPositive ? 0f : lagSeconds,
+                DOTween.To(() => rubberMaxX, v => { rubberMaxX = v; ApplyRubberEdges(); }, toMax.x, duration)
+                    .SetEase(xMovesPositive ? rubberBandLeadEase : rubberBandTrailEase));
+            sequence.Insert(xMovesPositive ? lagSeconds : 0f,
+                DOTween.To(() => rubberMinX, v => { rubberMinX = v; ApplyRubberEdges(); }, toMin.x, duration)
+                    .SetEase(xMovesPositive ? rubberBandTrailEase : rubberBandLeadEase));
+
+            sequence.Insert(yMovesPositive ? 0f : lagSeconds,
+                DOTween.To(() => rubberMaxY, v => { rubberMaxY = v; ApplyRubberEdges(); }, toMax.y, duration)
+                    .SetEase(yMovesPositive ? rubberBandLeadEase : rubberBandTrailEase));
+            sequence.Insert(yMovesPositive ? lagSeconds : 0f,
+                DOTween.To(() => rubberMinY, v => { rubberMinY = v; ApplyRubberEdges(); }, toMin.y, duration)
+                    .SetEase(yMovesPositive ? rubberBandTrailEase : rubberBandLeadEase));
+
+            slideTween.ApplyTimingOnly(sequence);
+
+            rubberBandSequence = sequence;
+        }
+
+        private void ApplyRubberEdges()
+        {
+            if (selectionIndicator == null)
+            {
+                return;
+            }
+
+            var center = new Vector2(
+                (rubberMinX + rubberMaxX) * 0.5f,
+                (rubberMinY + rubberMaxY) * 0.5f);
+            var size = new Vector2(
+                Mathf.Max(0f, rubberMaxX - rubberMinX),
+                Mathf.Max(0f, rubberMaxY - rubberMinY));
+
+            selectionIndicator.anchoredPosition = center;
+
+            if (baseIndicatorSize.x > Mathf.Epsilon && baseIndicatorSize.y > Mathf.Epsilon)
+            {
+                var scale = selectionIndicator.localScale;
+                scale.x = size.x / baseIndicatorSize.x;
+                scale.y = size.y / baseIndicatorSize.y;
+                selectionIndicator.localScale = scale;
+            }
+        }
+
+        private void CaptureBaseIndicatorSize()
+        {
+            if (selectionIndicator == null)
+            {
+                baseIndicatorSize = Vector2.one;
+                return;
+            }
+
+            var size = selectionIndicator.rect.size;
+            baseIndicatorSize = new Vector2(
+                size.x > Mathf.Epsilon ? size.x : 1f,
+                size.y > Mathf.Epsilon ? size.y : 1f);
         }
 
         private void CacheTabRestLayout()
@@ -419,8 +554,14 @@ namespace UIControls.Runtime.Controls
                 sizeTween.Kill(false);
             }
 
+            if (rubberBandSequence != null && rubberBandSequence.IsActive())
+            {
+                rubberBandSequence.Kill(false);
+            }
+
             positionTween = null;
             sizeTween = null;
+            rubberBandSequence = null;
         }
 
         private void InvokeCustomActions(Action<UITabSliderCustomAction> invocation)

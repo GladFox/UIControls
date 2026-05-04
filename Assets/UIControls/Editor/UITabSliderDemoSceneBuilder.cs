@@ -186,7 +186,18 @@ namespace UIControls.Editor
             AlignIndicatorToButton(indicator, buttons[0]);
 
             var control = rootGo.GetComponent<UITabSliderControl>();
-            ConfigureTabSlider(control, indicator, true, 0, false, 0.22f, Ease.OutQuad);
+            ConfigureTabSlider(
+                control,
+                indicator,
+                matchIndicatorSize: true,
+                initialIndex: 0,
+                autoToggleViews: false,
+                duration: 0.4f,
+                ease: Ease.OutQuad,
+                rubberBand: true,
+                rubberBandLag: 0.35f,
+                rubberBandLeadEase: Ease.OutCubic,
+                rubberBandTrailEase: Ease.OutCubic);
             ConfigureTabs(control, buttons, null);
 
             return control;
@@ -327,7 +338,11 @@ namespace UIControls.Editor
             int initialIndex,
             bool autoToggleViews,
             float duration,
-            Ease ease)
+            Ease ease,
+            bool rubberBand = false,
+            float rubberBandLag = 0.35f,
+            Ease rubberBandLeadEase = Ease.OutCubic,
+            Ease rubberBandTrailEase = Ease.OutCubic)
         {
             var serializedObject = new SerializedObject(control);
             serializedObject.FindProperty("selectionIndicator").objectReferenceValue = indicator;
@@ -340,6 +355,11 @@ namespace UIControls.Editor
             tween.FindPropertyRelative("ease").enumValueIndex = (int)ease;
             tween.FindPropertyRelative("delay").floatValue = 0f;
             tween.FindPropertyRelative("independentUpdate").boolValue = false;
+
+            serializedObject.FindProperty("rubberBand").boolValue = rubberBand;
+            serializedObject.FindProperty("rubberBandLag").floatValue = rubberBandLag;
+            serializedObject.FindProperty("rubberBandLeadEase").enumValueIndex = (int)rubberBandLeadEase;
+            serializedObject.FindProperty("rubberBandTrailEase").enumValueIndex = (int)rubberBandTrailEase;
 
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
