@@ -130,7 +130,7 @@
   - `git log 4ad3b18... --oneline` -> `70beccb sync memory bank after asmdef compatibility fix`, `31f9feb bump UPM package version to 0.1.1`.
   - `git log 31f9feb... --oneline` -> `636faab update memory bank checkpoint for 0.1.1 release`, `bfba25e configure explicit DOTween asmdef link and bump package to 0.1.2`.
   - `git log bfba25e... --oneline` -> `6e993d3 sync memory bank checkpoint after DOTween asmdef link`, `3d8c7b9 fix TMPro references in UPM package and bump to 0.1.3`.
-  - `git log 3d8c7b9... --oneline` -> `0b0cb6b sync memory bank checkpoint after TMPro fix`.
+  - `git log 3d8c7b9... --oneline` -> `0b0cb6b sync memory bank checkpoint after TMPro fix`, `ddb7433 include all test scenes in UPM samples and bump to 0.1.4`.
 - Поднята версия UPM-пакета до `0.1.1`:
   - обновлен `Assets/UIControls/package.json`;
   - обновлен `Assets/UIControls/CHANGELOG.md` с перечнем исправлений UPM-совместимости и samples.
