@@ -11,6 +11,13 @@
   "dependencies": {
     "com.unity.ugui": "1.0.0"
   },
+  "samples": [
+    {
+      "displayName": "Demo Scenes",
+      "description": "Ready-to-run demo scenes for base controls and progress bar scenarios.",
+      "path": "Samples~/DemoScenes"
+    }
+  ],
   "documentationUrl": "https://github.com/GladFox/UIControls/blob/main/Assets/UIControls/README.md",
   "changelogUrl": "https://github.com/GladFox/UIControls/blob/main/Assets/UIControls/CHANGELOG.md"
 }

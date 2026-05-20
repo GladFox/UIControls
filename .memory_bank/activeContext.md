@@ -45,6 +45,9 @@
 - [x] [REQUIREMENTS_OWNER] Подготовить UPM-формат библиотеки для экспорта в другие проекты без ухудшения локальной разработки
 - [x] [ARCHITECT] Подтвердить стратегию: package root в `Assets/UIControls` + подключение через git `?path=Assets/UIControls`
 - [x] [IMPLEMENTER] Добавить UPM metadata (`package.json`, `README`, `CHANGELOG`, `LICENSE`) и `UIControls.Editor.asmdef`
+- [x] [REQUIREMENTS_OWNER] Добавить в UPM пакет импортируемые примеры (`Samples`) со сценами контролов
+- [x] [IMPLEMENTER] Сформировать `Samples~/DemoScenes` с `UIControlsDemo` и `UIProgressBarDemo`
+- [x] [IMPLEMENTER] Развязать GUID sample-ассетов от `Assets/ThirdParty`, чтобы samples были автономными
 - [x] [DOCS_WRITER] Обновить `local/README.md` с инструкцией установки пакета через UPM
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
@@ -95,8 +98,14 @@
   - добавлены `package.json`, `README.md`, `CHANGELOG.md`, `LICENSE.md`;
   - добавлен `Assets/UIControls/Editor/UIControls.Editor.asmdef`;
   - установка из другого проекта: `https://github.com/GladFox/UIControls.git?path=Assets/UIControls`.
+- Добавлены UPM Samples:
+  - `Assets/UIControls/Samples~/DemoScenes/Scenes/UIControlsDemo.unity`;
+  - `Assets/UIControls/Samples~/DemoScenes/Scenes/UIProgressBarDemo.unity`;
+  - `Assets/UIControls/Samples~/DemoScenes/Art/Slider/*` (локальные копии текстур для demo).
+- Для sample-артов сгенерированы новые GUID и обновлены ссылки в `UIProgressBarDemo.unity`, чтобы убрать коллизию с исходными `Assets/ThirdParty/...`.
+- `Assets/UIControls/package.json` дополнен блоком `samples` (`Demo Scenes`).
 - Выполнена проверка коммитов от контрольной точки:
-  - `git log 9abb48d... --oneline` -> `57700e3 add spend super action for energy progress demo`.
+  - `git log 57700e3... --oneline` -> включает `7b675f1 add UPM package layout for uicontrols export` и последующие коммиты в `main`.
 
 ## Следующие шаги
 - Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:
@@ -105,3 +114,4 @@
   - верхний `Health` бар (damage/heal semantics);
   - нижний `Energy` бар (`0..3` за `6s`, сегментная фиксация цветов).
 - Проверить импорт UPM-пакета в чистом Unity-проекте через git URL с `?path=Assets/UIControls`.
+- Проверить импорт sample `Demo Scenes` через `Package Manager > Samples`.

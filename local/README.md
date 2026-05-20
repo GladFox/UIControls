@@ -142,6 +142,9 @@ Assets/UIControls/
   - `Assets/UIControls/README.md`
   - `Assets/UIControls/CHANGELOG.md`
   - `Assets/UIControls/Editor/UIControls.Editor.asmdef`
+- Примеры для импорта через Package Manager (`Samples`) добавляются в:
+  - `Assets/UIControls/Samples~/...`
+  - текущий набор: `Samples~/DemoScenes` (`UIControlsDemo.unity`, `UIProgressBarDemo.unity` + sample art).
 
 ## Пример кастомного действия
 ```csharp

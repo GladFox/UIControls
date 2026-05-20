@@ -21,6 +21,13 @@ Use Unity Package Manager:
 - Reusable ScriptableObject actions and visual-state assets
 - Editor scene builders for demo/prototyping
 
+## Samples
+
+- `Demo Scenes` sample is available in Package Manager.
+- It includes:
+  - `UIControlsDemo.unity`
+  - `UIProgressBarDemo.unity`
+
 ## Notes
 
 This package is developed directly inside the main project under `Assets/UIControls`.

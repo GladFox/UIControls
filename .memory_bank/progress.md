@@ -76,6 +76,14 @@
   - добавлены файлы UPM-метаданных (`package.json`, `README.md`, `CHANGELOG.md`, `LICENSE.md`);
   - добавлен `UIControls.Editor.asmdef` для editor-части пакета;
   - способ подключения: git URL с `?path=Assets/UIControls`.
+- В UPM пакет добавлены importable samples:
+  - `Samples~/DemoScenes/Scenes/UIControlsDemo.unity`;
+  - `Samples~/DemoScenes/Scenes/UIProgressBarDemo.unity`.
+- Для sample-сцен добавлены локальные sample-текстуры `Samples~/DemoScenes/Art/Slider/*`.
+- Устранена потенциальная GUID-коллизия sample-артов:
+  - GUID в `Samples~/DemoScenes/Art/Slider/*.meta` заменены на уникальные;
+  - ссылки в `Samples~/DemoScenes/Scenes/UIProgressBarDemo.unity` обновлены на новые GUID.
+- `Assets/UIControls/package.json` дополнен секцией `samples` для импорта `Demo Scenes` через Package Manager.
 - Исправлено размножение автогенерируемых `AutoSegment/AutoDivider`:
   - генерация идет в отдельный служебный контейнер `AutoSegments`;
   - добавлена зачистка legacy-детей с префиксами `AutoSegment`/`AutoDivider`.
@@ -95,7 +103,8 @@
 - Пересобрать `UIProgressBarDemo.unity` через `UIControls/Create ProgressBar Demo Scene` и визуально проверить оба demo-бара.
 - После визуального прохода в Unity Editor зафиксировать финальные значения размеров/отступов для обеих demo-сцен.
 - Добавить prefab-набор для типовых сценариев ProgressBar v2 (segmented, hitbar, combined).
+- Прогнать проверку импорта samples в чистом Unity-проекте через `Package Manager > Samples`.
 
 ## Контроль изменений
-- last_checked_commit: 57700e3
+- last_checked_commit: a1c5edd
 - last_checked_date: 2026-05-20
