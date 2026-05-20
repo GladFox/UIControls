@@ -145,6 +145,8 @@ Assets/UIControls/
 - Примеры для импорта через Package Manager (`Samples`) добавляются в:
   - `Assets/UIControls/Samples~/...`
   - текущий набор: `Samples~/DemoScenes` (`UIControlsDemo.unity`, `UIProgressBarDemo.unity` + sample art).
+- `UIControls.Runtime.asmdef` ссылается на `UnityEngine.UI` (а не на package-id `Unity.ugui`), чтобы корректно резолвиться в импортированных проектах.
+- Зависимость от `DOTween.Modules` убрана: UI-твины `Graphic/CanvasGroup/RectTransform` реализованы через `DOTween.To(...)` в `UIDOTweenUtility`.
 
 ## Пример кастомного действия
 ```csharp

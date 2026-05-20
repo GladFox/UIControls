@@ -84,6 +84,12 @@
   - GUID в `Samples~/DemoScenes/Art/Slider/*.meta` заменены на уникальные;
   - ссылки в `Samples~/DemoScenes/Scenes/UIProgressBarDemo.unity` обновлены на новые GUID.
 - `Assets/UIControls/package.json` дополнен секцией `samples` для импорта `Demo Scenes` через Package Manager.
+- Исправлена проблема импортов asmdef в чистом UPM-проекте:
+  - ссылка `Unity.ugui` заменена на корректную `UnityEngine.UI` в `UIControls.Runtime.asmdef`;
+  - убрана прямая зависимость от `DOTween.Modules` в asmdef.
+- Добавлен `UIDOTweenUtility` (`DOTween.To`-адаптеры для `CanvasGroup`, `Graphic`, `RectTransform`), чтобы контролы не требовали `DOTween.Modules.asmdef`.
+- Обновлены контролы/ядро на `UIDOTweenUtility`:
+  - `UIStateAnimator`, `UIModalControl`, `UIToggleControl`, `UITabSliderControl`, `UIButtonAnchoredOffsetAction`.
 - Исправлено размножение автогенерируемых `AutoSegment/AutoDivider`:
   - генерация идет в отдельный служебный контейнер `AutoSegments`;
   - добавлена зачистка legacy-детей с префиксами `AutoSegment`/`AutoDivider`.

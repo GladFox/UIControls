@@ -48,6 +48,9 @@
 - [x] [REQUIREMENTS_OWNER] Добавить в UPM пакет импортируемые примеры (`Samples`) со сценами контролов
 - [x] [IMPLEMENTER] Сформировать `Samples~/DemoScenes` с `UIControlsDemo` и `UIProgressBarDemo`
 - [x] [IMPLEMENTER] Развязать GUID sample-ассетов от `Assets/ThirdParty`, чтобы samples были автономными
+- [x] [REQUIREMENTS_OWNER] Исправить импорт UPM в чистый проект: устранить `Assembly Definition Reference = null` для `uGUI`/`DOTween`
+- [x] [IMPLEMENTER] Обновить `UIControls.Runtime.asmdef`: `Unity.ugui` -> `UnityEngine.UI`
+- [x] [IMPLEMENTER] Убрать обязательную ссылку на `DOTween.Modules` через внутренний `UIDOTweenUtility` (`DOTween.To` для UI-компонентов)
 - [x] [DOCS_WRITER] Обновить `local/README.md` с инструкцией установки пакета через UPM
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
@@ -104,6 +107,10 @@
   - `Assets/UIControls/Samples~/DemoScenes/Art/Slider/*` (локальные копии текстур для demo).
 - Для sample-артов сгенерированы новые GUID и обновлены ссылки в `UIProgressBarDemo.unity`, чтобы убрать коллизию с исходными `Assets/ThirdParty/...`.
 - `Assets/UIControls/package.json` дополнен блоком `samples` (`Demo Scenes`).
+- Исправлена совместимость asmdef для UPM-импорта в новый проект:
+  - `UIControls.Runtime.asmdef` теперь использует ссылку `UnityEngine.UI`;
+  - удалена ссылка `DOTween.Modules` из asmdef;
+  - добавлен `UIDOTweenUtility` и заменены `DOAnchorPos/DOColor/DOFade/DOSizeDelta` на `DOTween.To`-адаптеры.
 - Выполнена проверка коммитов от контрольной точки:
   - `git log 57700e3... --oneline` -> включает `7b675f1 add UPM package layout for uicontrols export` и последующие коммиты в `main`.
   - `git log a1c5edd... --oneline` -> `481562d add UPM demo scenes sample`.

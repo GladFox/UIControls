@@ -152,11 +152,11 @@ namespace UIControls.Runtime.Controls
 
             var sequence = DOTween.Sequence();
 
-            sequence.Join(canvasGroup.DOFade(1f, duration));
+            sequence.Join(UIDOTweenUtility.TweenCanvasGroupAlpha(canvasGroup, 1f, duration));
 
             if (panel != null)
             {
-                sequence.Join(panel.DOAnchorPos(visiblePosition, duration));
+                sequence.Join(UIDOTweenUtility.TweenAnchoredPosition(panel, visiblePosition, duration));
                 sequence.Join(panel.DOScale(visibleScale, duration));
             }
 
@@ -188,11 +188,11 @@ namespace UIControls.Runtime.Controls
 
             var sequence = DOTween.Sequence();
 
-            sequence.Join(canvasGroup.DOFade(0f, duration));
+            sequence.Join(UIDOTweenUtility.TweenCanvasGroupAlpha(canvasGroup, 0f, duration));
 
             if (panel != null)
             {
-                sequence.Join(panel.DOAnchorPos(visiblePosition + hiddenOffset, duration));
+                sequence.Join(UIDOTweenUtility.TweenAnchoredPosition(panel, visiblePosition + hiddenOffset, duration));
                 sequence.Join(panel.DOScale(visibleScale * hiddenScale, duration));
             }
 

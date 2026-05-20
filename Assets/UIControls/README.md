@@ -15,6 +15,11 @@ Use Unity Package Manager:
 - DOTween installed in project (`DG.Tweening` namespace must be available)
 - `com.unity.ugui`
 
+### DOTween setup note
+
+`UIControls.Runtime` no longer depends on `DOTween.Modules.asmdef`.
+If your project uses the standard DOTween DLL import, package scripts still compile without creating extra DOTween asmdef references.
+
 ## Included
 
 - Runtime controls: `UIButtonControl`, `UIToggleControl`, `UIModalControl`, `UIProgressBarControl`, `UITabSliderControl`

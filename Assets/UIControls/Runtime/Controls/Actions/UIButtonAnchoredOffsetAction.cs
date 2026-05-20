@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DG.Tweening;
+using UIControls.Runtime.Core;
 using UnityEngine;
 
 namespace UIControls.Runtime.Controls.Actions
@@ -155,7 +156,7 @@ namespace UIControls.Runtime.Controls.Actions
                 return;
             }
 
-            var tween = target.DOAnchorPos(destination, duration)
+            var tween = UIDOTweenUtility.TweenAnchoredPosition(target, destination, duration)
                 .SetEase(ease)
                 .SetUpdate(UpdateType.Normal, independentUpdate);
 

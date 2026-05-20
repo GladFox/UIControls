@@ -91,13 +91,13 @@ namespace UIControls.Runtime.Core
 
             if (alphaTarget != null)
             {
-                sequence.Join(alphaTarget.DOFade(state.alpha, duration));
+                sequence.Join(UIDOTweenUtility.TweenCanvasGroupAlpha(alphaTarget, state.alpha, duration));
                 hasTweens = true;
             }
 
             if (colorTarget != null)
             {
-                sequence.Join(colorTarget.DOColor(state.color, duration));
+                sequence.Join(UIDOTweenUtility.TweenGraphicColor(colorTarget, state.color, duration));
                 hasTweens = true;
             }
 

@@ -2,8 +2,7 @@
     "name": "UIControls.Runtime",
     "rootNamespace": "UIControls",
     "references": [
-        "Unity.ugui",
-        "DOTween.Modules",
+        "UnityEngine.UI",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [],

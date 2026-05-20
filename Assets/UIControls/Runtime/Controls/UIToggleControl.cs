@@ -207,19 +207,19 @@ namespace UIControls.Runtime.Controls
 
             if (handle != null)
             {
-                sequence.Join(handle.DOAnchorPos(targetPosition, duration));
+                sequence.Join(UIDOTweenUtility.TweenAnchoredPosition(handle, targetPosition, duration));
                 hasTweens = true;
             }
 
             if (backgroundGraphic != null)
             {
-                sequence.Join(backgroundGraphic.DOColor(targetBackgroundColor, duration));
+                sequence.Join(UIDOTweenUtility.TweenGraphicColor(backgroundGraphic, targetBackgroundColor, duration));
                 hasTweens = true;
             }
 
             if (handleGraphic != null)
             {
-                sequence.Join(handleGraphic.DOColor(targetHandleColor, duration));
+                sequence.Join(UIDOTweenUtility.TweenGraphicColor(handleGraphic, targetHandleColor, duration));
                 hasTweens = true;
             }
 

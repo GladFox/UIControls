@@ -361,7 +361,7 @@ namespace UIControls.Runtime.Controls
 
             if (sameParent)
             {
-                positionTween = selectionIndicator.DOAnchorPos(targetAnchored, duration);
+                positionTween = UIDOTweenUtility.TweenAnchoredPosition(selectionIndicator, targetAnchored, duration);
             }
             else
             {
@@ -372,7 +372,7 @@ namespace UIControls.Runtime.Controls
 
             if (matchIndicatorSize)
             {
-                sizeTween = selectionIndicator.DOSizeDelta(targetSize, duration);
+                sizeTween = UIDOTweenUtility.TweenSizeDelta(selectionIndicator, targetSize, duration);
                 slideTween.Apply(sizeTween);
             }
         }
