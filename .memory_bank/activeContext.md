@@ -56,6 +56,10 @@
 - [x] [REQUIREMENTS_OWNER] Сделать явную линковку на DOTween в asmdef пакета
 - [x] [IMPLEMENTER] Настроить `UIControls.Runtime.asmdef` на `overrideReferences + precompiledReferences: ["DOTween.dll"]`
 - [x] [IMPLEMENTER] Поднять версию пакета до `0.1.2` и обновить changelog
+- [x] [REQUIREMENTS_OWNER] Исправить ошибку импорта `TMPro` в `PackageCache` (Editor demo builders)
+- [x] [IMPLEMENTER] Добавить `Unity.TextMeshPro` reference в `UIControls.Editor.asmdef`
+- [x] [IMPLEMENTER] Добавить dependency `com.unity.textmeshpro` в `package.json`
+- [x] [IMPLEMENTER] Поднять версию пакета до `0.1.3` и обновить changelog
 - [x] [DOCS_WRITER] Обновить `local/README.md` с инструкцией установки пакета через UPM
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
@@ -129,6 +133,10 @@
   - `UIControls.Runtime.asmdef` использует `precompiledReferences: ["DOTween.dll"]` при `overrideReferences: true`;
   - зависимость от `DOTween.Modules.asmdef` по-прежнему не требуется.
 - Версия UPM-пакета повышена до `0.1.2` с записью в `CHANGELOG.md`.
+- Исправлена UPM-совместимость для TextMeshPro:
+  - `UIControls.Editor.asmdef` теперь явно ссылается на `Unity.TextMeshPro`;
+  - `package.json` дополнен зависимостью `com.unity.textmeshpro: 3.0.6`;
+  - версия пакета повышена до `0.1.3`.
 
 ## Следующие шаги
 - Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:

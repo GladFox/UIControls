@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3 - 2026-05-20
+
+- Fixed `TMPro` compile errors in imported projects:
+  - added `Unity.TextMeshPro` reference to `UIControls.Editor.asmdef`.
+- Added explicit package dependency:
+  - `com.unity.textmeshpro` (`3.0.6`) in `package.json`.
+
 ## 0.1.2 - 2026-05-20
 
 - Added explicit DOTween assembly linkage in `UIControls.Runtime.asmdef`:

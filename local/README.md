@@ -142,6 +142,7 @@ Assets/UIControls/
   - `Assets/UIControls/README.md`
   - `Assets/UIControls/CHANGELOG.md`
   - `Assets/UIControls/Editor/UIControls.Editor.asmdef`
+- В `package.json` явно объявлены зависимости `com.unity.ugui` и `com.unity.textmeshpro`.
 - Примеры для импорта через Package Manager (`Samples`) добавляются в:
   - `Assets/UIControls/Samples~/...`
   - текущий набор: `Samples~/DemoScenes` (`UIControlsDemo.unity`, `UIProgressBarDemo.unity` + sample art).

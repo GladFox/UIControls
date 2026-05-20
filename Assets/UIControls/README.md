@@ -14,6 +14,7 @@ Use Unity Package Manager:
 - Unity `2021.3+`
 - DOTween installed in project (`DG.Tweening` namespace must be available)
 - `com.unity.ugui`
+- `com.unity.textmeshpro`
 
 ### DOTween setup note
 

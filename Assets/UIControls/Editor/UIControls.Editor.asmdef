@@ -2,7 +2,8 @@
   "name": "UIControls.Editor",
   "rootNamespace": "UIControls.Editor",
   "references": [
-    "UIControls.Runtime"
+    "UIControls.Runtime",
+    "Unity.TextMeshPro"
   ],
   "includePlatforms": [
     "Editor"

@@ -1,6 +1,6 @@
 {
   "name": "com.gladfox.uicontrols",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "displayName": "UIControls (uGUI + DOTween)",
   "description": "Reusable uGUI controls with DOTween animations (Button, Toggle, Modal, ProgressBar, TabSlider).",
   "unity": "2021.3",
@@ -9,7 +9,8 @@
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
-    "com.unity.ugui": "1.0.0"
+    "com.unity.ugui": "1.0.0",
+    "com.unity.textmeshpro": "3.0.6"
   },
   "samples": [
     {

@@ -96,6 +96,10 @@
   - `overrideReferences: true`
   - `precompiledReferences: ["DOTween.dll"]`
 - Версия UPM пакета увеличена до `0.1.2` и зафиксирована в changelog.
+- Исправлена ошибка `CS0246: TMPro` при импорте UPM пакета:
+  - `UIControls.Editor.asmdef` дополнен `Unity.TextMeshPro`;
+  - добавлена package dependency `com.unity.textmeshpro: 3.0.6`.
+- Версия UPM пакета увеличена до `0.1.3`.
 - Исправлено размножение автогенерируемых `AutoSegment/AutoDivider`:
   - генерация идет в отдельный служебный контейнер `AutoSegments`;
   - добавлена зачистка legacy-детей с префиксами `AutoSegment`/`AutoDivider`.
