@@ -1,0 +1,16 @@
+{
+  "name": "com.gladfox.uicontrols",
+  "version": "0.1.0",
+  "displayName": "UIControls (uGUI + DOTween)",
+  "description": "Reusable uGUI controls with DOTween animations (Button, Toggle, Modal, ProgressBar, TabSlider).",
+  "unity": "2021.3",
+  "author": {
+    "name": "GladFox"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "dependencies": {
+    "com.unity.ugui": "1.0.0"
+  },
+  "documentationUrl": "https://github.com/GladFox/UIControls/blob/main/Assets/UIControls/README.md",
+  "changelogUrl": "https://github.com/GladFox/UIControls/blob/main/Assets/UIControls/CHANGELOG.md"
+}

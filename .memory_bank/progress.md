@@ -71,6 +71,11 @@
   - кнопка `Spend 1 Super` (в новом builder-сценарии) списывает одно целое деление `Energy`;
   - при списании корректируется внутренний таймер auto-charge, поэтому набор продолжается без скачка;
   - для старой сцены без новой кнопки активирован fallback: `AutoDamage` toggle работает как `Spend 1 Super`.
+- Библиотека подготовлена к UPM-экспорту:
+  - package root в `Assets/UIControls`, без копирования runtime-исходников;
+  - добавлены файлы UPM-метаданных (`package.json`, `README.md`, `CHANGELOG.md`, `LICENSE.md`);
+  - добавлен `UIControls.Editor.asmdef` для editor-части пакета;
+  - способ подключения: git URL с `?path=Assets/UIControls`.
 - Исправлено размножение автогенерируемых `AutoSegment/AutoDivider`:
   - генерация идет в отдельный служебный контейнер `AutoSegments`;
   - добавлена зачистка legacy-детей с префиксами `AutoSegment`/`AutoDivider`.
@@ -84,6 +89,7 @@
 - Полноценная визуальная проверка UX demo-сцены требует запуска в Unity Editor.
 - `dotnet build` выводит предупреждения по конфликтам `System.Net.Http`/`System.Security.Cryptography.*` в Unity окружении.
 - Невозможно выполнить Unity `-batchmode` для этого проекта, пока он открыт во втором инстансе Unity.
+- Локальная `dotnet build` проверка сейчас также зависит от доступности Unity SourceGenerators DLL в установленном Editor.
 
 ## Развитие решений
 - Пересобрать `UIProgressBarDemo.unity` через `UIControls/Create ProgressBar Demo Scene` и визуально проверить оба demo-бара.
@@ -91,5 +97,5 @@
 - Добавить prefab-набор для типовых сценариев ProgressBar v2 (segmented, hitbar, combined).
 
 ## Контроль изменений
-- last_checked_commit: 9abb48d
-- last_checked_date: 2026-04-01
+- last_checked_commit: 57700e3
+- last_checked_date: 2026-05-20

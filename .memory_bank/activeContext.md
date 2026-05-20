@@ -42,6 +42,10 @@
 - [x] [IMPLEMENTER] Добавить кнопку `Spend 1 Super` в `UIProgressBarDemoSceneBuilder` и привязку к презентеру
 - [x] [IMPLEMENTER] Реализовать списание одного energy-сегмента в `UIProgressBarDemoPresenter`
 - [x] [IMPLEMENTER] Добавить fallback для старой сцены: `AutoDamage` toggle работает как триггер `Spend 1 Super`, если кнопка не назначена
+- [x] [REQUIREMENTS_OWNER] Подготовить UPM-формат библиотеки для экспорта в другие проекты без ухудшения локальной разработки
+- [x] [ARCHITECT] Подтвердить стратегию: package root в `Assets/UIControls` + подключение через git `?path=Assets/UIControls`
+- [x] [IMPLEMENTER] Добавить UPM metadata (`package.json`, `README`, `CHANGELOG`, `LICENSE`) и `UIControls.Editor.asmdef`
+- [x] [DOCS_WRITER] Обновить `local/README.md` с инструкцией установки пакета через UPM
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
 - [x] [REQUIREMENTS_OWNER] Уточнить доработки demo: убрать echo-артефакт на heal и показать режим плавного заполнения делений
@@ -86,8 +90,13 @@
   - в новом builder-flow создается кнопка `Spend 1 Super` и привязывается к `UIProgressBarDemoPresenter`;
   - при нажатии списывается ровно один сегмент `1 / energySegments`, а авто-набор продолжает заполнение от обновленной точки;
   - для текущей (legacy) сцены без новой кнопки включен fallback через `AutoDamage` toggle, переименованный в `Spend 1 Super`.
+- Подготовлен UPM-формат библиотеки без переноса исходников:
+  - package root: `Assets/UIControls`;
+  - добавлены `package.json`, `README.md`, `CHANGELOG.md`, `LICENSE.md`;
+  - добавлен `Assets/UIControls/Editor/UIControls.Editor.asmdef`;
+  - установка из другого проекта: `https://github.com/GladFox/UIControls.git?path=Assets/UIControls`.
 - Выполнена проверка коммитов от контрольной точки:
-  - `git log 754f1f9... --oneline` -> `9abb48d rework progressbar demo into health hitbar and auto energy flow`.
+  - `git log 9abb48d... --oneline` -> `57700e3 add spend super action for energy progress demo`.
 
 ## Следующие шаги
 - Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:
@@ -95,3 +104,4 @@
 - Визуально проверить в Unity Editor новую конфигурацию `UIProgressBarDemo`:
   - верхний `Health` бар (damage/heal semantics);
   - нижний `Energy` бар (`0..3` за `6s`, сегментная фиксация цветов).
+- Проверить импорт UPM-пакета в чистом Unity-проекте через git URL с `?path=Assets/UIControls`.

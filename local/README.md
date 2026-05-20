@@ -132,6 +132,17 @@ Assets/UIControls/
   - `Assets/UIControls/Animations/UI/ProgressBar/Actions/DemoProgressBarDebug.action.asset`
   - тип: `UIProgressBarDebugLogAction`.
 
+## UPM Экспорт
+- Пакет оформлен прямо в `Assets/UIControls` (без дублирования исходников).
+- Подключение из другого проекта через Unity Package Manager:
+  - `https://github.com/GladFox/UIControls.git?path=Assets/UIControls`
+- Это позволяет продолжать разработку контролов в текущем проекте и одновременно использовать их как UPM-библиотеку.
+- В пакет добавлены:
+  - `Assets/UIControls/package.json`
+  - `Assets/UIControls/README.md`
+  - `Assets/UIControls/CHANGELOG.md`
+  - `Assets/UIControls/Editor/UIControls.Editor.asmdef`
+
 ## Пример кастомного действия
 ```csharp
 using UIControls.Runtime.Controls;
