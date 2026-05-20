@@ -117,6 +117,7 @@
   - `git log 57700e3... --oneline` -> включает `7b675f1 add UPM package layout for uicontrols export` и последующие коммиты в `main`.
   - `git log a1c5edd... --oneline` -> `481562d add UPM demo scenes sample`.
   - `git log 481562d... --oneline` -> `12cc6e3 update memory bank checkpoint after samples commit`, `4ad3b18 fix asmdef refs for UPM import and remove DOTween.Modules dependency`.
+  - `git log 4ad3b18... --oneline` -> `70beccb sync memory bank after asmdef compatibility fix`, `31f9feb bump UPM package version to 0.1.1`.
 - Поднята версия UPM-пакета до `0.1.1`:
   - обновлен `Assets/UIControls/package.json`;
   - обновлен `Assets/UIControls/CHANGELOG.md` с перечнем исправлений UPM-совместимости и samples.
