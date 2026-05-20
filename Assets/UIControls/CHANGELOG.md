@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2 - 2026-05-20
+
+- Added explicit DOTween assembly linkage in `UIControls.Runtime.asmdef`:
+  - `overrideReferences: true`
+  - `precompiledReferences: ["DOTween.dll"]`
+- Kept package independent from `DOTween.Modules.asmdef` (modules asmdef no longer required).
+
 ## 0.1.1 - 2026-05-20
 
 - Fixed UPM import compatibility for asmdef references:

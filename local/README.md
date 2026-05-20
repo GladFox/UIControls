@@ -147,6 +147,7 @@ Assets/UIControls/
   - текущий набор: `Samples~/DemoScenes` (`UIControlsDemo.unity`, `UIProgressBarDemo.unity` + sample art).
 - `UIControls.Runtime.asmdef` ссылается на `UnityEngine.UI` (а не на package-id `Unity.ugui`), чтобы корректно резолвиться в импортированных проектах.
 - Зависимость от `DOTween.Modules` убрана: UI-твины `Graphic/CanvasGroup/RectTransform` реализованы через `DOTween.To(...)` в `UIDOTweenUtility`.
+- Для `DG.Tweening` настроена явная линковка в `UIControls.Runtime.asmdef` через `overrideReferences + precompiledReferences: ["DOTween.dll"]`.
 
 ## Пример кастомного действия
 ```csharp

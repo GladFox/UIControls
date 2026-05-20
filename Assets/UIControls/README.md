@@ -17,8 +17,9 @@ Use Unity Package Manager:
 
 ### DOTween setup note
 
-`UIControls.Runtime` no longer depends on `DOTween.Modules.asmdef`.
-If your project uses the standard DOTween DLL import, package scripts still compile without creating extra DOTween asmdef references.
+`UIControls.Runtime` does not depend on `DOTween.Modules.asmdef`,
+but has an explicit asmdef link to `DOTween.dll` (precompiled reference).
+So DOTween must be installed in the project before (or together with) UIControls.
 
 ## Included
 

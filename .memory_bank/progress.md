@@ -92,6 +92,10 @@
   - `UIStateAnimator`, `UIModalControl`, `UIToggleControl`, `UITabSliderControl`, `UIButtonAnchoredOffsetAction`.
 - Версия UPM пакета увеличена до `0.1.1`, чтобы обновление отображалось пользователям в Package Manager.
 - `Assets/UIControls/CHANGELOG.md` дополнен записью `0.1.1` с описанием fixes.
+- Для runtime asmdef добавлена явная ссылка на DOTween:
+  - `overrideReferences: true`
+  - `precompiledReferences: ["DOTween.dll"]`
+- Версия UPM пакета увеличена до `0.1.2` и зафиксирована в changelog.
 - Исправлено размножение автогенерируемых `AutoSegment/AutoDivider`:
   - генерация идет в отдельный служебный контейнер `AutoSegments`;
   - добавлена зачистка legacy-детей с префиксами `AutoSegment`/`AutoDivider`.

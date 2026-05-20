@@ -53,6 +53,9 @@
 - [x] [IMPLEMENTER] Убрать обязательную ссылку на `DOTween.Modules` через внутренний `UIDOTweenUtility` (`DOTween.To` для UI-компонентов)
 - [x] [REQUIREMENTS_OWNER] Поднять версию UPM-пакета, чтобы пользователи видели обновление в Package Manager
 - [x] [IMPLEMENTER] Обновить `Assets/UIControls/package.json` до `0.1.1` и зафиксировать изменения в `CHANGELOG.md`
+- [x] [REQUIREMENTS_OWNER] Сделать явную линковку на DOTween в asmdef пакета
+- [x] [IMPLEMENTER] Настроить `UIControls.Runtime.asmdef` на `overrideReferences + precompiledReferences: ["DOTween.dll"]`
+- [x] [IMPLEMENTER] Поднять версию пакета до `0.1.2` и обновить changelog
 - [x] [DOCS_WRITER] Обновить `local/README.md` с инструкцией установки пакета через UPM
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
@@ -121,6 +124,10 @@
 - Поднята версия UPM-пакета до `0.1.1`:
   - обновлен `Assets/UIControls/package.json`;
   - обновлен `Assets/UIControls/CHANGELOG.md` с перечнем исправлений UPM-совместимости и samples.
+- Явно настроена линковка DOTween:
+  - `UIControls.Runtime.asmdef` использует `precompiledReferences: ["DOTween.dll"]` при `overrideReferences: true`;
+  - зависимость от `DOTween.Modules.asmdef` по-прежнему не требуется.
+- Версия UPM-пакета повышена до `0.1.2` с записью в `CHANGELOG.md`.
 
 ## Следующие шаги
 - Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:
