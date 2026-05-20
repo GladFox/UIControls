@@ -51,6 +51,8 @@
 - [x] [REQUIREMENTS_OWNER] Исправить импорт UPM в чистый проект: устранить `Assembly Definition Reference = null` для `uGUI`/`DOTween`
 - [x] [IMPLEMENTER] Обновить `UIControls.Runtime.asmdef`: `Unity.ugui` -> `UnityEngine.UI`
 - [x] [IMPLEMENTER] Убрать обязательную ссылку на `DOTween.Modules` через внутренний `UIDOTweenUtility` (`DOTween.To` для UI-компонентов)
+- [x] [REQUIREMENTS_OWNER] Поднять версию UPM-пакета, чтобы пользователи видели обновление в Package Manager
+- [x] [IMPLEMENTER] Обновить `Assets/UIControls/package.json` до `0.1.1` и зафиксировать изменения в `CHANGELOG.md`
 - [x] [DOCS_WRITER] Обновить `local/README.md` с инструкцией установки пакета через UPM
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
@@ -115,6 +117,9 @@
   - `git log 57700e3... --oneline` -> включает `7b675f1 add UPM package layout for uicontrols export` и последующие коммиты в `main`.
   - `git log a1c5edd... --oneline` -> `481562d add UPM demo scenes sample`.
   - `git log 481562d... --oneline` -> `12cc6e3 update memory bank checkpoint after samples commit`, `4ad3b18 fix asmdef refs for UPM import and remove DOTween.Modules dependency`.
+- Поднята версия UPM-пакета до `0.1.1`:
+  - обновлен `Assets/UIControls/package.json`;
+  - обновлен `Assets/UIControls/CHANGELOG.md` с перечнем исправлений UPM-совместимости и samples.
 
 ## Следующие шаги
 - Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:
