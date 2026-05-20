@@ -122,5 +122,5 @@
 - Прогнать проверку импорта samples в чистом Unity-проекте через `Package Manager > Samples`.
 
 ## Контроль изменений
-- last_checked_commit: bfba25e
+- last_checked_commit: 3d8c7b9
 - last_checked_date: 2026-05-20
