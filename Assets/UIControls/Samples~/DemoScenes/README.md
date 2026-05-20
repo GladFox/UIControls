@@ -1,9 +1,11 @@
 # UIControls Demo Scenes (Samples)
 
-This sample contains two ready-to-run scenes:
+This sample contains ready-to-run test scenes:
 
 - `Scenes/UIControlsDemo.unity` - base controls demo (`UIButtonControl`, `UIToggleControl`, `UIProgressBarControl`).
 - `Scenes/UIProgressBarDemo.unity` - advanced progress bar scenarios (`HitBar`, segmented energy charge, spend super action).
+- `Scenes/UITabSliderDemo.unity` - `UITabSliderControl` behavior and interaction demo.
+- `Scenes/UIRubberBandPrototype.unity` - rubber-band slide prototype for tab indicator transitions.
 
 ## How to use
 

@@ -34,6 +34,8 @@ So DOTween must be installed in the project before (or together with) UIControls
 - It includes:
   - `UIControlsDemo.unity`
   - `UIProgressBarDemo.unity`
+  - `UITabSliderDemo.unity`
+  - `UIRubberBandPrototype.unity`
 
 ## Notes
 

@@ -100,6 +100,9 @@
   - `UIControls.Editor.asmdef` дополнен `Unity.TextMeshPro`;
   - добавлена package dependency `com.unity.textmeshpro: 3.0.6`.
 - Версия UPM пакета увеличена до `0.1.3`.
+- UPM sample `Demo Scenes` расширен всеми тестовыми сценами:
+  - `UIControlsDemo`, `UIProgressBarDemo`, `UITabSliderDemo`, `UIRubberBandPrototype`.
+- Версия UPM пакета увеличена до `0.1.4`.
 - Исправлено размножение автогенерируемых `AutoSegment/AutoDivider`:
   - генерация идет в отдельный служебный контейнер `AutoSegments`;
   - добавлена зачистка legacy-детей с префиксами `AutoSegment`/`AutoDivider`.

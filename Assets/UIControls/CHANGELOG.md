@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.4 - 2026-05-20
+
+- Expanded `Demo Scenes` sample to include all current test/demo scenes:
+  - `UIControlsDemo.unity`
+  - `UIProgressBarDemo.unity`
+  - `UITabSliderDemo.unity`
+  - `UIRubberBandPrototype.unity`
+
 ## 0.1.3 - 2026-05-20
 
 - Fixed `TMPro` compile errors in imported projects:

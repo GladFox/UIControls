@@ -60,6 +60,9 @@
 - [x] [IMPLEMENTER] Добавить `Unity.TextMeshPro` reference в `UIControls.Editor.asmdef`
 - [x] [IMPLEMENTER] Добавить dependency `com.unity.textmeshpro` в `package.json`
 - [x] [IMPLEMENTER] Поднять версию пакета до `0.1.3` и обновить changelog
+- [x] [REQUIREMENTS_OWNER] Включить все тестовые сцены в UPM samples
+- [x] [IMPLEMENTER] Добавить `UITabSliderDemo` и `UIRubberBandPrototype` в `Samples~/DemoScenes/Scenes`
+- [x] [IMPLEMENTER] Поднять версию пакета до `0.1.4` и обновить changelog
 - [x] [DOCS_WRITER] Обновить `local/README.md` с инструкцией установки пакета через UPM
 - [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
 - [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
@@ -127,6 +130,7 @@
   - `git log 4ad3b18... --oneline` -> `70beccb sync memory bank after asmdef compatibility fix`, `31f9feb bump UPM package version to 0.1.1`.
   - `git log 31f9feb... --oneline` -> `636faab update memory bank checkpoint for 0.1.1 release`, `bfba25e configure explicit DOTween asmdef link and bump package to 0.1.2`.
   - `git log bfba25e... --oneline` -> `6e993d3 sync memory bank checkpoint after DOTween asmdef link`, `3d8c7b9 fix TMPro references in UPM package and bump to 0.1.3`.
+  - `git log 3d8c7b9... --oneline` -> `0b0cb6b sync memory bank checkpoint after TMPro fix`.
 - Поднята версия UPM-пакета до `0.1.1`:
   - обновлен `Assets/UIControls/package.json`;
   - обновлен `Assets/UIControls/CHANGELOG.md` с перечнем исправлений UPM-совместимости и samples.
@@ -138,6 +142,12 @@
   - `UIControls.Editor.asmdef` теперь явно ссылается на `Unity.TextMeshPro`;
   - `package.json` дополнен зависимостью `com.unity.textmeshpro: 3.0.6`;
   - версия пакета повышена до `0.1.3`.
+- В UPM sample `DemoScenes` добавлены все актуальные тестовые сцены:
+  - `UIControlsDemo.unity`
+  - `UIProgressBarDemo.unity`
+  - `UITabSliderDemo.unity`
+  - `UIRubberBandPrototype.unity`
+- Версия пакета повышена до `0.1.4` с записью в changelog.
 
 ## Следующие шаги
 - Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:
