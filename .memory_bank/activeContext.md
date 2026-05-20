@@ -106,6 +106,7 @@
 - `Assets/UIControls/package.json` дополнен блоком `samples` (`Demo Scenes`).
 - Выполнена проверка коммитов от контрольной точки:
   - `git log 57700e3... --oneline` -> включает `7b675f1 add UPM package layout for uicontrols export` и последующие коммиты в `main`.
+  - `git log a1c5edd... --oneline` -> `481562d add UPM demo scenes sample`.
 
 ## Следующие шаги
 - Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:
