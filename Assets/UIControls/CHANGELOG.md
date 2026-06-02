@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0 - 2026-06-02
+
+- Added `UIToastControl` — queued toast / snackbar:
+  - FIFO queue plays messages one at a time with slide-in + fade and auto-dismiss;
+  - optional action button (snackbar) fires a callback and dismisses early; swipe down to dismiss;
+  - info / success / error kinds tint an accent strip; `Show` / `ShowAction`, `OnShown` / `OnDismissed`.
+- Added `UIToastDemo.unity` demo scene (info/success/error triggers + snackbar with UNDO) and editor scene builder.
+
 ## 0.6.0 - 2026-06-02
 
 - Added `UIBottomSheetControl` — sheet that slides up from the bottom:
