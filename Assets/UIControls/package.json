@@ -1,8 +1,8 @@
 {
   "name": "com.gladfox.uicontrols",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "displayName": "UIControls (uGUI + DOTween)",
-  "description": "Reusable uGUI controls with DOTween animations (Button, Toggle, Modal, ProgressBar, TabSlider, Segmented, ChipGroup, Stepper).",
+  "description": "Reusable uGUI controls with DOTween animations (Button, Toggle, Modal, ProgressBar, TabSlider, Segmented, ChipGroup, Stepper, RangeSlider).",
   "unity": "2021.3",
   "author": {
     "name": "GladFox"

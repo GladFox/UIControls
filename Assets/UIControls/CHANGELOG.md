@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 - 2026-06-02
+
+- Added `UIRangeSliderControl` — dual-thumb range slider:
+  - two handles over one track with a fill between them; handles can't cross and keep a `minDistance` gap;
+  - drag a handle or click the track to jump the nearer one; optional `wholeNumbers`;
+  - animated jumps/programmatic sets, arrow-key nudge of the active handle, `Interactable` + `CanvasGroup`.
+- Added `UIRangeSliderDemo.unity` demo scene (price filter + time window) and editor scene builder.
+
 ## 0.4.0 - 2026-06-02
 
 - Added `UIStepperControl` — numeric stepper `[ - ] value [ + ]`:

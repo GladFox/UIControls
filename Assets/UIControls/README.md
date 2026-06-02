@@ -24,7 +24,7 @@ So DOTween must be installed in the project before (or together with) UIControls
 
 ## Included
 
-- Runtime controls: `UIButtonControl`, `UIToggleControl`, `UIModalControl`, `UIProgressBarControl`, `UITabSliderControl`, `UISegmentedControl`, `UIChipGroup`, `UIStepperControl`
+- Runtime controls: `UIButtonControl`, `UIToggleControl`, `UIModalControl`, `UIProgressBarControl`, `UITabSliderControl`, `UISegmentedControl`, `UIChipGroup`, `UIStepperControl`, `UIRangeSliderControl`
 - Reusable ScriptableObject actions and visual-state assets
 - Editor scene builders for demo/prototyping
 
@@ -38,6 +38,7 @@ So DOTween must be installed in the project before (or together with) UIControls
   - `UISegmentedDemo.unity`
   - `UIChipGroupDemo.unity`
   - `UIStepperDemo.unity`
+  - `UIRangeSliderDemo.unity`
   - `UIRubberBandPrototype.unity`
 
 ## Notes
