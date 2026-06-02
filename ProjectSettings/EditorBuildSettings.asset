@@ -17,5 +17,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UIChipGroupDemo.unity
     guid: 13772dc9431d1b048a6df927a60570cf
+  - enabled: 1
+    path: Assets/Scenes/UISegmentedDemo.unity
+    guid: 5042ba8a22b86394a9233db7dccce391
+  - enabled: 1
+    path: Assets/Scenes/UIStepperDemo.unity
+    guid: f5a84d0c6208bb048a1adb62b7b3819f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}

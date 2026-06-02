@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0 - 2026-06-02
+
+- Added `UIStepperControl` — numeric stepper `[ - ] value [ + ]`:
+  - tap to nudge by `step`; hold a button for accelerating auto-repeat;
+  - clamp or `wrapAround`, configurable numeric format, value-label pop on change;
+  - arrows dim at bounds, pointer hit-testing, arrow-key stepping, `Interactable` + `CanvasGroup`.
+- Added `UIStepperDemo.unity` demo scene (integer quantity + fractional volume) and editor scene builder.
+
+## 0.3.0 - 2026-06-02
+
+- Added `UISegmentedControl` — iOS-style segmented control:
+  - rounded container with equal-width segments and a sliding thumb;
+  - optional X-axis rubber-band slide (leading edge first, trailing catches up; driven via `localScale`);
+  - selected-label recolor, pointer hit-testing, arrow-key / submit navigation, `Interactable` + `CanvasGroup`.
+- Added `UISegmentedDemo.unity` demo scene (view-switching + event-only variants) and editor scene builder.
+- Added `ROADMAP.md` — sequential control backlog and per-PR Definition of Done.
+
 ## 0.2.0 - 2026-06-02
 
 - Added `UIChipGroup` — a group of independently-toggling chips (no sliding indicator):
