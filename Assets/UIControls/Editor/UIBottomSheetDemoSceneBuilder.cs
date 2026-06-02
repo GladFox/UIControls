@@ -78,7 +78,7 @@ namespace UIControls.Editor
             // --- Sheet (top) ---
             const float sheetHeight = 900f;
             const float closedY = -sheetHeight;
-            var collapsedY = -(sheetHeight - 380f); // ~380px peeking
+            var collapsedY = -(sheetHeight - 380f); // ~380px peeking — header + buttons live in this band
             const float expandedY = 0f;
 
             var sheetGo = new GameObject("BottomSheet", typeof(RectTransform), typeof(Image), typeof(UIBottomSheetControl));
@@ -105,21 +105,30 @@ namespace UIControls.Editor
             grabberImage.color = GrabberColor;
             grabberImage.raycastTarget = false;
 
-            var sheetTitle = CreateText("SheetTitle", sheetRect, new Vector2(0f, -90f), new Vector2(820f, 50f),
+            // Header + actions live in the upper ~380px band, so they are visible in the
+            // COLLAPSED peek (center-anchored y must stay above ~+70 to show when collapsed).
+            var sheetTitle = CreateText("SheetTitle", sheetRect, new Vector2(0f, 320f), new Vector2(820f, 50f),
                 "Details", 30, FontStyles.Bold, TextAlignmentOptions.Center);
             sheetTitle.color = LabelColor;
             sheetTitle.raycastTarget = false;
 
-            var sheetBody = CreateText("SheetBody", sheetRect, new Vector2(0f, -210f), new Vector2(820f, 200f),
-                "Drag this sheet up to expand, down to collapse. A quick flick down — or a tap on the dimmed area behind — dismisses it. The backdrop darkens the further it opens.",
+            var sheetHint = CreateText("SheetHint", sheetRect, new Vector2(0f, 268f), new Vector2(820f, 32f),
+                "Collapsed view — Expand for details, or drag up.", 18, FontStyles.Italic, TextAlignmentOptions.Center);
+            sheetHint.color = new Color(0.72f, 0.78f, 0.92f, 1f);
+            sheetHint.raycastTarget = false;
+
+            var expandButton = CreateButton(sheetRect, "ExpandButton", new Vector2(-150f, 180f), new Vector2(260f, 76f),
+                "Expand", ButtonColor);
+            var closeButton = CreateButton(sheetRect, "CloseButton", new Vector2(150f, 180f), new Vector2(260f, 76f),
+                "Close", CloseButtonColor);
+
+            // Long body sits lower (below center), so it is hidden when collapsed and only
+            // revealed once the sheet is expanded — making Expand visibly do something.
+            var sheetBody = CreateText("SheetBody", sheetRect, new Vector2(0f, -40f), new Vector2(820f, 360f),
+                "Expanded details.\n\nDrag the sheet down to collapse, or flick down / tap the dimmed area to dismiss. The backdrop darkens the further the sheet opens. These two heights are snap points — release between them and the sheet springs to the nearest one.",
                 20, FontStyles.Normal, TextAlignmentOptions.Top);
             sheetBody.color = new Color(0.82f, 0.86f, 0.95f, 1f);
             sheetBody.raycastTarget = false;
-
-            var expandButton = CreateButton(sheetRect, "ExpandButton", new Vector2(-150f, -360f), new Vector2(260f, 76f),
-                "Expand", ButtonColor);
-            var closeButton = CreateButton(sheetRect, "CloseButton", new Vector2(150f, -360f), new Vector2(260f, 76f),
-                "Close", CloseButtonColor);
 
             var control = sheetGo.GetComponent<UIBottomSheetControl>();
             ConfigureSheet(control, sheetRect, backdropGroup, closedY, collapsedY, expandedY);
