@@ -18,9 +18,9 @@ namespace UIControls.Editor
         private static readonly Color PageColor = new Color(0.07f, 0.1f, 0.16f, 1f);
         private static readonly Color SheetColor = new Color(0.14f, 0.18f, 0.26f, 1f);
         private static readonly Color GrabberColor = new Color(0.5f, 0.56f, 0.68f, 1f);
-        private static readonly Color ButtonColor = new Color(0.24f, 0.55f, 0.95f, 1f);
-        private static readonly Color CloseButtonColor = new Color(0.5f, 0.3f, 0.34f, 1f);
-        private static readonly Color LabelColor = new Color(0.95f, 0.97f, 1f, 1f);
+        private static readonly Color ButtonColor = new Color(0.26f, 0.56f, 0.96f, 1f);
+        private static readonly Color CloseButtonColor = new Color(0.86f, 0.34f, 0.38f, 1f);
+        private static readonly Color LabelColor = new Color(0.98f, 0.99f, 1f, 1f);
         private static readonly Color StatusColor = new Color(0.82f, 0.88f, 1f, 1f);
 
         [MenuItem("UIControls/Create BottomSheet Demo Scene")]
@@ -184,7 +184,11 @@ namespace UIControls.Editor
             string label,
             Color color)
         {
-            var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(UIButtonControl));
+            // UIButtonControl sits on a Graphic-less root, so its UIStateAnimator does NOT auto-bind
+            // the background as a color target (which would force it to white on the Normal state and
+            // make the label blend in). The colored fill lives on a child; hover/press animate the
+            // root's scale instead, keeping the label fully readable at rest and on highlight.
+            var go = new GameObject(name, typeof(RectTransform), typeof(UIButtonControl));
             var rect = go.GetComponent<RectTransform>();
             rect.SetParent(parent, false);
             rect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -193,7 +197,11 @@ namespace UIControls.Editor
             rect.sizeDelta = size;
             rect.anchoredPosition = anchoredPosition;
 
-            var image = go.GetComponent<Image>();
+            var bgGo = new GameObject("Bg", typeof(RectTransform), typeof(Image));
+            var bgRect = bgGo.GetComponent<RectTransform>();
+            bgRect.SetParent(rect, false);
+            Stretch(bgRect);
+            var image = bgGo.GetComponent<Image>();
             image.color = color;
             image.raycastTarget = true;
 
