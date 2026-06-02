@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 - 2026-06-02
+
+- Added `UIChipGroup` — a group of independently-toggling chips (no sliding indicator):
+  - `Single` mode behaves like a radio group (one always selected, or optionally none);
+  - `Multi` mode toggles each chip freely (any number on at once);
+  - per-chip color + pop animation, optional checkmark, pointer hit-testing, keyboard focus/move/submit, `Interactable` + `CanvasGroup`.
+- Added `UIChipGroupDemo.unity` demo scene (radio + tags variants) and editor scene builder.
+
 ## 0.2.0 - 2026-06-02
 
 - Added `UISegmentedControl` — iOS-style segmented control:
