@@ -26,5 +26,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UIRangeSliderDemo.unity
     guid: c8ab8fae1a6b7ef408232e4f1f137798
+  - enabled: 1
+    path: Assets/Scenes/UIBottomSheetDemo.unity
+    guid: 914fba80cb02ccd4ba21e4e668dcaa4d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
