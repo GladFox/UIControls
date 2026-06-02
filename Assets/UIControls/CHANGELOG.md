@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 - 2026-06-02
+
+- Added `UISegmentedControl` — iOS-style segmented control:
+  - rounded container with equal-width segments and a sliding thumb;
+  - optional X-axis rubber-band slide (leading edge first, trailing catches up; driven via `localScale`);
+  - selected-label recolor, pointer hit-testing, arrow-key / submit navigation, `Interactable` + `CanvasGroup`.
+- Added `UISegmentedDemo.unity` demo scene (view-switching + event-only variants) and editor scene builder.
+- Project upgraded to Unity `6000.4.9f1`.
+
 ## 0.1.4 - 2026-05-20
 
 - Expanded `Demo Scenes` sample to include all current test/demo scenes:
