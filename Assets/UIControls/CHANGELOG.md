@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 - 2026-06-02
+
+- Added `UIBottomSheetControl` — sheet that slides up from the bottom:
+  - multiple snap points (e.g. collapsed / expanded); drag between them with an overshoot ease;
+  - flick down or drag below a threshold to dismiss; backdrop dims proportionally and closes on click;
+  - `Open` / `Close` / `SnapTo`, `OnStateChanged`, `Interactable`.
+- Added `UIBottomSheetDemo.unity` demo scene and editor scene builder.
+
 ## 0.5.0 - 2026-06-02
 
 - Added `UIRangeSliderControl` — dual-thumb range slider:
