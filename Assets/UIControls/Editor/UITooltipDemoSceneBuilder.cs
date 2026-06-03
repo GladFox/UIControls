@@ -270,6 +270,7 @@ namespace UIControls.Editor
             text.textWrappingMode = TextWrappingModes.Normal;
             text.overflowMode = TextOverflowModes.Overflow;
             text.color = Color.white;
+            text.raycastTarget = false; // labels never intercept pointer events in this demo
 
             return text;
         }

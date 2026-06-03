@@ -99,6 +99,10 @@ namespace UIControls.Runtime.Controls
             ApplyText(text);
             PositionFor(target, placement);
 
+            // Always render on top — the bubble may have been created before other UI, so force it
+            // to the front of its parent whenever it is shown.
+            bubble.SetAsLastSibling();
+
             KillFade();
             bubble.localScale = Vector3.one;
 
