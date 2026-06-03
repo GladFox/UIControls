@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.0 - 2026-06-02
+
+- Added `UITooltipControl` + `UITooltipTrigger` — shared hover/long-press tooltip:
+  - bubble sizes to its text and is placed next to the target at a preferred side;
+  - auto-flips to the opposite side and clamps within the canvas so it never runs off screen;
+  - hover delay and optional touch long-press; `Show` / `Hide`, `OnShown` / `OnHidden`.
+- Added `UITooltipDemo.unity` demo scene (edge markers demonstrating auto-flip) and editor scene builder.
+
 ## 0.8.0 - 2026-06-02
 
 - Added `UIAccordionControl` — stack of collapsible sections:
