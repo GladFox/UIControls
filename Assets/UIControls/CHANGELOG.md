@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0 - 2026-06-02
+
+- Added `UIAccordionControl` — stack of collapsible sections:
+  - clickable headers expand/collapse content with an animated height; chevron rotates to match;
+  - single-open (classic accordion) or multi-open mode; content clips via a masked viewport;
+  - `Toggle` / `Expand` / `Collapse` / `SetExpanded`, `IsExpanded`, `OnSectionToggled`.
+- Added `UIAccordionDemo.unity` demo scene (single-open FAQ + multi-open settings) and editor scene builder.
+
 ## 0.7.0 - 2026-06-02
 
 - Added `UIToastControl` — queued toast / snackbar:
