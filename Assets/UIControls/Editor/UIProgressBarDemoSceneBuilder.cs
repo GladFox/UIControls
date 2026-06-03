@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DG.Tweening;
 using TMPro;
 using UIControls.Runtime.Controls;
@@ -550,7 +550,7 @@ namespace UIControls.Editor
             text.fontSize = fontSize;
             text.fontStyle = fontStyle;
             text.alignment = alignment;
-            text.enableWordWrapping = true;
+            text.textWrappingMode = TextWrappingModes.Normal;
             text.overflowMode = TextOverflowModes.Overflow;
             text.color = Color.white;
 

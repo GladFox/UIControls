@@ -13,8 +13,15 @@ namespace UIControls.Runtime.Demo
         [SerializeField] private UIButtonControl closeButton;
         [SerializeField] private TMP_Text statusLabel;
 
+        private TMP_Text expandLabel;
+
         private void OnEnable()
         {
+            if (expandButton != null && expandLabel == null)
+            {
+                expandLabel = expandButton.GetComponentInChildren<TMP_Text>(true);
+            }
+
             if (openButton != null)
             {
                 openButton.OnClick.AddListener(HandleOpen);
@@ -67,10 +74,14 @@ namespace UIControls.Runtime.Demo
 
         private void HandleExpand()
         {
-            if (sheet != null)
+            if (sheet == null || sheet.SnapCount == 0)
             {
-                sheet.SnapTo(Mathf.Max(0, sheet.SnapCount - 1));
+                return;
             }
+
+            var top = sheet.SnapCount - 1;
+            // Toggle: if already expanded, collapse back; otherwise expand.
+            sheet.SnapTo(sheet.CurrentSnapIndex >= top ? 0 : top);
         }
 
         private void HandleClose()
@@ -88,6 +99,14 @@ namespace UIControls.Runtime.Demo
             statusLabel.text = index < 0
                 ? "Sheet: closed"
                 : string.Format(CultureInfo.InvariantCulture, "Sheet: open at snap {0}", index);
+
+            // Flip the toggle button between Expand / Collapse based on whether the sheet is
+            // already at its top snap point.
+            if (expandLabel != null && sheet != null && sheet.SnapCount > 0)
+            {
+                var expanded = index >= sheet.SnapCount - 1;
+                expandLabel.text = expanded ? "Collapse" : "Expand";
+            }
         }
     }
 }

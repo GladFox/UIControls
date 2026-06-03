@@ -231,7 +231,7 @@ namespace UIControls.Editor
             text.fontStyle = fontStyle;
             text.alignment = alignment;
             text.color = color;
-            text.enableWordWrapping = true;
+            text.textWrappingMode = TextWrappingModes.Normal;
             text.overflowMode = TextOverflowModes.Truncate;
             text.raycastTarget = false;
             return text;
