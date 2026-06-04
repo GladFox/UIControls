@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.10.0 - 2026-06-02
+
+- Added `UIPullToRefreshControl` — pull-to-refresh wrapper for a vertical `ScrollRect`:
+  - overscroll past the top reveals a spinner indicator; releasing beyond a threshold fires `OnRefresh`;
+  - call `EndRefreshing()` when done — the indicator springs back; spinner rotates with the pull and spins while refreshing.
+- Added `UIPullToRefreshDemo.unity` demo scene (scrollable list that prepends a fresh item on refresh) and editor scene builder.
+
 ## 0.9.0 - 2026-06-02
 
 - Added `UITooltipControl` + `UITooltipTrigger` — shared hover/long-press tooltip:

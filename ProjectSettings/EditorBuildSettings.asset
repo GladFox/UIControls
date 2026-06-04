@@ -38,5 +38,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UITooltipDemo.unity
     guid: 63550ea31e616234791684553e405e08
+  - enabled: 1
+    path: Assets/Scenes/UIPullToRefreshDemo.unity
+    guid: 2579c5af97b9465438cc8f8821b2c0ee
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
