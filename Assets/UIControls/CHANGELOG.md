@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.14.0 - 2026-06-02
+
+- Added `UIOTPInputControl` — one-time-code input: a row of single-character cells backed by one
+  hidden `TMP_InputField`, so paste, backspace and auto-advance work natively while the cells render
+  the value and highlight the active one. Digits-only / masking options; `OnChanged` / `OnCompleted`,
+  `Code` / `Clear` / `SetCode` / `Focus`.
+- Added `UIOTPInputDemo.unity` demo scene (6-digit code with Clear) and editor scene builder.
+
 ## 0.13.0 - 2026-06-02
 
 - Added `UIInfiniteScrollControl` — load-more-at-bottom infinite scroll for a vertical `ScrollRect`:

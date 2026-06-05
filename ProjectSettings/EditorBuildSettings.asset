@@ -50,5 +50,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UIInfiniteScrollDemo.unity
     guid: 91c6727952e27b1478bce3632abef890
+  - enabled: 1
+    path: Assets/Scenes/UIOTPInputDemo.unity
+    guid: e110566ef48192641b32452c4f829f75
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
