@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.0 - 2026-06-02
+
+- Added `UIInfiniteScrollControl` — load-more-at-bottom infinite scroll for a vertical `ScrollRect`:
+  - fires `OnLoadMore` when scrolled within a pixel threshold of the bottom (once, while `HasMore` and not loading);
+  - footer shows a spinner while loading and an "all caught up" message when done; call `EndLoadMore(hasMore)` after appending rows.
+- Added `UIInfiniteScrollDemo.unity` demo scene (paged list that loads batches up to a cap) and editor scene builder.
+
 ## 0.12.0 - 2026-06-02
 
 - Added `UICarouselControl` — horizontal paged carousel on a `ScrollRect`:
