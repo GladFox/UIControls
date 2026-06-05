@@ -117,8 +117,8 @@ namespace UIControls.Editor
             sr.decelerationRate = 0.135f;
             sr.scrollSensitivity = 20f;
 
-            // Pull indicator overlay (sibling above the viewport, top-center, not masked).
-            var indicator = CreateIndicator(scrollRect, out var spinner, out var indicatorLabel);
+            // Pull indicator — child of the MASKED viewport so it is clipped while hidden above the top.
+            var indicator = CreateIndicator(viewport, out var spinner, out var indicatorLabel);
 
             var control = scrollGo.GetComponent<UIPullToRefreshControl>();
             ConfigurePull(control, sr, indicator, spinner, indicatorLabel);
@@ -170,7 +170,7 @@ namespace UIControls.Editor
             rect.anchorMax = new Vector2(0.5f, 1f);
             rect.pivot = new Vector2(0.5f, 1f);
             rect.sizeDelta = new Vector2(320f, 56f);
-            rect.anchoredPosition = new Vector2(0f, 70f);
+            rect.anchoredPosition = new Vector2(0f, 64f); // hidden above the viewport top (clipped by the mask)
             var bg = go.GetComponent<Image>();
             bg.color = IndicatorColor;
             bg.raycastTarget = false;
@@ -219,8 +219,8 @@ namespace UIControls.Editor
             so.FindProperty("spinner").objectReferenceValue = spinner;
             so.FindProperty("label").objectReferenceValue = label;
             so.FindProperty("pullThreshold").floatValue = 120f;
-            so.FindProperty("hiddenY").floatValue = 70f;
-            so.FindProperty("restY").floatValue = -60f;
+            so.FindProperty("hiddenY").floatValue = 64f;
+            so.FindProperty("restY").floatValue = 0f;
             so.FindProperty("degreesPerPixel").floatValue = 2.2f;
             so.FindProperty("spinSpeed").floatValue = 320f;
             so.FindProperty("pullText").stringValue = "Pull to refresh";

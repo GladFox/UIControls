@@ -24,7 +24,7 @@ namespace UIControls.Runtime.Controls
     {
         [Header("Targets")]
         [SerializeField] private ScrollRect scrollRect;
-        [Tooltip("Overlay shown at the top of the viewport. Anchored top-center; its anchoredPosition.y is driven between hiddenY and restY.")]
+        [Tooltip("Indicator shown at the top of the viewport. Should be a child of the masked viewport, anchored top-center (pivot top), so it is clipped while hidden. Its anchoredPosition.y is driven between hiddenY and restY.")]
         [SerializeField] private RectTransform indicator;
         [Tooltip("Graphic rotated to show progress/spinning.")]
         [SerializeField] private RectTransform spinner;
@@ -33,8 +33,10 @@ namespace UIControls.Runtime.Controls
         [Header("Pull")]
         [Tooltip("Overscroll distance (px) past which a release triggers a refresh.")]
         [SerializeField] private float pullThreshold = 120f;
-        [SerializeField] private float hiddenY = 70f;
-        [SerializeField] private float restY = -60f;
+        [Tooltip("anchoredPosition.y when hidden — should place the indicator fully above the viewport top so the mask clips it (>= its height, top pivot).")]
+        [SerializeField] private float hiddenY = 64f;
+        [Tooltip("anchoredPosition.y when fully revealed (flush at the viewport top).")]
+        [SerializeField] private float restY = 0f;
 
         [Header("Spinner")]
         [Tooltip("Degrees the spinner rotates per pixel pulled (pre-refresh).")]
