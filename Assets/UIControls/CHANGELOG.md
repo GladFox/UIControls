@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.0 - 2026-06-02
+
+- Added `UIVirtualListControl` — recycled-cell virtual list for huge datasets:
+  - instantiates only enough fixed-height cells to fill the viewport (plus a buffer) and recycles them while scrolling;
+  - `SetItems(count, binder)` / `SetItemCount`, `ScrollToIndex`, `RefreshActiveCells`, `OnBindCell`.
+- Added `UIVirtualListDemo.unity` demo scene (10,000-row list backed by ~12 cells) and editor scene builder.
+
 ## 0.10.0 - 2026-06-02
 
 - Added `UIPullToRefreshControl` — pull-to-refresh wrapper for a vertical `ScrollRect`:
