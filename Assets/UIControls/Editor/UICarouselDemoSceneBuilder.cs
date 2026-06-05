@@ -126,7 +126,7 @@ namespace UIControls.Editor
             status.color = StatusColor;
 
             var hint = CreateText("Hint", panel, new Vector2(0f, -390f), new Vector2(900f, 36f),
-                "Swipe / drag the pages, use the arrows, or click the dots' neighbours. Autoplay is on.",
+                "Flick to swipe a page, or drag and release to snap. Autoplay ping-pongs forward then back.",
                 18, FontStyles.Italic, TextAlignmentOptions.Center);
             hint.color = new Color(0.72f, 0.78f, 0.95f, 1f);
 
@@ -211,9 +211,13 @@ namespace UIControls.Editor
             so.FindProperty("inactiveDotColor").colorValue = InactiveDotColor;
             so.FindProperty("activeDotScale").floatValue = 1.3f;
             so.FindProperty("initialPage").intValue = 0;
+            so.FindProperty("wrap").boolValue = true;
+            so.FindProperty("swipeGesture").boolValue = true;
+            so.FindProperty("swipeMinDistance").floatValue = 50f;
+            so.FindProperty("swipeMinSpeed").floatValue = 500f;
             so.FindProperty("autoplay").boolValue = true;
             so.FindProperty("autoplayInterval").floatValue = 3.5f;
-            so.FindProperty("autoplayLoops").boolValue = true;
+            so.FindProperty("autoplayMode").enumValueIndex = (int)UICarouselControl.AutoplayMode.PingPong;
 
             var dotsProp = so.FindProperty("dots");
             dotsProp.arraySize = dots.Count;

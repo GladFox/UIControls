@@ -19,6 +19,14 @@ namespace UIControls.Runtime.Controls
         IBeginDragHandler,
         IEndDragHandler
     {
+        public enum AutoplayMode
+        {
+            /// <summary>Advance forward; wrap from the last page back to the first.</summary>
+            Loop,
+            /// <summary>Advance forward to the end, then step back to the start, bouncing back and forth.</summary>
+            PingPong,
+        }
+
         [Serializable]
         public sealed class PageChangedEvent : UnityEvent<int>
         {
@@ -39,11 +47,22 @@ namespace UIControls.Runtime.Controls
 
         [Header("Behaviour")]
         [SerializeField] private int initialPage;
+        [Tooltip("Manual Next/Previous wrap around the ends.")]
+        [SerializeField] private bool wrap = true;
+
+        [Header("Swipe")]
+        [Tooltip("A quick horizontal flick advances one page in its direction even if the drag was short. Slower drags just snap to the nearest page.")]
+        [SerializeField] private bool swipeGesture = true;
+        [Tooltip("Minimum horizontal drag distance (screen px) to count as a swipe.")]
+        [SerializeField] private float swipeMinDistance = 50f;
+        [Tooltip("Minimum horizontal flick speed (screen px/s) to count as a swipe.")]
+        [SerializeField] private float swipeMinSpeed = 500f;
+
+        [Header("Autoplay")]
         [SerializeField] private bool autoplay;
         [Min(0.5f)]
         [SerializeField] private float autoplayInterval = 3f;
-        [Tooltip("Autoplay wraps from the last page back to the first.")]
-        [SerializeField] private bool autoplayLoops = true;
+        [SerializeField] private AutoplayMode autoplayMode = AutoplayMode.PingPong;
 
         [Header("Animation")]
         [SerializeField] private UITweenSettings snapTween = new UITweenSettings();
@@ -54,6 +73,8 @@ namespace UIControls.Runtime.Controls
         private int currentPage;
         private bool dragging;
         private float autoplayTimer;
+        private int autoplayDir = 1;
+        private float dragStartTime;
         private Tween snap;
 
         public PageChangedEvent OnPageChanged => onPageChanged;
@@ -96,7 +117,32 @@ namespace UIControls.Runtime.Controls
             if (autoplayTimer >= autoplayInterval)
             {
                 autoplayTimer = 0f;
-                Next();
+                AutoplayStep();
+            }
+        }
+
+        private void AutoplayStep()
+        {
+            if (PageCount <= 1)
+            {
+                return;
+            }
+
+            if (autoplayMode == AutoplayMode.PingPong)
+            {
+                var next = currentPage + autoplayDir;
+                if (next >= PageCount || next < 0)
+                {
+                    autoplayDir = -autoplayDir;
+                    next = Mathf.Clamp(currentPage + autoplayDir, 0, PageCount - 1);
+                }
+
+                GoTo(next);
+            }
+            else
+            {
+                var next = currentPage + 1;
+                GoTo(next >= PageCount ? 0 : next);
             }
         }
 
@@ -110,6 +156,16 @@ namespace UIControls.Runtime.Controls
             var clamped = Mathf.Clamp(index, 0, PageCount - 1);
             currentPage = clamped;
             autoplayTimer = 0f;
+
+            // Keep ping-pong bouncing off the ends even after manual / swipe navigation.
+            if (currentPage <= 0)
+            {
+                autoplayDir = 1;
+            }
+            else if (currentPage >= PageCount - 1)
+            {
+                autoplayDir = -1;
+            }
 
             var targetX = -clamped * pageWidth;
             KillSnap();
@@ -144,7 +200,7 @@ namespace UIControls.Runtime.Controls
             var next = currentPage + 1;
             if (next >= PageCount)
             {
-                next = autoplayLoops ? 0 : PageCount - 1;
+                next = wrap ? 0 : PageCount - 1;
             }
 
             GoTo(next);
@@ -160,7 +216,7 @@ namespace UIControls.Runtime.Controls
             var prev = currentPage - 1;
             if (prev < 0)
             {
-                prev = autoplayLoops ? PageCount - 1 : 0;
+                prev = wrap ? PageCount - 1 : 0;
             }
 
             GoTo(prev);
@@ -169,6 +225,7 @@ namespace UIControls.Runtime.Controls
         public void OnBeginDrag(PointerEventData eventData)
         {
             dragging = true;
+            dragStartTime = Time.unscaledTime;
             KillSnap();
         }
 
@@ -182,6 +239,20 @@ namespace UIControls.Runtime.Controls
                 return;
             }
 
+            // Quick horizontal flick → advance one page in the swipe direction.
+            if (swipeGesture && eventData != null)
+            {
+                var dx = eventData.position.x - eventData.pressPosition.x;
+                var dt = Mathf.Max(0.0001f, Time.unscaledTime - dragStartTime);
+                var speed = Mathf.Abs(dx) / dt;
+                if (Mathf.Abs(dx) >= swipeMinDistance && speed >= swipeMinSpeed)
+                {
+                    GoTo(currentPage + (dx < 0f ? 1 : -1));
+                    return;
+                }
+            }
+
+            // Otherwise snap to whichever page is nearest after the drag.
             var nearest = Mathf.RoundToInt(-content.anchoredPosition.x / pageWidth);
             GoTo(nearest);
         }
