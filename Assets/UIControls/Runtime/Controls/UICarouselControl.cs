@@ -81,6 +81,24 @@ namespace UIControls.Runtime.Controls
         public int CurrentPage => currentPage;
         public int PageCount => content != null ? content.childCount : 0;
 
+        /// <summary>Toggle autoplay at runtime. Setting it (re)starts the interval timer from zero.</summary>
+        public bool Autoplay
+        {
+            get => autoplay;
+            set
+            {
+                autoplay = value;
+                autoplayTimer = 0f;
+            }
+        }
+
+        /// <summary>Autoplay direction behaviour: Loop (wrap) or PingPong (bounce back and forth).</summary>
+        public AutoplayMode Mode
+        {
+            get => autoplayMode;
+            set => autoplayMode = value;
+        }
+
         private void Awake()
         {
             if (scrollRect == null)
@@ -226,6 +244,7 @@ namespace UIControls.Runtime.Controls
         {
             dragging = true;
             dragStartTime = Time.unscaledTime;
+            autoplayTimer = 0f; // user took over — don't let autoplay fire right after release
             KillSnap();
         }
 

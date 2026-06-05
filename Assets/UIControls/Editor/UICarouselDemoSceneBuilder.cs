@@ -130,6 +130,9 @@ namespace UIControls.Editor
                 18, FontStyles.Italic, TextAlignmentOptions.Center);
             hint.color = new Color(0.72f, 0.78f, 0.95f, 1f);
 
+            var autoplayToggle = CreateToggle(panel, new Vector2(-220f, -450f), "Autoplay", true);
+            var pingPongToggle = CreateToggle(panel, new Vector2(220f, -450f), "Ping-pong", true);
+
             var control = scrollGo.GetComponent<UICarouselControl>();
             ConfigureCarousel(control, sr, content, pageWidth, dots);
 
@@ -137,6 +140,8 @@ namespace UIControls.Editor
             SetObjectReference(presenter, "carousel", control);
             SetObjectReference(presenter, "prevButton", prev);
             SetObjectReference(presenter, "nextButton", next);
+            SetObjectReference(presenter, "autoplayToggle", autoplayToggle);
+            SetObjectReference(presenter, "pingPongToggle", pingPongToggle);
             SetObjectReference(presenter, "statusLabel", status);
 
             EditorSceneManager.SaveScene(scene, ScenePath, true);
@@ -270,13 +275,61 @@ namespace UIControls.Editor
             rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = new Vector2(960f, 980f);
+            rect.sizeDelta = new Vector2(960f, 1040f);
 
             var image = panelGo.GetComponent<Image>();
             image.color = PanelColor;
             image.raycastTarget = false;
 
             return rect;
+        }
+
+        private static UIToggleControl CreateToggle(RectTransform parent, Vector2 anchoredPosition, string labelText, bool isOn)
+        {
+            var holder = new GameObject($"{labelText}Toggle", typeof(RectTransform));
+            var holderRect = holder.GetComponent<RectTransform>();
+            holderRect.SetParent(parent, false);
+            holderRect.anchorMin = new Vector2(0.5f, 0.5f);
+            holderRect.anchorMax = new Vector2(0.5f, 0.5f);
+            holderRect.pivot = new Vector2(0.5f, 0.5f);
+            holderRect.anchoredPosition = anchoredPosition;
+            holderRect.sizeDelta = new Vector2(320f, 72f);
+
+            var label = CreateText("Label", holderRect, new Vector2(-60f, 0f), new Vector2(180f, 56f),
+                labelText, 22, FontStyles.Normal, TextAlignmentOptions.MidlineLeft);
+            label.color = new Color(0.9f, 0.94f, 1f, 1f);
+
+            var toggleGo = new GameObject("Switch", typeof(RectTransform), typeof(Image), typeof(CanvasGroup), typeof(UIToggleControl));
+            var toggleRect = toggleGo.GetComponent<RectTransform>();
+            toggleRect.SetParent(holderRect, false);
+            toggleRect.anchorMin = new Vector2(0.5f, 0.5f);
+            toggleRect.anchorMax = new Vector2(0.5f, 0.5f);
+            toggleRect.pivot = new Vector2(0.5f, 0.5f);
+            toggleRect.anchoredPosition = new Vector2(105f, 0f);
+            toggleRect.sizeDelta = new Vector2(96f, 44f);
+            var toggleBackground = toggleGo.GetComponent<Image>();
+            toggleBackground.color = new Color(0.27f, 0.27f, 0.3f, 1f);
+
+            var handleGo = new GameObject("Handle", typeof(RectTransform), typeof(Image));
+            var handleRect = handleGo.GetComponent<RectTransform>();
+            handleRect.SetParent(toggleRect, false);
+            handleRect.anchorMin = new Vector2(0.5f, 0.5f);
+            handleRect.anchorMax = new Vector2(0.5f, 0.5f);
+            handleRect.pivot = new Vector2(0.5f, 0.5f);
+            handleRect.sizeDelta = new Vector2(36f, 36f);
+            var handleImage = handleGo.GetComponent<Image>();
+            handleImage.color = Color.white;
+
+            var toggle = toggleGo.GetComponent<UIToggleControl>();
+            SetObjectReference(toggle, "handle", handleRect);
+            SetObjectReference(toggle, "backgroundGraphic", toggleBackground);
+            SetObjectReference(toggle, "handleGraphic", handleImage);
+            SetObjectReference(toggle, "canvasGroup", toggleGo.GetComponent<CanvasGroup>());
+            SetVector2(toggle, "offHandlePosition", new Vector2(-26f, 0f));
+            SetVector2(toggle, "onHandlePosition", new Vector2(26f, 0f));
+            SetBool(toggle, "isOn", isOn);
+
+            return toggle;
         }
 
         private static void Stretch(RectTransform rect)
@@ -371,6 +424,20 @@ namespace UIControls.Editor
         {
             var so = new SerializedObject(target);
             so.FindProperty(propertyName).objectReferenceValue = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetVector2(UnityEngine.Object target, string propertyName, Vector2 value)
+        {
+            var so = new SerializedObject(target);
+            so.FindProperty(propertyName).vector2Value = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetBool(UnityEngine.Object target, string propertyName, bool value)
+        {
+            var so = new SerializedObject(target);
+            so.FindProperty(propertyName).boolValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

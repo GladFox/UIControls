@@ -10,6 +10,8 @@ namespace UIControls.Runtime.Demo
         [SerializeField] private UICarouselControl carousel;
         [SerializeField] private UIButtonControl prevButton;
         [SerializeField] private UIButtonControl nextButton;
+        [SerializeField] private UIToggleControl autoplayToggle;
+        [SerializeField] private UIToggleControl pingPongToggle;
         [SerializeField] private TMP_Text statusLabel;
 
         private void OnEnable()
@@ -22,6 +24,18 @@ namespace UIControls.Runtime.Demo
             if (nextButton != null)
             {
                 nextButton.OnClick.AddListener(HandleNext);
+            }
+
+            if (autoplayToggle != null)
+            {
+                autoplayToggle.OnValueChanged.AddListener(HandleAutoplayToggled);
+                HandleAutoplayToggled(autoplayToggle.IsOn);
+            }
+
+            if (pingPongToggle != null)
+            {
+                pingPongToggle.OnValueChanged.AddListener(HandlePingPongToggled);
+                HandlePingPongToggled(pingPongToggle.IsOn);
             }
 
             if (carousel != null)
@@ -43,9 +57,37 @@ namespace UIControls.Runtime.Demo
                 nextButton.OnClick.RemoveListener(HandleNext);
             }
 
+            if (autoplayToggle != null)
+            {
+                autoplayToggle.OnValueChanged.RemoveListener(HandleAutoplayToggled);
+            }
+
+            if (pingPongToggle != null)
+            {
+                pingPongToggle.OnValueChanged.RemoveListener(HandlePingPongToggled);
+            }
+
             if (carousel != null)
             {
                 carousel.OnPageChanged.RemoveListener(HandlePageChanged);
+            }
+        }
+
+        private void HandleAutoplayToggled(bool on)
+        {
+            if (carousel != null)
+            {
+                carousel.Autoplay = on;
+            }
+        }
+
+        private void HandlePingPongToggled(bool pingPong)
+        {
+            if (carousel != null)
+            {
+                carousel.Mode = pingPong
+                    ? UICarouselControl.AutoplayMode.PingPong
+                    : UICarouselControl.AutoplayMode.Loop;
             }
         }
 
