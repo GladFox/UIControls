@@ -53,5 +53,17 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UIOTPInputDemo.unity
     guid: e110566ef48192641b32452c4f829f75
+  - enabled: 1
+    path: Assets/Scenes/UISearchFieldDemo.unity
+    guid: d6953acbc459d19418b66ac089a3d44e
+  - enabled: 1
+    path: Assets/Scenes/UIStarRatingDemo.unity
+    guid: 39826d75a9011604987c5ac22e64cfde
+  - enabled: 1
+    path: Assets/Scenes/UIDatePickerDemo.unity
+    guid: 8192d7a435a017c4b947e95e79895ef5
+  - enabled: 1
+    path: Assets/Scenes/UIColorPickerDemo.unity
+    guid: 99a139ed56d28da48886733aedc9cd94
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.18.0 - 2026-06-02
+
+Category D (input controls):
+
+- Added `UISearchFieldControl` — text input with a clear (×) button, debounced `OnSearch`, and a
+  suggestions dropdown filtered from a source list. Demo `UISearchFieldDemo.unity`.
+- Added `UIDatePickerControl` — month-grid calendar (header + prev/next, 6×7 days) with selected/today
+  highlighting; `SelectedDate`, `OnDateChanged`. Demo `UIDatePickerDemo.unity`.
+- Added `UIStarRatingControl` — clickable/draggable stars with half-star precision, hover preview and
+  read-only mode (half-stars clip the fill via a mask). `Value`, `OnRatingChanged`. Demo `UIStarRatingDemo.unity`.
+- Added `UIColorPickerControl` — HSV picker with a runtime-generated saturation/value square and hue bar,
+  live preview swatch and hex label; `Color`, `SetColor`, `OnColorChanged`. Demo `UIColorPickerDemo.unity`.
+
 ## 0.14.0 - 2026-06-02
 
 - Added `UIOTPInputControl` — one-time-code input: a row of single-character cells backed by one

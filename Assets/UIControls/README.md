@@ -24,7 +24,7 @@ So DOTween must be installed in the project before (or together with) UIControls
 
 ## Included
 
-- Runtime controls: `UIButtonControl`, `UIToggleControl`, `UIModalControl`, `UIProgressBarControl`, `UITabSliderControl`, `UISegmentedControl`, `UIChipGroup`, `UIStepperControl`, `UIRangeSliderControl`, `UIBottomSheetControl`, `UIToastControl`, `UIAccordionControl`, `UITooltipControl`, `UIPullToRefreshControl`, `UIVirtualListControl`, `UICarouselControl`, `UIInfiniteScrollControl`, `UIOTPInputControl`
+- Runtime controls: `UIButtonControl`, `UIToggleControl`, `UIModalControl`, `UIProgressBarControl`, `UITabSliderControl`, `UISegmentedControl`, `UIChipGroup`, `UIStepperControl`, `UIRangeSliderControl`, `UIBottomSheetControl`, `UIToastControl`, `UIAccordionControl`, `UITooltipControl`, `UIPullToRefreshControl`, `UIVirtualListControl`, `UICarouselControl`, `UIInfiniteScrollControl`, `UIOTPInputControl`, `UISearchFieldControl`, `UIDatePickerControl`, `UIStarRatingControl`, `UIColorPickerControl`
 - Reusable ScriptableObject actions and visual-state assets
 - Editor scene builders for demo/prototyping
 
@@ -48,6 +48,10 @@ So DOTween must be installed in the project before (or together with) UIControls
   - `UICarouselDemo.unity`
   - `UIInfiniteScrollDemo.unity`
   - `UIOTPInputDemo.unity`
+  - `UISearchFieldDemo.unity`
+  - `UIDatePickerDemo.unity`
+  - `UIStarRatingDemo.unity`
+  - `UIColorPickerDemo.unity`
   - `UIRubberBandPrototype.unity`
 
 ## Notes
