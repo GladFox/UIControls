@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.0 - 2026-06-02
+
+- Added `UICarouselControl` — horizontal paged carousel on a `ScrollRect`:
+  - drag snaps to the nearest page; dot indicators highlight the current page; optional autoplay (paused while dragging);
+  - `GoTo` / `Next` / `Previous`, `CurrentPage` / `PageCount`, `OnPageChanged`.
+- Added `UICarouselDemo.unity` demo scene (4 pages, dots, Prev/Next, autoplay) and editor scene builder.
+
 ## 0.11.0 - 2026-06-02
 
 - Added `UIVirtualListControl` — recycled-cell virtual list for huge datasets:

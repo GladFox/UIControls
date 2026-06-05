@@ -44,5 +44,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UIVirtualListDemo.unity
     guid: 96f7a217b0a3ee946b92063f6a3dfb34
+  - enabled: 1
+    path: Assets/Scenes/UICarouselDemo.unity
+    guid: 5f489b030a8544d428cb62f0ddc65f5f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
