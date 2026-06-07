@@ -113,8 +113,11 @@ namespace UIControls.Runtime.Controls
                 if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
                         svRect, eventData.position, eventData.pressEventCamera, out var local))
                 {
-                    sat = Mathf.Clamp01(local.x / svRect.rect.width + 0.5f);
-                    val = Mathf.Clamp01(local.y / svRect.rect.height + 0.5f);
+                    // local is relative to the rect's pivot; normalize via the rect bounds so this
+                    // works regardless of the pivot.
+                    var r = svRect.rect;
+                    sat = r.width > Mathf.Epsilon ? Mathf.Clamp01((local.x - r.xMin) / r.width) : 0f;
+                    val = r.height > Mathf.Epsilon ? Mathf.Clamp01((local.y - r.yMin) / r.height) : 0f;
                     ApplyVisuals(true);
                 }
 
@@ -127,7 +130,8 @@ namespace UIControls.Runtime.Controls
                 if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
                         hueRect, eventData.position, eventData.pressEventCamera, out var local))
                 {
-                    hue = Mathf.Clamp01(local.x / hueRect.rect.width + 0.5f);
+                    var r = hueRect.rect;
+                    hue = r.width > Mathf.Epsilon ? Mathf.Clamp01((local.x - r.xMin) / r.width) : 0f;
                     RebuildSvTexture();
                     ApplyVisuals(true);
                 }

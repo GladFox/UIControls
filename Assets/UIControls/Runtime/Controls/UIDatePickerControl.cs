@@ -18,6 +18,8 @@ namespace UIControls.Runtime.Controls
         [SerializeField] private TMP_Text headerLabel;
         [SerializeField] private UIButtonControl prevButton;
         [SerializeField] private UIButtonControl nextButton;
+        [SerializeField] private UIButtonControl prevYearButton;
+        [SerializeField] private UIButtonControl nextYearButton;
 
         [Header("Grid (42 cells = 6 rows × 7 cols)")]
         [SerializeField] private UIButtonControl[] dayButtons = Array.Empty<UIButtonControl>();
@@ -66,6 +68,16 @@ namespace UIControls.Runtime.Controls
             {
                 nextButton.OnClick.AddListener(NextMonth);
             }
+
+            if (prevYearButton != null)
+            {
+                prevYearButton.OnClick.AddListener(PreviousYear);
+            }
+
+            if (nextYearButton != null)
+            {
+                nextYearButton.OnClick.AddListener(NextYear);
+            }
         }
 
         private void OnEnable()
@@ -98,9 +110,28 @@ namespace UIControls.Runtime.Controls
             ShiftMonth(1);
         }
 
+        public void PreviousYear()
+        {
+            ShiftYear(-1);
+        }
+
+        public void NextYear()
+        {
+            ShiftYear(1);
+        }
+
         private void ShiftMonth(int delta)
         {
             var d = new DateTime(displayYear, displayMonth, 1).AddMonths(delta);
+            displayYear = d.Year;
+            displayMonth = d.Month;
+            Rebuild();
+        }
+
+        private void ShiftYear(int delta)
+        {
+            var year = Mathf.Clamp(displayYear + delta, 1, 9999);
+            var d = new DateTime(year, displayMonth, 1);
             displayYear = d.Year;
             displayMonth = d.Month;
             Rebuild();

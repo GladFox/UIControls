@@ -72,18 +72,28 @@ namespace UIControls.Editor
             cardImage.color = CardColor;
             cardImage.raycastTarget = false;
 
-            // Header row.
-            var prev = CreateButton(cardRect, "Prev", new Vector2(0f, 0f), new Vector2(56f, 56f), "‹", NavColor);
+            // Header row: ‹‹ year ‹ month  [Month Year]  month › year ››
+            var prevYear = CreateButton(cardRect, "PrevYear", Vector2.zero, new Vector2(52f, 56f), "‹‹", NavColor);
+            var prevYearRect = prevYear.transform as RectTransform;
+            prevYearRect.anchorMin = new Vector2(0f, 1f); prevYearRect.anchorMax = new Vector2(0f, 1f); prevYearRect.pivot = new Vector2(0f, 1f);
+            prevYearRect.anchoredPosition = new Vector2(20f, -22f);
+
+            var prev = CreateButton(cardRect, "PrevMonth", Vector2.zero, new Vector2(52f, 56f), "‹", NavColor);
             var prevRect = prev.transform as RectTransform;
             prevRect.anchorMin = new Vector2(0f, 1f); prevRect.anchorMax = new Vector2(0f, 1f); prevRect.pivot = new Vector2(0f, 1f);
-            prevRect.anchoredPosition = new Vector2(24f, -22f);
+            prevRect.anchoredPosition = new Vector2(78f, -22f);
 
-            var next = CreateButton(cardRect, "Next", new Vector2(0f, 0f), new Vector2(56f, 56f), "›", NavColor);
+            var next = CreateButton(cardRect, "NextMonth", Vector2.zero, new Vector2(52f, 56f), "›", NavColor);
             var nextRect = next.transform as RectTransform;
             nextRect.anchorMin = new Vector2(1f, 1f); nextRect.anchorMax = new Vector2(1f, 1f); nextRect.pivot = new Vector2(1f, 1f);
-            nextRect.anchoredPosition = new Vector2(-24f, -22f);
+            nextRect.anchoredPosition = new Vector2(-78f, -22f);
 
-            var header = CreateText("Header", cardRect, new Vector2(0f, -50f), new Vector2(gridWidth - 120f, 50f),
+            var nextYear = CreateButton(cardRect, "NextYear", Vector2.zero, new Vector2(52f, 56f), "››", NavColor);
+            var nextYearRect = nextYear.transform as RectTransform;
+            nextYearRect.anchorMin = new Vector2(1f, 1f); nextYearRect.anchorMax = new Vector2(1f, 1f); nextYearRect.pivot = new Vector2(1f, 1f);
+            nextYearRect.anchoredPosition = new Vector2(-20f, -22f);
+
+            var header = CreateText("Header", cardRect, new Vector2(0f, -50f), new Vector2(gridWidth - 280f, 50f),
                 "Month Year", 26, FontStyles.Bold, TextAlignmentOptions.Center);
             header.color = HeaderColor;
             var headerRect = header.rectTransform;
@@ -119,7 +129,7 @@ namespace UIControls.Editor
             }
 
             var control = card.GetComponent<UIDatePickerControl>();
-            ConfigurePicker(control, header, prev, next, dayButtons, dayLabels, dayBackgrounds);
+            ConfigurePicker(control, header, prev, next, prevYear, nextYear, dayButtons, dayLabels, dayBackgrounds);
 
             var status = CreateText("Status", panel, new Vector2(0f, -360f), new Vector2(900f, 40f),
                 "Selected: —", 22, FontStyles.Bold, TextAlignmentOptions.Center);
@@ -174,6 +184,8 @@ namespace UIControls.Editor
             TMP_Text header,
             UIButtonControl prev,
             UIButtonControl next,
+            UIButtonControl prevYear,
+            UIButtonControl nextYear,
             IReadOnlyList<UIButtonControl> dayButtons,
             IReadOnlyList<TextMeshProUGUI> dayLabels,
             IReadOnlyList<Image> dayBackgrounds)
@@ -182,6 +194,8 @@ namespace UIControls.Editor
             so.FindProperty("headerLabel").objectReferenceValue = header;
             so.FindProperty("prevButton").objectReferenceValue = prev;
             so.FindProperty("nextButton").objectReferenceValue = next;
+            so.FindProperty("prevYearButton").objectReferenceValue = prevYear;
+            so.FindProperty("nextYearButton").objectReferenceValue = nextYear;
             so.FindProperty("mondayFirst").boolValue = true;
             so.FindProperty("cellColor").colorValue = CellColor;
             so.FindProperty("selectedColor").colorValue = SelectedColor;
