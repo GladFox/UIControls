@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.19.0 - 2026-06-07
+
+Category E (feedback & decoration controls):
+
+- Added `UISkeletonLoaderControl` — shimmer placeholder shown while content loads: toggles a skeleton
+  root (bones) vs the real content root, with a runtime-generated gradient that sweeps across the
+  bones. `SetLoading`, `IsLoading`. Demo `UISkeletonLoaderDemo.unity`.
+- Added `UICircularProgressControl` — ring progress with a runtime-generated donut sprite (radial-fill
+  `Image`): determinate (`SetValue` 0–1 + percent label) or indeterminate (spinning arc). Demo
+  `UICircularProgressDemo.unity`.
+- Added `UIBadgeControl` — notification badge that overlays a count on an icon: hides at zero, clamps
+  to "N+" past a cap, dot-only mode, and pops its scale on change. `SetCount`/`Increment`/`Decrement`,
+  `Count`, `OnCountChanged`. Demo `UIBadgeDemo.unity`.
+- Added `UIRippleEffectControl` — Material-style ripple that expands from the click point and fades,
+  clipped to the element bounds (runtime-generated soft-circle sprite). Drop on any clickable surface.
+  Demo `UIRippleEffectDemo.unity`.
+- Added `UIMarqueeControl` — scrolling marquee for overflowing text: `Loop` (news-ticker) or
+  `PingPong`, optional scroll-only-when-overflowing. `Text`. Demo `UIMarqueeDemo.unity`.
+
 ## 0.18.0 - 2026-06-02
 
 Category D (input controls):

@@ -1,8 +1,8 @@
 {
   "name": "com.gladfox.uicontrols",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "displayName": "UIControls (uGUI + DOTween)",
-  "description": "Reusable uGUI controls with DOTween animations (Button, Toggle, Modal, ProgressBar, TabSlider, Segmented, ChipGroup, Stepper, RangeSlider, BottomSheet, Toast, Accordion, Tooltip, PullToRefresh, VirtualList, Carousel, InfiniteScroll, OTPInput, SearchField, DatePicker, StarRating, ColorPicker).",
+  "description": "Reusable uGUI controls with DOTween animations (Button, Toggle, Modal, ProgressBar, TabSlider, Segmented, ChipGroup, Stepper, RangeSlider, BottomSheet, Toast, Accordion, Tooltip, PullToRefresh, VirtualList, Carousel, InfiniteScroll, OTPInput, SearchField, DatePicker, StarRating, ColorPicker, SkeletonLoader, CircularProgress, Badge, RippleEffect, Marquee).",
   "unity": "2021.3",
   "author": {
     "name": "GladFox"

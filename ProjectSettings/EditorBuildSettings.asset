@@ -65,5 +65,20 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UIColorPickerDemo.unity
     guid: 99a139ed56d28da48886733aedc9cd94
+  - enabled: 1
+    path: Assets/Scenes/UISkeletonLoaderDemo.unity
+    guid: e6f1fb2c38f4ec24ab9cf860e338f43d
+  - enabled: 1
+    path: Assets/Scenes/UICircularProgressDemo.unity
+    guid: 2b1621d3f0fd31d42a647bf0999c780a
+  - enabled: 1
+    path: Assets/Scenes/UIBadgeDemo.unity
+    guid: b81b3292356672844aa59f4bd140703a
+  - enabled: 1
+    path: Assets/Scenes/UIRippleEffectDemo.unity
+    guid: 73355ac905122054da78846344814f26
+  - enabled: 1
+    path: Assets/Scenes/UIMarqueeDemo.unity
+    guid: c8c7c4488930e754dbb7ae7605ed9f29
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
