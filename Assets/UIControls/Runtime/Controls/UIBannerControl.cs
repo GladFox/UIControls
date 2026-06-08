@@ -11,7 +11,9 @@ namespace UIControls.Runtime.Controls
     /// <summary>
     /// Persistent inline banner / alert (info, success, warning, error). Unlike a toast it stays until
     /// dismissed: <see cref="Show"/> sets the type colour, icon and message and slides/fades it in;
-    /// <see cref="Dismiss"/> animates it out and raises <see cref="OnDismissed"/>.
+    /// <see cref="Dismiss"/> animates it out and raises <see cref="OnDismissed"/>. Visibility is driven
+    /// by the <see cref="CanvasGroup"/> (alpha / blocksRaycasts), so the control's own GameObject stays
+    /// active and never fights its enable callbacks.
     /// </summary>
     public sealed class UIBannerControl : MonoBehaviour
     {
@@ -39,29 +41,34 @@ namespace UIControls.Runtime.Controls
         [Header("Events")]
         [SerializeField] private UnityEvent onDismissed = new UnityEvent();
 
-        public UnityEvent OnDismissed => onDismissed;
-        public bool IsVisible => root != null && root.gameObject.activeSelf;
-
         private Vector2 shownPos;
+        private bool initialized;
+        private bool visible;
+
+        public UnityEvent OnDismissed => onDismissed;
+        public bool IsVisible => visible;
 
         private void Awake()
         {
             if (dismissButton != null) dismissButton.OnClick.AddListener(Dismiss);
-            if (root != null) shownPos = root.anchoredPosition;
+            Initialize();
         }
 
-        private void OnEnable()
+        private void Initialize()
         {
-            if (canvasGroup != null) canvasGroup.alpha = 0f;
-            if (root != null) root.gameObject.SetActive(false);
+            if (initialized)
+            {
+                return;
+            }
+
+            initialized = true;
+            if (root != null) shownPos = root.anchoredPosition;
+            HideInstant();
         }
 
         public void Show(BannerType type, string message)
         {
-            if (root == null)
-            {
-                return;
-            }
+            Initialize();
 
             var color = ColorFor(type);
             if (background != null) background.color = new Color(color.r, color.g, color.b, 0.18f);
@@ -69,39 +76,65 @@ namespace UIControls.Runtime.Controls
             if (iconLabel != null) { iconLabel.text = IconFor(type); iconLabel.color = color; }
             if (messageLabel != null) messageLabel.text = message;
 
-            root.gameObject.SetActive(true);
-            root.anchoredPosition = shownPos + new Vector2(0f, slideFrom);
-            UIDOTweenUtility.TweenAnchoredPosition(root, shownPos, duration).SetEase(Ease.OutCubic).SetUpdate(true);
+            visible = true;
+
+            if (root != null)
+            {
+                root.DOKill();
+                root.anchoredPosition = shownPos + new Vector2(0f, slideFrom);
+                UIDOTweenUtility.TweenAnchoredPosition(root, shownPos, duration).SetEase(Ease.OutCubic).SetUpdate(true);
+            }
+
             if (canvasGroup != null)
             {
-                canvasGroup.alpha = 0f;
+                canvasGroup.DOKill();
+                canvasGroup.blocksRaycasts = true;
                 UIDOTweenUtility.TweenCanvasGroupAlpha(canvasGroup, 1f, duration).SetUpdate(true);
             }
         }
 
         public void Dismiss()
         {
-            if (root == null || !root.gameObject.activeSelf)
+            if (!visible)
             {
                 return;
             }
 
-            UIDOTweenUtility.TweenAnchoredPosition(root, shownPos + new Vector2(0f, slideFrom), duration).SetEase(Ease.InCubic).SetUpdate(true);
+            visible = false;
+
+            if (root != null)
+            {
+                root.DOKill();
+                UIDOTweenUtility.TweenAnchoredPosition(root, shownPos + new Vector2(0f, slideFrom), duration).SetEase(Ease.InCubic).SetUpdate(true);
+            }
+
             if (canvasGroup != null)
             {
+                canvasGroup.DOKill();
+                canvasGroup.blocksRaycasts = false;
                 UIDOTweenUtility.TweenCanvasGroupAlpha(canvasGroup, 0f, duration).SetUpdate(true)
-                    .OnComplete(Finish);
+                    .OnComplete(() => onDismissed.Invoke());
             }
             else
             {
-                Finish();
+                onDismissed.Invoke();
             }
         }
 
-        private void Finish()
+        private void HideInstant()
         {
-            if (root != null) root.gameObject.SetActive(false);
-            onDismissed.Invoke();
+            visible = false;
+            if (canvasGroup != null)
+            {
+                canvasGroup.DOKill();
+                canvasGroup.alpha = 0f;
+                canvasGroup.blocksRaycasts = false;
+            }
+
+            if (root != null)
+            {
+                root.anchoredPosition = shownPos + new Vector2(0f, slideFrom);
+            }
         }
 
         private static Color ColorFor(BannerType type)
