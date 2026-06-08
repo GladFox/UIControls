@@ -24,7 +24,7 @@ So DOTween must be installed in the project before (or together with) UIControls
 
 ## Included
 
-- Runtime controls: `UIButtonControl`, `UIToggleControl`, `UIModalControl`, `UIProgressBarControl`, `UITabSliderControl`, `UISegmentedControl`, `UIChipGroup`, `UIStepperControl`, `UIRangeSliderControl`, `UIBottomSheetControl`, `UIToastControl`, `UIAccordionControl`, `UITooltipControl`, `UIPullToRefreshControl`, `UIVirtualListControl`, `UICarouselControl`, `UIInfiniteScrollControl`, `UIOTPInputControl`, `UISearchFieldControl`, `UIDatePickerControl`, `UIStarRatingControl`, `UIColorPickerControl`, `UISkeletonLoaderControl`, `UICircularProgressControl`, `UIBadgeControl`, `UIRippleEffectControl`, `UIMarqueeControl`
+- Runtime controls: `UIButtonControl`, `UIToggleControl`, `UIModalControl`, `UIProgressBarControl`, `UITabSliderControl`, `UISegmentedControl`, `UIChipGroup`, `UIStepperControl`, `UIRangeSliderControl`, `UIBottomSheetControl`, `UIToastControl`, `UIAccordionControl`, `UITooltipControl`, `UIPullToRefreshControl`, `UIVirtualListControl`, `UICarouselControl`, `UIInfiniteScrollControl`, `UIOTPInputControl`, `UISearchFieldControl`, `UIDatePickerControl`, `UIStarRatingControl`, `UIColorPickerControl`, `UISkeletonLoaderControl`, `UICircularProgressControl`, `UIBadgeControl`, `UIRippleEffectControl`, `UIMarqueeControl`, `UIVirtualJoystickControl`, `UIRadialMenuControl`, `UIKnobControl`, `UINumberTickerControl`, `UIReorderableListControl`, `UISwipeCardControl`, `UITabBarControl`, `UIPaginationControl`, `UIBreadcrumbsControl`, `UIWizardStepsControl`, `UIFloatingActionButtonControl`, `UIDropdownControl`, `UIWheelPickerControl`, `UIPasswordFieldControl`, `UITagInputControl`, `UIValueSliderControl`, `UIContextMenuControl`, `UITreeNodeControl`, `UIGaugeControl`, `UIAvatarControl`, `UIEmptyStateControl`, `UIBannerControl`
 - Reusable ScriptableObject actions and visual-state assets
 - Editor scene builders for demo/prototyping
 
@@ -58,6 +58,11 @@ So DOTween must be installed in the project before (or together with) UIControls
   - `UIRippleEffectDemo.unity`
   - `UIMarqueeDemo.unity`
   - `UIRubberBandPrototype.unity`
+- Category F–I demo scenes are grouped into sub-folders:
+  - `Gameplay(F)/`: `UIVirtualJoystickDemo`, `UIRadialMenuDemo`, `UIKnobDemo`, `UINumberTickerDemo`, `UIReorderableListDemo`, `UISwipeCardDemo`
+  - `Navigation(G)/`: `UITabBarDemo`, `UIPaginationDemo`, `UIBreadcrumbsDemo`, `UIWizardStepsDemo`, `UIFloatingActionButtonDemo`
+  - `Forms(H)/`: `UIDropdownDemo`, `UIWheelPickerDemo`, `UIPasswordFieldDemo`, `UITagInputDemo`, `UIValueSliderDemo`
+  - `Data(I)/`: `UIContextMenuDemo`, `UITreeViewDemo`, `UIGaugeDemo`, `UIAvatarDemo`, `UIEmptyStateDemo`, `UIBannerDemo`
 
 ## Notes
 

@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.20.0 - 2026-06-08
+
+Categories F–I (22 new controls). Demo scenes are now grouped into sub-folders
+(`Scenes/Gameplay(F)`, `Scenes/Navigation(G)`, `Scenes/Forms(H)`, `Scenes/Data(I)`)
+and a shared `UIDemoSceneFactory` backs the new demo builders.
+
+Category F — gameplay / gamepad:
+
+- `UIVirtualJoystickControl` — analog touch stick (fixed/floating, dead zone), `Direction`/`Magnitude`. Demo `UIVirtualJoystickDemo`.
+- `UIRadialMenuControl` — pie menu; items fan out/in with stagger; auto-wired selection. Demo `UIRadialMenuDemo`.
+- `UIKnobControl` — rotary dial; drag-around value over an angular sweep with optional steps. Demo `UIKnobDemo`.
+- `UINumberTickerControl` — rolling animated number (separators, prefix/suffix, pop-on-change). Demo `UINumberTickerDemo`.
+- `UIReorderableListControl` (+ `UIReorderableItem`) — vertical drag-to-reorder list. Demo `UIReorderableListDemo`.
+- `UISwipeCardControl` — Tinder-style swipe with tilt, like/nope overlays, fling/spring. Demo `UISwipeCardDemo`.
+
+Category G — navigation:
+
+- `UITabBarControl` — app-style bottom nav with sliding indicator and pages. Demo `UITabBarDemo`.
+- `UIPaginationControl` — numeric pager with ellipsis collapsing. Demo `UIPaginationDemo`.
+- `UIBreadcrumbsControl` — Home › Section › Page trail; click to navigate up. Demo `UIBreadcrumbsDemo`.
+- `UIWizardStepsControl` — horizontal step indicator with filling connectors. Demo `UIWizardStepsDemo`.
+- `UIFloatingActionButtonControl` — FAB speed-dial with icon rotation. Demo `UIFloatingActionButtonDemo`.
+
+Category H — input / forms:
+
+- `UIDropdownControl` — animated single-select with flipping arrow and tinted rows. Demo `UIDropdownDemo`.
+- `UIWheelPickerControl` — barrel/wheel picker with snap and distance scale/fade. Demo `UIWheelPickerDemo`.
+- `UIPasswordFieldControl` — show/hide toggle + live strength meter. Demo `UIPasswordFieldDemo`.
+- `UITagInputControl` — type-and-Enter removable chips from a template. Demo `UITagInputDemo`.
+- `UIValueSliderControl` — single-value slider with a value bubble that follows the handle. Demo `UIValueSliderDemo`.
+
+Category I — data / overlays:
+
+- `UIContextMenuControl` — click-to-open popup at the cursor with edge-flipping. Demo `UIContextMenuDemo`.
+- `UITreeNodeControl` — expandable/collapsible tree node (chevron + reflow). Demo `UITreeViewDemo`.
+- `UIGaugeControl` — arc gauge with a needle tweened to the value. Demo `UIGaugeDemo`.
+- `UIAvatarControl` — initials + derived colour + status dot, with "+N" overflow. Demo `UIAvatarDemo`.
+- `UIEmptyStateControl` — placeholder with icon/title/message and a CTA. Demo `UIEmptyStateDemo`.
+- `UIBannerControl` — persistent inline alert (info/success/warning/error). Demo `UIBannerDemo`.
+
 ## 0.19.0 - 2026-06-07
 
 Category E (feedback & decoration controls):
