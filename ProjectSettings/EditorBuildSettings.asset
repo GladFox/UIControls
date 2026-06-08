@@ -80,5 +80,23 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UIMarqueeDemo.unity
     guid: c8c7c4488930e754dbb7ae7605ed9f29
+  - enabled: 1
+    path: Assets/Scenes/Gameplay(F)/UIVirtualJoystickDemo.unity
+    guid: 27fabe5a128378a4bb592274c1083786
+  - enabled: 1
+    path: Assets/Scenes/Gameplay(F)/UIRadialMenuDemo.unity
+    guid: 15b145f6dfb1da34eac50c8a840b8f42
+  - enabled: 1
+    path: Assets/Scenes/Gameplay(F)/UIKnobDemo.unity
+    guid: 6fc28c06482517449b86ef0ee596081e
+  - enabled: 1
+    path: Assets/Scenes/Gameplay(F)/UINumberTickerDemo.unity
+    guid: 30c8e286854c94449866512dd5bc88d7
+  - enabled: 1
+    path: Assets/Scenes/Gameplay(F)/UIReorderableListDemo.unity
+    guid: 80a655a84b9499040b73695e62f37a4d
+  - enabled: 1
+    path: Assets/Scenes/Gameplay(F)/UISwipeCardDemo.unity
+    guid: ca1c04ccd8985fa498a882be9a7f5ff9
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
