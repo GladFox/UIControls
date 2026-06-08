@@ -128,5 +128,23 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Forms(H)/UIValueSliderDemo.unity
     guid: 4e757849ed9429e4b84a79a489cf24e1
+  - enabled: 1
+    path: Assets/Scenes/Data(I)/UIContextMenuDemo.unity
+    guid: 585933bbffc9325479af66f9e93a4c36
+  - enabled: 1
+    path: Assets/Scenes/Data(I)/UITreeViewDemo.unity
+    guid: d31314963703e914ea087637bb26ab68
+  - enabled: 1
+    path: Assets/Scenes/Data(I)/UIGaugeDemo.unity
+    guid: 420ea4dcac52c4848bffc76e666d880e
+  - enabled: 1
+    path: Assets/Scenes/Data(I)/UIAvatarDemo.unity
+    guid: 0cee6e7ac15fcbd45b0a11678b22f86c
+  - enabled: 1
+    path: Assets/Scenes/Data(I)/UIEmptyStateDemo.unity
+    guid: caa70a23ab111144f87f065481ac6f16
+  - enabled: 1
+    path: Assets/Scenes/Data(I)/UIBannerDemo.unity
+    guid: 964937136863b6e428891e60c2067a11
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
