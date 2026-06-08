@@ -113,5 +113,20 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Navigation(G)/UIFloatingActionButtonDemo.unity
     guid: 78b52ae70f3f6e34698637cf279004b0
+  - enabled: 1
+    path: Assets/Scenes/Forms(H)/UIDropdownDemo.unity
+    guid: 305b16cf4258e8e43b663deb72feb051
+  - enabled: 1
+    path: Assets/Scenes/Forms(H)/UIWheelPickerDemo.unity
+    guid: 7d46c9f7ae8e9bd4d9e83dbc81329de0
+  - enabled: 1
+    path: Assets/Scenes/Forms(H)/UIPasswordFieldDemo.unity
+    guid: ccaa3079438fd2740af31594c01fa364
+  - enabled: 1
+    path: Assets/Scenes/Forms(H)/UITagInputDemo.unity
+    guid: 9f3ba76563443b54cb325518731f5dc1
+  - enabled: 1
+    path: Assets/Scenes/Forms(H)/UIValueSliderDemo.unity
+    guid: 4e757849ed9429e4b84a79a489cf24e1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}

@@ -148,6 +148,67 @@ namespace UIControls.Editor
             return go.GetComponent<UIButtonControl>();
         }
 
+        /// <summary>
+        /// Builds a working TMP_InputField (background, masked viewport, text and placeholder) and
+        /// returns it. The caller can further configure content type, character limit, etc.
+        /// </summary>
+        public static TMP_InputField InputField(string name, RectTransform parent, Vector2 anchoredPosition, Vector2 size, string placeholder)
+        {
+            var rootGo = new GameObject(name, typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(TMP_InputField));
+            var root = rootGo.GetComponent<RectTransform>();
+            root.SetParent(parent, false);
+            root.anchorMin = new Vector2(0.5f, 0.5f);
+            root.anchorMax = new Vector2(0.5f, 0.5f);
+            root.pivot = new Vector2(0.5f, 0.5f);
+            root.anchoredPosition = anchoredPosition;
+            root.sizeDelta = size;
+            rootGo.GetComponent<UnityEngine.UI.Image>().color = new Color(0.1f, 0.14f, 0.22f, 1f);
+
+            var viewportGo = new GameObject("TextArea", typeof(RectTransform), typeof(RectMask2D));
+            var viewport = viewportGo.GetComponent<RectTransform>();
+            viewport.SetParent(root, false);
+            viewport.anchorMin = Vector2.zero;
+            viewport.anchorMax = Vector2.one;
+            viewport.offsetMin = new Vector2(16f, 4f);
+            viewport.offsetMax = new Vector2(-16f, -4f);
+
+            var textGo = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
+            var textRect = textGo.GetComponent<RectTransform>();
+            textRect.SetParent(viewport, false);
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+            var text = textGo.GetComponent<TextMeshProUGUI>();
+            text.fontSize = 26;
+            text.color = Label;
+            text.alignment = TextAlignmentOptions.Left;
+            text.richText = false;
+
+            var placeholderGo = new GameObject("Placeholder", typeof(RectTransform), typeof(TextMeshProUGUI));
+            var phRect = placeholderGo.GetComponent<RectTransform>();
+            phRect.SetParent(viewport, false);
+            phRect.anchorMin = Vector2.zero;
+            phRect.anchorMax = Vector2.one;
+            phRect.offsetMin = Vector2.zero;
+            phRect.offsetMax = Vector2.zero;
+            var ph = placeholderGo.GetComponent<TextMeshProUGUI>();
+            ph.fontSize = 26;
+            ph.fontStyle = FontStyles.Italic;
+            ph.color = new Color(0.6f, 0.66f, 0.78f, 0.7f);
+            ph.alignment = TextAlignmentOptions.Left;
+            ph.text = placeholder;
+
+            var field = rootGo.GetComponent<TMP_InputField>();
+            field.textViewport = viewport;
+            field.textComponent = text;
+            field.placeholder = ph;
+            field.fontAsset = text.font;
+            field.pointSize = 26;
+            field.text = string.Empty;
+            return field;
+        }
+
         public static void SetRef(UnityEngine.Object target, string property, UnityEngine.Object value)
         {
             var so = new SerializedObject(target);
