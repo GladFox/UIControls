@@ -13,7 +13,7 @@ namespace UIControls.Editor
 {
     public static class UIDatePickerDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIDatePickerDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Input(D)/UIDatePickerDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color CardColor = new Color(0.13f, 0.16f, 0.24f, 1f);

@@ -12,7 +12,7 @@ namespace UIControls.Editor
 {
     public static class UISearchFieldDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UISearchFieldDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Input(D)/UISearchFieldDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color FieldColor = new Color(0.16f, 0.2f, 0.29f, 1f);

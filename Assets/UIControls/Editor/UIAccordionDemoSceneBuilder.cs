@@ -14,7 +14,7 @@ namespace UIControls.Editor
 {
     public static class UIAccordionDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIAccordionDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Overlays(B)/UIAccordionDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color HeaderColor = new Color(0.2f, 0.25f, 0.35f, 1f);

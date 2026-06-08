@@ -12,7 +12,7 @@ namespace UIControls.Editor
 {
     public static class UIControlsDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIControlsDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Basics/UIControlsDemo.unity";
         private const string TapProfilePath = "Assets/UIControls/Animations/UI/Button/Profiles/TapProfile.asset";
 
         [MenuItem("UIControls/Create Demo Scene")]

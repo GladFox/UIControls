@@ -12,7 +12,7 @@ namespace UIControls.Editor
 {
     public static class UIVirtualListDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIVirtualListDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Scrolling(C)/UIVirtualListDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color ViewportColor = new Color(0.12f, 0.15f, 0.22f, 1f);

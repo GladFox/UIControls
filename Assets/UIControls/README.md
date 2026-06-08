@@ -31,34 +31,13 @@ So DOTween must be installed in the project before (or together with) UIControls
 ## Samples
 
 - `Demo Scenes` sample is available in Package Manager.
-- It includes:
-  - `UIControlsDemo.unity`
-  - `UIProgressBarDemo.unity`
-  - `UITabSliderDemo.unity`
-  - `UISegmentedDemo.unity`
-  - `UIChipGroupDemo.unity`
-  - `UIStepperDemo.unity`
-  - `UIRangeSliderDemo.unity`
-  - `UIBottomSheetDemo.unity`
-  - `UIToastDemo.unity`
-  - `UIAccordionDemo.unity`
-  - `UITooltipDemo.unity`
-  - `UIPullToRefreshDemo.unity`
-  - `UIVirtualListDemo.unity`
-  - `UICarouselDemo.unity`
-  - `UIInfiniteScrollDemo.unity`
-  - `UIOTPInputDemo.unity`
-  - `UISearchFieldDemo.unity`
-  - `UIDatePickerDemo.unity`
-  - `UIStarRatingDemo.unity`
-  - `UIColorPickerDemo.unity`
-  - `UISkeletonLoaderDemo.unity`
-  - `UICircularProgressDemo.unity`
-  - `UIBadgeDemo.unity`
-  - `UIRippleEffectDemo.unity`
-  - `UIMarqueeDemo.unity`
-  - `UIRubberBandPrototype.unity`
-- Category F–I demo scenes are grouped into sub-folders:
+- All demo scenes are organised into category sub-folders:
+  - `Basics/`: `UIControlsDemo`, `UIProgressBarDemo`, `UIRubberBandPrototype`
+  - `Selection(A)/`: `UITabSliderDemo`, `UISegmentedDemo`, `UIChipGroupDemo`, `UIStepperDemo`, `UIRangeSliderDemo`
+  - `Overlays(B)/`: `UIBottomSheetDemo`, `UIToastDemo`, `UIAccordionDemo`, `UITooltipDemo`
+  - `Scrolling(C)/`: `UIPullToRefreshDemo`, `UIVirtualListDemo`, `UICarouselDemo`, `UIInfiniteScrollDemo`
+  - `Input(D)/`: `UIOTPInputDemo`, `UISearchFieldDemo`, `UIDatePickerDemo`, `UIStarRatingDemo`, `UIColorPickerDemo`
+  - `Feedback(E)/`: `UISkeletonLoaderDemo`, `UICircularProgressDemo`, `UIBadgeDemo`, `UIRippleEffectDemo`, `UIMarqueeDemo`
   - `Gameplay(F)/`: `UIVirtualJoystickDemo`, `UIRadialMenuDemo`, `UIKnobDemo`, `UINumberTickerDemo`, `UIReorderableListDemo`, `UISwipeCardDemo`
   - `Navigation(G)/`: `UITabBarDemo`, `UIPaginationDemo`, `UIBreadcrumbsDemo`, `UIWizardStepsDemo`, `UIFloatingActionButtonDemo`
   - `Forms(H)/`: `UIDropdownDemo`, `UIWheelPickerDemo`, `UIPasswordFieldDemo`, `UITagInputDemo`, `UIValueSliderDemo`

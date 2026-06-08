@@ -2,9 +2,14 @@
 
 ## 0.20.0 - 2026-06-08
 
-Categories F–I (22 new controls). Demo scenes are now grouped into sub-folders
-(`Scenes/Gameplay(F)`, `Scenes/Navigation(G)`, `Scenes/Forms(H)`, `Scenes/Data(I)`)
-and a shared `UIDemoSceneFactory` backs the new demo builders.
+Categories F–I (22 new controls) and a shared `UIDemoSceneFactory` backing the
+new demo builders.
+
+All demo scenes (existing and new) are now organised into category sub-folders
+under `Assets/Scenes/` and `Samples~/DemoScenes/Scenes/`: `Basics`,
+`Selection(A)`, `Overlays(B)`, `Scrolling(C)`, `Input(D)`, `Feedback(E)`,
+`Gameplay(F)`, `Navigation(G)`, `Forms(H)`, `Data(I)`. The scene builders and
+build settings were updated to the new paths.
 
 Category F — gameplay / gamepad:
 

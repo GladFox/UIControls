@@ -12,7 +12,7 @@ namespace UIControls.Editor
 {
     public static class UIBadgeDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIBadgeDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Feedback(E)/UIBadgeDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color IconColor = new Color(0.24f, 0.29f, 0.4f, 1f);

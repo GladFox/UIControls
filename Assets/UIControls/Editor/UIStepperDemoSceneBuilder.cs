@@ -13,7 +13,7 @@ namespace UIControls.Editor
 {
     public static class UIStepperDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIStepperDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Selection(A)/UIStepperDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color TrackColor = new Color(0.15f, 0.19f, 0.27f, 1f);

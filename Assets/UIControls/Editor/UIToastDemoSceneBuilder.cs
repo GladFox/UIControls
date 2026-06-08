@@ -13,7 +13,7 @@ namespace UIControls.Editor
 {
     public static class UIToastDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIToastDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Overlays(B)/UIToastDemo.unity";
 
         private static readonly Color PageColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color ToastColor = new Color(0.16f, 0.2f, 0.29f, 1f);

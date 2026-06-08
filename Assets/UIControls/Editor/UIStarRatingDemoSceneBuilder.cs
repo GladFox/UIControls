@@ -13,7 +13,7 @@ namespace UIControls.Editor
 {
     public static class UIStarRatingDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIStarRatingDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Input(D)/UIStarRatingDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color EmptyStarColor = new Color(0.3f, 0.34f, 0.44f, 1f);

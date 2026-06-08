@@ -14,7 +14,7 @@ namespace UIControls.Editor
 {
     public static class UITabSliderDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UITabSliderDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Selection(A)/UITabSliderDemo.unity";
         private const string TapProfilePath = "Assets/UIControls/Animations/UI/Button/Profiles/TapProfile.asset";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);

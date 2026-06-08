@@ -14,7 +14,7 @@ namespace UIControls.Editor
 {
     public static class UISegmentedDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UISegmentedDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Selection(A)/UISegmentedDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color ContainerColor = new Color(0.17f, 0.21f, 0.3f, 1f);

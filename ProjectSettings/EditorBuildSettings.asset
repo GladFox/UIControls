@@ -6,79 +6,79 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/UIProgressBarDemo.unity
+    path: Assets/Scenes/Basics/UIProgressBarDemo.unity
     guid: 1c70d866f009c9a4b9c0b90b608edd7f
   - enabled: 1
-    path: Assets/Scenes/UITabSliderDemo.unity
+    path: Assets/Scenes/Selection(A)/UITabSliderDemo.unity
     guid: b9cb951b53931a54bb759af7cfa84668
   - enabled: 1
-    path: Assets/Scenes/UIRubberBandPrototype.unity
+    path: Assets/Scenes/Basics/UIRubberBandPrototype.unity
     guid: ba19ea851d8015a48876f8f978967df2
   - enabled: 1
-    path: Assets/Scenes/UIChipGroupDemo.unity
+    path: Assets/Scenes/Selection(A)/UIChipGroupDemo.unity
     guid: 13772dc9431d1b048a6df927a60570cf
   - enabled: 1
-    path: Assets/Scenes/UISegmentedDemo.unity
+    path: Assets/Scenes/Selection(A)/UISegmentedDemo.unity
     guid: 5042ba8a22b86394a9233db7dccce391
   - enabled: 1
-    path: Assets/Scenes/UIStepperDemo.unity
+    path: Assets/Scenes/Selection(A)/UIStepperDemo.unity
     guid: f5a84d0c6208bb048a1adb62b7b3819f
   - enabled: 1
-    path: Assets/Scenes/UIRangeSliderDemo.unity
+    path: Assets/Scenes/Selection(A)/UIRangeSliderDemo.unity
     guid: c8ab8fae1a6b7ef408232e4f1f137798
   - enabled: 1
-    path: Assets/Scenes/UIBottomSheetDemo.unity
+    path: Assets/Scenes/Overlays(B)/UIBottomSheetDemo.unity
     guid: 914fba80cb02ccd4ba21e4e668dcaa4d
   - enabled: 1
-    path: Assets/Scenes/UIToastDemo.unity
+    path: Assets/Scenes/Overlays(B)/UIToastDemo.unity
     guid: 2031b1be95848264d831c515534d7d21
   - enabled: 1
-    path: Assets/Scenes/UIAccordionDemo.unity
+    path: Assets/Scenes/Overlays(B)/UIAccordionDemo.unity
     guid: 5fac302081c54f34d816a8ea5f4a2b75
   - enabled: 1
-    path: Assets/Scenes/UITooltipDemo.unity
+    path: Assets/Scenes/Overlays(B)/UITooltipDemo.unity
     guid: 63550ea31e616234791684553e405e08
   - enabled: 1
-    path: Assets/Scenes/UIPullToRefreshDemo.unity
+    path: Assets/Scenes/Scrolling(C)/UIPullToRefreshDemo.unity
     guid: 2579c5af97b9465438cc8f8821b2c0ee
   - enabled: 1
-    path: Assets/Scenes/UIVirtualListDemo.unity
+    path: Assets/Scenes/Scrolling(C)/UIVirtualListDemo.unity
     guid: 96f7a217b0a3ee946b92063f6a3dfb34
   - enabled: 1
-    path: Assets/Scenes/UICarouselDemo.unity
+    path: Assets/Scenes/Scrolling(C)/UICarouselDemo.unity
     guid: 5f489b030a8544d428cb62f0ddc65f5f
   - enabled: 1
-    path: Assets/Scenes/UIInfiniteScrollDemo.unity
+    path: Assets/Scenes/Scrolling(C)/UIInfiniteScrollDemo.unity
     guid: 91c6727952e27b1478bce3632abef890
   - enabled: 1
-    path: Assets/Scenes/UIOTPInputDemo.unity
+    path: Assets/Scenes/Input(D)/UIOTPInputDemo.unity
     guid: e110566ef48192641b32452c4f829f75
   - enabled: 1
-    path: Assets/Scenes/UISearchFieldDemo.unity
+    path: Assets/Scenes/Input(D)/UISearchFieldDemo.unity
     guid: d6953acbc459d19418b66ac089a3d44e
   - enabled: 1
-    path: Assets/Scenes/UIStarRatingDemo.unity
+    path: Assets/Scenes/Input(D)/UIStarRatingDemo.unity
     guid: 39826d75a9011604987c5ac22e64cfde
   - enabled: 1
-    path: Assets/Scenes/UIDatePickerDemo.unity
+    path: Assets/Scenes/Input(D)/UIDatePickerDemo.unity
     guid: 8192d7a435a017c4b947e95e79895ef5
   - enabled: 1
-    path: Assets/Scenes/UIColorPickerDemo.unity
+    path: Assets/Scenes/Input(D)/UIColorPickerDemo.unity
     guid: 99a139ed56d28da48886733aedc9cd94
   - enabled: 1
-    path: Assets/Scenes/UISkeletonLoaderDemo.unity
+    path: Assets/Scenes/Feedback(E)/UISkeletonLoaderDemo.unity
     guid: e6f1fb2c38f4ec24ab9cf860e338f43d
   - enabled: 1
-    path: Assets/Scenes/UICircularProgressDemo.unity
+    path: Assets/Scenes/Feedback(E)/UICircularProgressDemo.unity
     guid: 2b1621d3f0fd31d42a647bf0999c780a
   - enabled: 1
-    path: Assets/Scenes/UIBadgeDemo.unity
+    path: Assets/Scenes/Feedback(E)/UIBadgeDemo.unity
     guid: b81b3292356672844aa59f4bd140703a
   - enabled: 1
-    path: Assets/Scenes/UIRippleEffectDemo.unity
+    path: Assets/Scenes/Feedback(E)/UIRippleEffectDemo.unity
     guid: 73355ac905122054da78846344814f26
   - enabled: 1
-    path: Assets/Scenes/UIMarqueeDemo.unity
+    path: Assets/Scenes/Feedback(E)/UIMarqueeDemo.unity
     guid: c8c7c4488930e754dbb7ae7605ed9f29
   - enabled: 1
     path: Assets/Scenes/Gameplay(F)/UIVirtualJoystickDemo.unity

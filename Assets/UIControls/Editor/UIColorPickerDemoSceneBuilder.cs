@@ -12,7 +12,7 @@ namespace UIControls.Editor
 {
     public static class UIColorPickerDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIColorPickerDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Input(D)/UIColorPickerDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color StatusColor = new Color(0.82f, 0.88f, 1f, 1f);

@@ -14,7 +14,7 @@ namespace UIControls.Editor
 {
     public static class UIProgressBarDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIProgressBarDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Basics/UIProgressBarDemo.unity";
         private const string TapProfilePath = "Assets/UIControls/Animations/UI/Button/Profiles/TapProfile.asset";
         private const string ProgressBarActionPath = "Assets/UIControls/Animations/UI/ProgressBar/Actions/DemoProgressBarDebug.action.asset";
         private const string EnergyScalePulseActionPath = "Assets/UIControls/Animations/UI/ProgressBar/Actions/EnergySegmentScalePulse.action.asset";

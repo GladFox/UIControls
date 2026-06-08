@@ -12,7 +12,7 @@ namespace UIControls.Editor
 {
     public static class UISkeletonLoaderDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UISkeletonLoaderDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Feedback(E)/UISkeletonLoaderDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color CardColor = new Color(0.13f, 0.16f, 0.24f, 1f);

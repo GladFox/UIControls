@@ -12,7 +12,7 @@ namespace UIControls.Editor
 {
     public static class UICircularProgressDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UICircularProgressDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Feedback(E)/UICircularProgressDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color TrackColor = new Color(0.2f, 0.24f, 0.33f, 1f);

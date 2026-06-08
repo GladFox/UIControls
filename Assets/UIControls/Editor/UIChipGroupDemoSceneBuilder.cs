@@ -14,7 +14,7 @@ namespace UIControls.Editor
 {
     public static class UIChipGroupDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIChipGroupDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Selection(A)/UIChipGroupDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color GroupBackdropColor = new Color(1f, 1f, 1f, 0.02f);

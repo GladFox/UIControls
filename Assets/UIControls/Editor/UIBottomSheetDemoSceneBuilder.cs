@@ -13,7 +13,7 @@ namespace UIControls.Editor
 {
     public static class UIBottomSheetDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIBottomSheetDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Overlays(B)/UIBottomSheetDemo.unity";
 
         private static readonly Color PageColor = new Color(0.07f, 0.1f, 0.16f, 1f);
         private static readonly Color SheetColor = new Color(0.14f, 0.18f, 0.26f, 1f);

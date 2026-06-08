@@ -11,7 +11,7 @@ namespace UIControls.Editor
 {
     public static class UIRippleEffectDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIRippleEffectDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Feedback(E)/UIRippleEffectDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color LabelColor = new Color(0.97f, 0.98f, 1f, 1f);

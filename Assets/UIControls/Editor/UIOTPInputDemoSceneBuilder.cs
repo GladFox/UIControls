@@ -13,7 +13,7 @@ namespace UIControls.Editor
 {
     public static class UIOTPInputDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIOTPInputDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Input(D)/UIOTPInputDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color EmptyColor = new Color(0.18f, 0.22f, 0.31f, 1f);

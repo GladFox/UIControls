@@ -13,7 +13,7 @@ namespace UIControls.Editor
 {
     public static class UITooltipDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UITooltipDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Overlays(B)/UITooltipDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color MarkerColor = new Color(0.24f, 0.55f, 0.95f, 1f);

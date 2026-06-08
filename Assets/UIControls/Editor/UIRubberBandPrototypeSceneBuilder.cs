@@ -12,7 +12,7 @@ namespace UIControls.Editor
 {
     public static class UIRubberBandPrototypeSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIRubberBandPrototype.unity";
+        private const string ScenePath = "Assets/Scenes/Basics/UIRubberBandPrototype.unity";
 
         private static readonly Color BackgroundColor = new Color(0.05f, 0.08f, 0.14f, 1f);
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);

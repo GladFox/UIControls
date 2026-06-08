@@ -14,7 +14,7 @@ namespace UIControls.Editor
 {
     public static class UICarouselDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UICarouselDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Scrolling(C)/UICarouselDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color ButtonColor = new Color(0.24f, 0.29f, 0.4f, 1f);

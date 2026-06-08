@@ -11,7 +11,7 @@ namespace UIControls.Editor
 {
     public static class UIMarqueeDemoSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/UIMarqueeDemo.unity";
+        private const string ScenePath = "Assets/Scenes/Feedback(E)/UIMarqueeDemo.unity";
 
         private static readonly Color PanelColor = new Color(0.09f, 0.13f, 0.2f, 0.92f);
         private static readonly Color TrackColor = new Color(0.13f, 0.18f, 0.27f, 1f);
