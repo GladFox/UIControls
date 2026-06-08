@@ -98,5 +98,20 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Gameplay(F)/UISwipeCardDemo.unity
     guid: ca1c04ccd8985fa498a882be9a7f5ff9
+  - enabled: 1
+    path: Assets/Scenes/Navigation(G)/UITabBarDemo.unity
+    guid: 45a5947c77e751340a93e70f1bd9d0d9
+  - enabled: 1
+    path: Assets/Scenes/Navigation(G)/UIPaginationDemo.unity
+    guid: 95c9d48d976bb144a95f11922a1e8b3b
+  - enabled: 1
+    path: Assets/Scenes/Navigation(G)/UIBreadcrumbsDemo.unity
+    guid: 2712bbcd0eed43c4baa63fd3847f1bf8
+  - enabled: 1
+    path: Assets/Scenes/Navigation(G)/UIWizardStepsDemo.unity
+    guid: 3b4faceb5e5d638459f94f583f98294d
+  - enabled: 1
+    path: Assets/Scenes/Navigation(G)/UIFloatingActionButtonDemo.unity
+    guid: 78b52ae70f3f6e34698637cf279004b0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}

@@ -159,6 +159,42 @@ namespace UIControls.Editor
             }
         }
 
+        public static void SetRefArray(UnityEngine.Object target, string property, params UnityEngine.Object[] values)
+        {
+            var so = new SerializedObject(target);
+            var prop = so.FindProperty(property);
+            if (prop == null)
+            {
+                return;
+            }
+
+            prop.arraySize = values.Length;
+            for (var i = 0; i < values.Length; i++)
+            {
+                prop.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        public static void SetStringArray(UnityEngine.Object target, string property, params string[] values)
+        {
+            var so = new SerializedObject(target);
+            var prop = so.FindProperty(property);
+            if (prop == null)
+            {
+                return;
+            }
+
+            prop.arraySize = values.Length;
+            for (var i = 0; i < values.Length; i++)
+            {
+                prop.GetArrayElementAtIndex(i).stringValue = values[i];
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         private static RectTransform CreatePanel(RectTransform parent, Vector2 size)
         {
             var go = new GameObject("DemoPanel", typeof(RectTransform), typeof(Image));
