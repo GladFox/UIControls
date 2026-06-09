@@ -146,5 +146,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Data(I)/UIBannerDemo.unity
     guid: 964937136863b6e428891e60c2067a11
+  - enabled: 1
+    path: Assets/Scenes/Navigation(G)/UISideMenuDemo.unity
+    guid: d6d162ef0e3c5f0498b485de9e9340e7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}

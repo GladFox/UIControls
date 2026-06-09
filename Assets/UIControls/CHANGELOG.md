@@ -27,6 +27,7 @@ Category G — navigation:
 - `UIBreadcrumbsControl` — Home › Section › Page trail; click to navigate up. Demo `UIBreadcrumbsDemo`.
 - `UIWizardStepsControl` — horizontal step indicator with filling connectors. Demo `UIWizardStepsDemo`.
 - `UIFloatingActionButtonControl` — FAB speed-dial with icon rotation. Demo `UIFloatingActionButtonDemo`.
+- `UISideMenuControl` — slide-in drawer from the left/right over a backdrop; menu items fly in one by one from the same side. Demo `UISideMenuDemo`.
 
 Category H — input / forms:
 
