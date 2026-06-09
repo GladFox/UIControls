@@ -51,6 +51,11 @@ namespace UIControls.Editor
             dimImg.color = new Color(0f, 0f, 0f, 0.55f);
             dimImg.raycastTarget = true;
 
+            // Bake the closed state so the backdrop never covers the trigger in the editor / first frame.
+            backdropGroup.alpha = 0f;
+            backdropGroup.blocksRaycasts = false;
+            backdropGo.SetActive(false);
+
             // Drawer panel (anchors are applied by the control at runtime).
             var drawerGo = new GameObject("SideMenuPanel", typeof(RectTransform), typeof(Image), typeof(RectMask2D));
             var drawer = drawerGo.GetComponent<RectTransform>();

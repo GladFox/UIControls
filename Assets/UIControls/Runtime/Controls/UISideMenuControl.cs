@@ -166,7 +166,9 @@ namespace UIControls.Runtime.Controls
 
             if (backdrop != null)
             {
+                backdrop.gameObject.SetActive(true);
                 backdrop.DOKill();
+                backdrop.alpha = 0f;
                 backdrop.blocksRaycasts = true;
                 UIDOTweenUtility.TweenCanvasGroupAlpha(backdrop, 1f, panelDuration).SetUpdate(true);
             }
@@ -188,7 +190,8 @@ namespace UIControls.Runtime.Controls
             {
                 backdrop.DOKill();
                 backdrop.blocksRaycasts = false;
-                UIDOTweenUtility.TweenCanvasGroupAlpha(backdrop, 0f, panelDuration).SetUpdate(true);
+                UIDOTweenUtility.TweenCanvasGroupAlpha(backdrop, 0f, panelDuration).SetUpdate(true)
+                    .OnComplete(() => { if (backdrop != null) backdrop.gameObject.SetActive(false); });
             }
         }
 
@@ -272,8 +275,11 @@ namespace UIControls.Runtime.Controls
 
             if (backdrop != null)
             {
+                backdrop.DOKill();
                 backdrop.alpha = 0f;
                 backdrop.blocksRaycasts = false;
+                // Fully deactivate so it can never overlap or eat clicks on the trigger while closed.
+                backdrop.gameObject.SetActive(false);
             }
         }
     }
