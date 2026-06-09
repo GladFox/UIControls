@@ -38,16 +38,20 @@ namespace UIControls.Runtime.Controls
         [SerializeField] private bool closeOnSelect = true;
 
         [Header("Panel animation")]
-        [SerializeField] private float panelDuration = 0.32f;
+        [SerializeField] private float panelDuration = 0.26f;
         [SerializeField] private Ease panelEase = Ease.OutCubic;
 
-        [Header("Item animation")]
+        [Header("Item animation (Brawl-Stars-style pop)")]
         [Tooltip("Distance (px) each item flies in from, along the open direction.")]
-        [SerializeField] private float itemSlideDistance = 240f;
-        [SerializeField] private float itemDuration = 0.28f;
-        [SerializeField] private float itemStagger = 0.06f;
+        [SerializeField] private float itemSlideDistance = 170f;
+        [SerializeField] private float itemDuration = 0.34f;
+        [SerializeField] private float itemStagger = 0.05f;
         [Tooltip("Delay before the first item starts, as a fraction of the panel slide.")]
-        [SerializeField] private float itemStartDelayFactor = 0.35f;
+        [SerializeField] private float itemStartDelayFactor = 0.22f;
+        [Tooltip("Easing for each item's fly-in; OutBack gives the bouncy overshoot.")]
+        [SerializeField] private Ease itemEase = Ease.OutBack;
+        [Tooltip("Scale each item pops in from (0 disables the scale pop).")]
+        [SerializeField] private float itemStartScale = 0.72f;
 
         [Header("Events")]
         [SerializeField] private IntEvent onItemSelected = new IntEvent();
@@ -217,6 +221,10 @@ namespace UIControls.Runtime.Controls
 
                 item.DOKill();
                 item.anchoredPosition = itemRest[i] + new Vector2(offset, 0f);
+                if (itemStartScale > 0f)
+                {
+                    item.localScale = Vector3.one * itemStartScale;
+                }
 
                 var group = itemGroups[i];
                 if (group != null)
@@ -227,11 +235,17 @@ namespace UIControls.Runtime.Controls
 
                 var delay = startDelay + i * itemStagger;
                 UIDOTweenUtility.TweenAnchoredPosition(item, itemRest[i], itemDuration)
-                    .SetEase(Ease.OutCubic).SetDelay(delay).SetUpdate(true);
+                    .SetEase(itemEase).SetDelay(delay).SetUpdate(true);
+
+                if (itemStartScale > 0f)
+                {
+                    item.DOScale(1f, itemDuration).SetEase(itemEase).SetDelay(delay).SetUpdate(true);
+                }
 
                 if (group != null)
                 {
-                    UIDOTweenUtility.TweenCanvasGroupAlpha(group, 1f, itemDuration).SetDelay(delay).SetUpdate(true);
+                    // Fade a touch faster than the slide so items are solid before they settle.
+                    UIDOTweenUtility.TweenCanvasGroupAlpha(group, 1f, itemDuration * 0.6f).SetDelay(delay).SetUpdate(true);
                 }
             }
         }
