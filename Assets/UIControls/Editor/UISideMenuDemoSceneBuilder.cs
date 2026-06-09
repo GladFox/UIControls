@@ -60,8 +60,14 @@ namespace UIControls.Editor
             var drawerGo = new GameObject("SideMenuPanel", typeof(RectTransform), typeof(Image), typeof(RectMask2D));
             var drawer = drawerGo.GetComponent<RectTransform>();
             drawer.SetParent(panel, false);
+            // Bake the open (Left, flush, full-height) layout so the scene is inspectable; the control
+            // re-applies the same anchors at runtime and only slides anchoredPosition.
+            drawer.anchorMin = new Vector2(0f, 0f);
+            drawer.anchorMax = new Vector2(0f, 1f);
+            drawer.pivot = new Vector2(0f, 0.5f);
+            drawer.anchoredPosition = Vector2.zero;
             drawer.sizeDelta = new Vector2(420f, 0f);
-            drawerGo.GetComponent<Image>().color = new Color(0.1f, 0.13f, 0.2f, 1f);
+            drawerGo.GetComponent<Image>().color = new Color(0.12f, 0.15f, 0.24f, 1f);
 
             UIDemoSceneFactory.Text("Header", drawer, new Vector2(0f, -60f), new Vector2(360f, 50f),
                 "Menu", 34, FontStyles.Bold, TextAlignmentOptions.Center).color = UIDemoSceneFactory.Label;
