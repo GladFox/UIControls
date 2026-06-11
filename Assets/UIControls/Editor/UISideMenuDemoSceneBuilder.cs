@@ -10,6 +10,7 @@ namespace UIControls.Editor
     public static class UISideMenuDemoSceneBuilder
     {
         private const string ScenePath = "Assets/Scenes/Navigation(G)/UISideMenuDemo.unity";
+        private const float MenuDepth = 240f;
 
         private static readonly string[] Items = { "Home", "Profile", "Settings", "Notifications", "Help", "Log out" };
         private static readonly string[] Icons = { "⌂", "☻", "⚙", "🔔", "?", "⎋" };
@@ -24,16 +25,15 @@ namespace UIControls.Editor
             var panel = UIDemoSceneFactory.NewScene("UIControls Side Menu Demo", out var scene);
 
             UIDemoSceneFactory.Caption(panel, new Vector2(0f, 250f),
-                "Tap Menu to slide the drawer in; the items fly in one by one from the same side.");
+                "Tap Menu to slide the drawer in from any edge; items fly in from that same side. Switch cycles Left → Top → Right → Bottom.");
 
-            // Trigger + side switch (sit under the drawer/backdrop when open).
-            var menuButton = UIDemoSceneFactory.Button(panel, "MenuButton", new Vector2(-360f, 150f), new Vector2(180f, 76f), "☰  Menu",
+            var menuButton = UIDemoSceneFactory.Button(panel, "MenuButton", new Vector2(0f, 120f), new Vector2(180f, 76f), "☰  Menu",
                 new Color(0.24f, 0.55f, 0.95f, 1f), 26);
-            var switchButton = UIDemoSceneFactory.Button(panel, "SwitchSide", new Vector2(-360f, 60f), new Vector2(220f, 64f), "Side: Left",
+            var switchButton = UIDemoSceneFactory.Button(panel, "SwitchSide", new Vector2(0f, 30f), new Vector2(240f, 64f), "Side: Left",
                 new Color(0.3f, 0.36f, 0.5f, 1f), 22);
             var switchLabel = switchButton.transform.Find("Label").GetComponent<TMP_Text>();
 
-            var status = UIDemoSceneFactory.Text("Status", panel, new Vector2(0f, -300f), new Vector2(900f, 36f),
+            var status = UIDemoSceneFactory.Text("Status", panel, new Vector2(0f, -60f), new Vector2(900f, 36f),
                 "Selected: —", 22, FontStyles.Bold, TextAlignmentOptions.Center);
             status.color = UIDemoSceneFactory.Status;
 
@@ -47,47 +47,36 @@ namespace UIControls.Editor
             var dimRect = dim.GetComponent<RectTransform>();
             dimRect.SetParent(backdropRect, false);
             Stretch(dimRect);
-            var dimImg = dim.GetComponent<Image>();
-            dimImg.color = new Color(0f, 0f, 0f, 0.55f);
-            dimImg.raycastTarget = true;
+            dim.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.55f);
 
             // Bake the closed state so the backdrop never covers the trigger in the editor / first frame.
             backdropGroup.alpha = 0f;
             backdropGroup.blocksRaycasts = false;
             backdropGo.SetActive(false);
 
-            // Drawer panel (anchors are applied by the control at runtime).
+            // Drawer panel. Baked as a Left drawer for inspectability; the control re-applies anchors for
+            // the chosen side at runtime.
             var drawerGo = new GameObject("SideMenuPanel", typeof(RectTransform), typeof(Image), typeof(RectMask2D));
             var drawer = drawerGo.GetComponent<RectTransform>();
             drawer.SetParent(panel, false);
-            // Bake the open (Left, flush, full-height) layout so the scene is inspectable; the control
-            // re-applies the same anchors at runtime and only slides anchoredPosition.
             drawer.anchorMin = new Vector2(0f, 0f);
             drawer.anchorMax = new Vector2(0f, 1f);
             drawer.pivot = new Vector2(0f, 0.5f);
             drawer.anchoredPosition = Vector2.zero;
-            drawer.sizeDelta = new Vector2(420f, 0f);
+            drawer.sizeDelta = new Vector2(MenuDepth, 0f);
             drawerGo.GetComponent<Image>().color = new Color(0.12f, 0.15f, 0.24f, 1f);
 
-            UIDemoSceneFactory.Text("Header", drawer, new Vector2(0f, -60f), new Vector2(360f, 50f),
-                "Menu", 34, FontStyles.Bold, TextAlignmentOptions.Center).color = UIDemoSceneFactory.Label;
-            UIDemoSceneFactory.Image("HeaderRule", drawer, new Vector2(0f, -110f), new Vector2(360f, 3f), new Color(1f, 1f, 1f, 0.12f), false);
-
+            // Items container fills the drawer; the control positions items relative to its centre.
             var itemsGo = new GameObject("Items", typeof(RectTransform));
             var items = itemsGo.GetComponent<RectTransform>();
             items.SetParent(drawer, false);
-            items.anchorMin = new Vector2(0.5f, 1f);
-            items.anchorMax = new Vector2(0.5f, 1f);
-            items.pivot = new Vector2(0.5f, 1f);
-            items.anchoredPosition = new Vector2(0f, -150f);
-            items.sizeDelta = new Vector2(420f, 540f);
+            Stretch(items);
 
             for (var i = 0; i < Items.Length; i++)
             {
                 BuildItem(items, i, Items[i], Icons[i]);
             }
 
-            // Control.
             var menuGo = new GameObject("SideMenuControl", typeof(RectTransform), typeof(UISideMenuControl));
             (menuGo.GetComponent<RectTransform>()).SetParent(panel, false);
             var sideMenu = menuGo.GetComponent<UISideMenuControl>();
@@ -96,6 +85,9 @@ namespace UIControls.Editor
             UIDemoSceneFactory.SetRef(sideMenu, "backdropButton", backdropGo.GetComponent<UIButtonControl>());
             UIDemoSceneFactory.SetRef(sideMenu, "toggleButton", menuButton);
             UIDemoSceneFactory.SetRef(sideMenu, "itemsContainer", items);
+            var so = new SerializedObject(sideMenu);
+            so.FindProperty("menuDepth").floatValue = MenuDepth;
+            so.ApplyModifiedPropertiesWithoutUndo();
 
             var presenter = panel.gameObject.AddComponent<UISideMenuDemoPresenter>();
             UIDemoSceneFactory.SetRef(presenter, "sideMenu", sideMenu);
@@ -107,24 +99,25 @@ namespace UIControls.Editor
             UIDemoSceneFactory.Save(scene, ScenePath);
         }
 
+        // A uniform icon-over-label cell that reads well both as a column row and a horizontal-bar tile.
         private static void BuildItem(RectTransform container, int index, string label, string icon)
         {
             var itemGo = new GameObject("Item_" + label, typeof(RectTransform), typeof(CanvasGroup), typeof(UIButtonControl));
             var item = itemGo.GetComponent<RectTransform>();
             item.SetParent(container, false);
-            item.anchorMin = new Vector2(0.5f, 1f);
-            item.anchorMax = new Vector2(0.5f, 1f);
-            item.pivot = new Vector2(0.5f, 1f);
-            item.sizeDelta = new Vector2(360f, 72f);
-            item.anchoredPosition = new Vector2(0f, -(index * 82f) - 36f);
+            item.anchorMin = new Vector2(0.5f, 0.5f);
+            item.anchorMax = new Vector2(0.5f, 0.5f);
+            item.pivot = new Vector2(0.5f, 0.5f);
+            item.sizeDelta = new Vector2(140f, 100f);
+            item.anchoredPosition = Vector2.zero; // positioned by the control
 
-            var bg = UIDemoSceneFactory.Image("Bg", item, Vector2.zero, new Vector2(360f, 72f),
+            var bg = UIDemoSceneFactory.Image("Bg", item, Vector2.zero, new Vector2(140f, 100f),
                 index == Items.Length - 1 ? new Color(0.4f, 0.22f, 0.24f, 1f) : new Color(0.17f, 0.22f, 0.33f, 1f), true);
 
-            UIDemoSceneFactory.Text("Icon", bg.rectTransform, new Vector2(-140f, 0f), new Vector2(50f, 50f),
-                icon, 28, FontStyles.Normal, TextAlignmentOptions.Center).color = UIDemoSceneFactory.Label;
-            UIDemoSceneFactory.Text("Label", bg.rectTransform, new Vector2(30f, 0f), new Vector2(250f, 60f),
-                label, 24, FontStyles.Bold, TextAlignmentOptions.Left).color = UIDemoSceneFactory.Label;
+            UIDemoSceneFactory.Text("Icon", bg.rectTransform, new Vector2(0f, 18f), new Vector2(120f, 48f),
+                icon, 34, FontStyles.Normal, TextAlignmentOptions.Center).color = UIDemoSceneFactory.Label;
+            UIDemoSceneFactory.Text("Label", bg.rectTransform, new Vector2(0f, -30f), new Vector2(132f, 30f),
+                label, 18, FontStyles.Bold, TextAlignmentOptions.Center).color = UIDemoSceneFactory.Label;
         }
 
         private static void Stretch(RectTransform rect)

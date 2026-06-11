@@ -28,9 +28,15 @@ namespace UIControls.Runtime.Demo
 
         private void SwitchSide()
         {
-            side = side == UISideMenuControl.MenuSide.Left
-                ? UISideMenuControl.MenuSide.Right
-                : UISideMenuControl.MenuSide.Left;
+            // Cycle around the four edges: Left -> Top -> Right -> Bottom -> Left.
+            switch (side)
+            {
+                case UISideMenuControl.MenuSide.Left: side = UISideMenuControl.MenuSide.Top; break;
+                case UISideMenuControl.MenuSide.Top: side = UISideMenuControl.MenuSide.Right; break;
+                case UISideMenuControl.MenuSide.Right: side = UISideMenuControl.MenuSide.Bottom; break;
+                default: side = UISideMenuControl.MenuSide.Left; break;
+            }
+
             if (sideMenu != null) sideMenu.SetSide(side);
             UpdateSideLabel();
         }
@@ -39,7 +45,7 @@ namespace UIControls.Runtime.Demo
         {
             if (switchSideLabel != null)
             {
-                switchSideLabel.text = side == UISideMenuControl.MenuSide.Left ? "Side: Left" : "Side: Right";
+                switchSideLabel.text = "Side: " + side;
             }
         }
 

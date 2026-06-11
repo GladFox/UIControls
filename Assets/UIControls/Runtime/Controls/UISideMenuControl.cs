@@ -7,9 +7,11 @@ using UnityEngine.Events;
 namespace UIControls.Runtime.Controls
 {
     /// <summary>
-    /// Slide-in side menu / drawer. The panel slides in from the configured <see cref="Side"/> (left or
-    /// right) over a dimming backdrop; once it arrives, the menu items fly in one after another from the
-    /// same direction the panel came from (with an optional fade). Items that carry a
+    /// Slide-in menu / drawer that can dock to any of the four screen edges. The panel slides in from the
+    /// configured <see cref="MenuSide"/> over a dimming backdrop; once it arrives, the menu items fly in
+    /// one after another from the same direction the panel came from (with a scale pop and fade). For
+    /// Left/Right the items are stacked in a column; for Top/Bottom they are laid out in a row — the
+    /// control owns the layout so it adapts when the side changes. Items that carry a
     /// <see cref="UIButtonControl"/> are auto-wired to raise <see cref="OnItemSelected"/>; clicking the
     /// backdrop (or an item, if <see cref="closeOnSelect"/>) closes the menu.
     /// </summary>
@@ -19,6 +21,8 @@ namespace UIControls.Runtime.Controls
         {
             Left,
             Right,
+            Top,
+            Bottom,
         }
 
         [Serializable]
@@ -35,6 +39,10 @@ namespace UIControls.Runtime.Controls
 
         [Header("Configuration")]
         [SerializeField] private MenuSide side = MenuSide.Left;
+        [Tooltip("Drawer thickness along the slide axis (width for Left/Right, height for Top/Bottom).")]
+        [SerializeField] private float menuDepth = 240f;
+        [Tooltip("Gap between items along the cross axis.")]
+        [SerializeField] private float itemSpacing = 16f;
         [SerializeField] private bool closeOnSelect = true;
 
         [Header("Panel animation")]
@@ -65,8 +73,23 @@ namespace UIControls.Runtime.Controls
 
         public IntEvent OnItemSelected => onItemSelected;
         public bool IsOpen => isOpen;
+        public MenuSide Side => side;
 
-        private float Direction => side == MenuSide.Left ? -1f : 1f;
+        private bool IsHorizontalSlide => side == MenuSide.Left || side == MenuSide.Right;
+
+        private Vector2 SlideDirection
+        {
+            get
+            {
+                switch (side)
+                {
+                    case MenuSide.Right: return new Vector2(1f, 0f);
+                    case MenuSide.Top: return new Vector2(0f, 1f);
+                    case MenuSide.Bottom: return new Vector2(0f, -1f);
+                    default: return new Vector2(-1f, 0f); // Left
+                }
+            }
+        }
 
         private void Awake()
         {
@@ -85,6 +108,7 @@ namespace UIControls.Runtime.Controls
 
             initialized = true;
             ApplyAnchors();
+            LayoutItems();
             CloseInstant();
         }
 
@@ -107,8 +131,14 @@ namespace UIControls.Runtime.Controls
             {
                 var child = itemsContainer.GetChild(i) as RectTransform;
                 items[i] = child;
-                itemRest[i] = child != null ? child.anchoredPosition : Vector2.zero;
                 itemGroups[i] = child != null ? child.GetComponent<CanvasGroup>() : null;
+
+                if (child != null)
+                {
+                    child.anchorMin = new Vector2(0.5f, 0.5f);
+                    child.anchorMax = new Vector2(0.5f, 0.5f);
+                    child.pivot = new Vector2(0.5f, 0.5f);
+                }
 
                 var index = i;
                 var button = child != null ? child.GetComponent<UIButtonControl>() : null;
@@ -126,25 +156,99 @@ namespace UIControls.Runtime.Controls
                 return;
             }
 
-            var x = side == MenuSide.Left ? 0f : 1f;
-            panel.anchorMin = new Vector2(x, 0f);
-            panel.anchorMax = new Vector2(x, 1f);
-            panel.pivot = new Vector2(x, 0.5f);
-            // Flush to the edge, full height.
-            panel.anchoredPosition = new Vector2(0f, 0f);
-            panel.sizeDelta = new Vector2(panel.sizeDelta.x, 0f);
+            switch (side)
+            {
+                case MenuSide.Right:
+                    panel.anchorMin = new Vector2(1f, 0f);
+                    panel.anchorMax = new Vector2(1f, 1f);
+                    panel.pivot = new Vector2(1f, 0.5f);
+                    panel.sizeDelta = new Vector2(menuDepth, 0f);
+                    break;
+                case MenuSide.Top:
+                    panel.anchorMin = new Vector2(0f, 1f);
+                    panel.anchorMax = new Vector2(1f, 1f);
+                    panel.pivot = new Vector2(0.5f, 1f);
+                    panel.sizeDelta = new Vector2(0f, menuDepth);
+                    break;
+                case MenuSide.Bottom:
+                    panel.anchorMin = new Vector2(0f, 0f);
+                    panel.anchorMax = new Vector2(1f, 0f);
+                    panel.pivot = new Vector2(0.5f, 0f);
+                    panel.sizeDelta = new Vector2(0f, menuDepth);
+                    break;
+                default: // Left
+                    panel.anchorMin = new Vector2(0f, 0f);
+                    panel.anchorMax = new Vector2(0f, 1f);
+                    panel.pivot = new Vector2(0f, 0.5f);
+                    panel.sizeDelta = new Vector2(menuDepth, 0f);
+                    break;
+            }
+
+            panel.anchoredPosition = Vector2.zero;
             shownPos = panel.anchoredPosition;
+        }
+
+        /// <summary>
+        /// Lays the items out centred along the cross axis: a column for Left/Right, a row for Top/Bottom.
+        /// </summary>
+        private void LayoutItems()
+        {
+            if (items == null || items.Length == 0)
+            {
+                return;
+            }
+
+            var vertical = IsHorizontalSlide; // L/R → stack vertically; T/B → row horizontally
+            var n = items.Length;
+
+            var sizes = new float[n];
+            var total = 0f;
+            for (var i = 0; i < n; i++)
+            {
+                var size = items[i] != null ? items[i].sizeDelta : Vector2.zero;
+                sizes[i] = vertical ? size.y : size.x;
+                total += sizes[i];
+            }
+
+            total += itemSpacing * Mathf.Max(0, n - 1);
+
+            if (vertical)
+            {
+                // Top to bottom: item 0 at the top.
+                var cursor = total * 0.5f;
+                for (var i = 0; i < n; i++)
+                {
+                    var c = cursor - sizes[i] * 0.5f;
+                    itemRest[i] = new Vector2(0f, c);
+                    cursor -= sizes[i] + itemSpacing;
+                }
+            }
+            else
+            {
+                // Left to right: item 0 at the left.
+                var cursor = -total * 0.5f;
+                for (var i = 0; i < n; i++)
+                {
+                    var c = cursor + sizes[i] * 0.5f;
+                    itemRest[i] = new Vector2(c, 0f);
+                    cursor += sizes[i] + itemSpacing;
+                }
+            }
+
+            for (var i = 0; i < n; i++)
+            {
+                if (items[i] != null)
+                {
+                    items[i].anchoredPosition = itemRest[i];
+                }
+            }
         }
 
         public void SetSide(MenuSide newSide)
         {
             side = newSide;
             ApplyAnchors();
-            // Re-read item rest positions in case layout differs, then re-close.
-            for (var i = 0; items != null && i < items.Length; i++)
-            {
-                if (items[i] != null) items[i].anchoredPosition = itemRest[i];
-            }
+            LayoutItems();
             CloseInstant();
         }
 
@@ -212,7 +316,7 @@ namespace UIControls.Runtime.Controls
             }
 
             var startDelay = panelDuration * Mathf.Clamp01(itemStartDelayFactor);
-            var offset = Direction * itemSlideDistance;
+            var offset = SlideDirection * itemSlideDistance;
 
             for (var i = 0; i < items.Length; i++)
             {
@@ -223,7 +327,7 @@ namespace UIControls.Runtime.Controls
                 }
 
                 item.DOKill();
-                item.anchoredPosition = itemRest[i] + new Vector2(offset, 0f);
+                item.anchoredPosition = itemRest[i] + offset;
                 if (itemStartScale > 0f)
                 {
                     item.localScale = Vector3.one * itemStartScale;
@@ -255,13 +359,10 @@ namespace UIControls.Runtime.Controls
 
         private Vector2 HiddenPos()
         {
-            var width = panel != null ? panel.rect.width : itemSlideDistance;
-            if (width <= 1f)
-            {
-                width = panel != null ? panel.sizeDelta.x : itemSlideDistance;
-            }
-
-            return shownPos + new Vector2(Direction * (width + 8f), 0f);
+            var size = IsHorizontalSlide
+                ? (panel != null && panel.rect.width > 1f ? panel.rect.width : menuDepth)
+                : (panel != null && panel.rect.height > 1f ? panel.rect.height : menuDepth);
+            return shownPos + SlideDirection * (size + 8f);
         }
 
         private void CloseInstant()
