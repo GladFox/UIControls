@@ -1,156 +1,161 @@
-﻿# UIControls Architecture
+# UIControls Architecture
 
-`local/README.md` - источник правды по архитектуре библиотеки контролов.
+`local/README.md` — источник правды по архитектуре библиотеки контролов.
 
 ## Цель
-Создать переиспользуемую библиотеку контролов на базе uGUI с анимациями через DOTween.
+Переиспользуемая библиотека UI-контролов на базе Unity `uGUI` с анимациями через `DOTween`.
+Поставляется как UPM-пакет (`com.gladfox.uicontrols`), текущая версия `0.20.0`.
 
 ## Границы решения
 - Внешние UI-решения используются только как референс поведения/идей.
-- Runtime-контролы библиотеки не зависят от сторонних UI-библиотек.
-- Все анимации реализуются через `DG.Tweening`.
+- Runtime-контролы не зависят от сторонних UI-библиотек.
+- Все анимации реализуются через `DG.Tweening` (UI-твины — через `UIDOTweenUtility`, см. ниже).
 
 ## Модульная структура
 ```text
 Assets/UIControls/
-  Animations/
-    UI/Button/
-      Profiles/
-      Actions/
-      States/
+  Animations/UI/Button/        Profiles / Actions / States (SO-пресеты кнопок)
   Runtime/
     UIControls.Runtime.asmdef
     Core/
-      UITweenSettings.cs
-      UIStateVisual.cs
-      UIStateVisualAsset.cs
-      UIStateAnimator.cs
-    Controls/
-      UIButtonControl.cs
-      UIButtonAnimationProfile.cs
-      UIButtonCustomAction.cs
-      UIProgressBarCustomAction.cs
-      Actions/
-        UIButtonActionTriggerFlags.cs
-        UIButtonScalePulseAction.cs
-        UIButtonAnchoredOffsetAction.cs
-        UIProgressBarDebugLogAction.cs
-      UIToggleControl.cs
-      UIModalControl.cs
-      UIProgressBarControl.cs
-    Demo/
-      UIControlsDemoPresenter.cs
-      UIProgressBarDemoPresenter.cs
+      UITweenSettings.cs  UIStateVisual.cs  UIStateVisualAsset.cs  UIStateAnimator.cs
+      UIDOTweenUtility.cs        # DOTween.To-адаптеры (без DOTween.Modules.asmdef)
+    Controls/                    # все контролы (см. каталог ниже)
+      Actions/                   # SO-действия кнопки/прогрессбара
+    Demo/                        # презентеры демо-сцен (UIXxxDemoPresenter)
   Editor/
-    UIControlsDemoSceneBuilder.cs
-    UIProgressBarDemoSceneBuilder.cs
+    UIControls.Editor.asmdef
+    UIDemoSceneFactory.cs        # общий фабричный слой для билдеров категорий E–I
+    UIXxxDemoSceneBuilder.cs     # по одному билдеру на контрол
     UIControlsButtonAnimationLibraryBuilder.cs
+  Samples~/DemoScenes/Scenes/<категория>/   # UPM-сэмплы (зеркало Assets/Scenes)
+Assets/Scenes/<категория>/       # рабочие демо-сцены, сгруппированы по папкам
 ```
 
 ## Core-компоненты
-- `UITweenSettings`:
-  единые параметры tween (`duration`, `ease`, `delay`, `independentUpdate`) и метод применения к tween.
-- `UIStateVisual`:
-  снимок визуального состояния (`scale`, `alpha`, `color`) + настройки tween.
-- `UIStateVisualAsset` (`ScriptableObject`):
-  переиспользуемый пресет `UIStateVisual` для применения в разных префабах.
-- `UIStateAnimator`:
-  унифицированная анимация перехода состояния для `RectTransform`, `CanvasGroup`, `Graphic`.
+- `UITweenSettings` — единые параметры tween (`duration`, `ease`, `delay`, `independentUpdate`) + применение.
+- `UIStateVisual` — снимок состояния (`scale`, `alpha`, `color`) + tween-настройки.
+- `UIStateVisualAsset` (`ScriptableObject`) — переиспользуемый пресет `UIStateVisual`.
+- `UIStateAnimator` — унифицированная анимация перехода состояния (`RectTransform`/`CanvasGroup`/`Graphic`).
+- `UIDOTweenUtility` — статические `DOTween.To`-адаптеры: `TweenAnchoredPosition`, `TweenSizeDelta`,
+  `TweenGraphicColor`, `TweenCanvasGroupAlpha`. Контролы используют их вместо модульных шорткатов
+  (`DOAnchorPos*`, `DOSizeDelta`, `Graphic.DOColor`), которых нет без `DOTween.Modules.asmdef`.
+  Шорткаты `Transform.DOScale` / `DOLocalRotate` / `DOKill` доступны и используются напрямую.
 
-## Контролы v0.2
-- `UIButtonControl`:
-  состояния `Normal/Hover/Pressed/Disabled`, событие `OnClick`, pointer + submit ввод.
-  Визуальные состояния берутся из `UIButtonAnimationProfile` (если назначен) или из локальных `UIStateVisualAsset` (fallback).
-  Дополнительно поддерживаются кастомные SO-действия через:
-  - `UIButtonAnimationProfile.customActions` (общие для профиля)
-  - локальный `UIButtonCustomAction[]` на компоненте
-- `UIToggleControl`:
-  переключатель `On/Off` с анимацией позиции handle и цветов, событие `OnValueChanged(bool)`.
-- `UIModalControl`:
-  `Show/Hide/Toggle`, fade + scale + anchored position.
-- `UIProgressBarControl`:
-  поддерживает комбинируемые режимы:
-  - обычный continuous progress
-  - segmented progress (`useSegments`, `segmentsCount`, `OnSegmentCompleted`)
-  - auto-generated segmented visuals (`autoGenerateSegments`, `segmentVisualMode`, `dividerWidth`, `dividerColor`)
-  - hitbar (`useHitBar`: `primaryFillImage` + `echoFillImage` с delayed echo trail)
-  - визуальные override для генерации сегментов (`segmentFillSprite`, `segmentDividerSprite`)
-  - suppress echo trail на восстановлении (`hideEchoOnIncrease`)
-  В режиме `useSegments + useHitBar` сегментация применяется к `Primary` слою.
-  Поддерживаются кастомные SO-действия через `UIProgressBarCustomAction[]`.
+## Каталог контролов
 
-## Кастомные SO-действия кнопки
-- Базовый класс: `UIButtonCustomAction : ScriptableObject`.
-- Доступные хуки:
-  - `OnPointerEnter(UIButtonControl button)`
-  - `OnPointerExit(UIButtonControl button)`
-  - `OnPointerDown(UIButtonControl button)`
-  - `OnPointerUp(UIButtonControl button)`
-  - `OnSubmit(UIButtonControl button)`
-  - `OnStateChanged(UIButtonControl button, UIButtonControl.ButtonVisualState state)`
-  - `OnClick(UIButtonControl button)`
-- Любая внешняя библиотека (например, аудио) может создать свой наследник и назначить asset в `UIButtonControl`.
+### База
+- `UIButtonControl` — состояния `Normal/Hover/Pressed/Disabled`, `OnClick`, pointer+submit ввод; визуал из
+  `UIButtonAnimationProfile` или локальных `UIStateVisualAsset`; SO-хуки `UIButtonCustomAction`.
+- `UIToggleControl` — `On/Off`, анимация handle + цветов, `OnValueChanged(bool)`.
+- `UIModalControl` — `Show/Hide/Toggle`, fade + scale + anchored position.
+- `UIProgressBarControl` — continuous / segmented (`OnSegmentCompleted`) / hitbar с delayed echo;
+  auto-generated segmented visuals; SO-хуки `UIProgressBarCustomAction`.
+- `UITabSliderControl` — таб-слайдер со скользящим индикатором (rubber-band).
 
-## Кастомные SO-действия ProgressBar
-- Базовый класс: `UIProgressBarCustomAction : ScriptableObject`.
-- Доступные хуки:
-  - `OnValueChanged(UIProgressBarControl progressBar, float value)`
-  - `OnSegmentCompleted(UIProgressBarControl progressBar, int segmentIndex)`
-  - `OnEchoStarted(UIProgressBarControl progressBar, float from, float to)`
-  - `OnEchoCompleted(UIProgressBarControl progressBar, float value)`
+### A — selection / sliders (`Scenes/Selection(A)`)
+- `UISegmentedControl` — iOS-style pill-табы со скользящей подсветкой.
+- `UIChipGroup` — single/multi выбор чипов (`Mode {Single,Multi}`).
+- `UIStepperControl` — `[-] n [+]` с hold-to-repeat и pop-scale.
+- `UIRangeSliderControl` — два хэндла min/max, fill между, хэндлы не пересекаются.
+
+### B — overlays (`Scenes/Overlays(B)`)
+- `UIBottomSheetControl` — snap-точки, drag-to-dismiss, backdrop fade, Expand/Collapse.
+- `UIToastControl` — FIFO-очередь, slide-in + auto-dismiss, swipe-to-dismiss.
+- `UIAccordionControl` — анимированная высота секций, поворот шеврона, single/multi open.
+- `UITooltipControl` (+ `UITooltipTrigger`) — hover/long-press, задержка, авто-флип у краёв.
+
+### C — scrolling (`Scenes/Scrolling(C)`)
+- `UIPullToRefreshControl` — overscroll-триггер, rubber-band, `OnRefresh`/`EndRefreshing`.
+- `UIVirtualListControl` — recycled-cells для больших списков, `SetData`/`OnBindItem`.
+- `UICarouselControl` — горизонтальный snap-пейджинг, точки, свайп-флик, autoplay ping-pong.
+- `UIInfiniteScrollControl` — load-more снизу, footer-loader, `OnLoadMore`/`HasMore`.
+
+### D — input (`Scenes/Input(D)`)
+- `UIOTPInputControl` — N ячеек, авто-переход фокуса, вставка кода целиком.
+- `UISearchFieldControl` — clear-кнопка, debounced `OnSearch`, dropdown подсказок.
+- `UIDatePickerControl` — календарь-сетка месяца + навигация по месяцам/годам.
+- `UIStarRatingControl` — клик/драг рейтинг, half-star, hover-preview, read-only.
+- `UIColorPickerControl` — HSV-квадрат + hue-бар (рантайм-текстуры), hex.
+
+### E — feedback / decoration (`Scenes/Feedback(E)`)
+- `UISkeletonLoaderControl` — шиммер-заглушка; toggle skeleton/content; рантайм-градиент.
+- `UICircularProgressControl` — кольцевой прогресс (рантайм-спрайт-бублик), determinate/indeterminate.
+- `UIBadgeControl` — счётчик-бейдж, скрытие на нуле, `N+`, dot-режим, pop-анимация.
+- `UIRippleEffectControl` — Material-волна из точки клика (рантайм-спрайт круга), обрезается маской.
+- `UIMarqueeControl` — бегущая строка, `Loop`/`PingPong`, только при переполнении.
+
+### F — gameplay (`Scenes/Gameplay(F)`)
+- `UIVirtualJoystickControl` — экранный стик (fixed/floating, dead-zone), `Direction`/`Magnitude`.
+- `UIRadialMenuControl` — радиальное меню, веер с stagger, авто-привязка пунктов.
+- `UIKnobControl` — поворотный регулятор, драг по кругу, угловой sweep + шаги.
+- `UINumberTickerControl` — анимированный счётчик (разделители, prefix/suffix, pop).
+- `UIReorderableListControl` (+ `UIReorderableItem`) — drag-to-reorder вертикальный список.
+- `UISwipeCardControl` — Tinder-свайп с наклоном, like/nope overlay, fling/spring.
+
+### G — navigation (`Scenes/Navigation(G)`)
+- `UITabBarControl` — нижняя навигация, скользящий индикатор, переключение страниц.
+- `UIPaginationControl` — нумерация страниц с эллипсисом в фиксированном пуле слотов.
+- `UIBreadcrumbsControl` — хлебные крошки, клик = навигация вверх.
+- `UIWizardStepsControl` — индикатор шагов (done/active/upcoming) с заполняемыми коннекторами.
+- `UIFloatingActionButtonControl` — FAB speed-dial с поворотом иконки.
+- `UISideMenuControl` — выдвижной ящик с **любого из 4 краёв**; собственная раскладка пунктов
+  (колонка для Left/Right, строка для Top/Bottom), пункты влетают вдоль оси выезда с pop;
+  `MenuSide`, `SetSide`, `OnItemSelected`, поля `menuDepth`/`itemSpacing`.
+
+### H — forms (`Scenes/Forms(H)`)
+- `UIDropdownControl` — анимированный селект, флип стрелки, подсветка строки.
+- `UIWheelPickerControl` — барабан со снапом и scale/fade по дистанции.
+- `UIPasswordFieldControl` — show/hide + индикатор силы поверх `TMP_InputField`.
+- `UITagInputControl` — Enter → удаляемый чип из шаблона.
+- `UIValueSliderControl` — одиночный слайдер с пузырём значения над хэндлом.
+
+### I — data / overlays (`Scenes/Data(I)`)
+- `UIContextMenuControl` — попап у курсора с авто-флипом у краёв.
+- `UITreeNodeControl` — раскрываемый узел дерева (шеврон + reflow layout-групп).
+- `UIGaugeControl` — дуговая шкала со стрелкой, плавный ход к значению.
+- `UIAvatarControl` — инициалы + цвет от имени + статус-дот, `+N` overflow.
+- `UIEmptyStateControl` — заглушка (иконка/заголовок/текст/CTA), `Show/Hide`.
+- `UIBannerControl` — постоянная плашка (info/success/warning/error), slide/fade, dismiss.
+
+## Конвейер демо-сцен (editor builders)
+- Каждый контрол сопровождается editor-билдером `UIXxxDemoSceneBuilder` с двумя точками входа:
+  `[MenuItem] Create … Demo Scene` и `CreateXxxDemoSceneBatch()` для `-batchmode -executeMethod`.
+- Сцены генерируются детерминированно и сохраняются в `Assets/Scenes/<категория>/`, затем копируются
+  в `Samples~/DemoScenes/Scenes/<категория>/`.
+- Категории E–I используют общий `UIDemoSceneFactory` (камера/canvas/панель, `Text`, `Button`,
+  `Image`, `InputField`, `SetRef`/`SetRefArray`/`SetStringArray`, `Save` с авто-созданием папки и
+  добавлением в Build Settings).
+- Презентеры (`UIXxxDemoPresenter`) держат демо-логику и связываются через сериализуемые ссылки;
+  сами контролы UI-структуру в runtime не создают (кроме рантайм-спрайтов/текстур у визуальных
+  контролов: ColorPicker, CircularProgress, Ripple, Skeleton).
+
+## Ключевые архитектурные правила (см. `systemPatterns.md`)
+- **Graphic-less корень кнопки**: `UIButtonControl` ставится на объект без `Graphic` + дочерний `Bg`,
+  иначе `UIStateAnimator.AutoAssign` форсит первый `Graphic` в белый на Normal.
+- **Видимость через `CanvasGroup`, не `SetActive` на себе**: контрол не должен прятать собственный
+  объект в `OnEnable` — реактивация повторно вызовет `OnEnable` (баг `UIBannerControl`). Бэкдропы
+  на отдельных объектах можно выключать через `SetActive`.
+- **MonoBehaviour = один файл по имени класса** (иначе «missing script»; кейс `UITooltipTrigger`).
+- **`.meta` коммитятся вместе с `.cs`/сценой** — иначе на чужой машине новый GUID → «missing script»
+  (кейс `UISideMenuControl`).
+- `TMP_Text.textWrappingMode = TextWrappingModes.Normal` вместо obsolete `enableWordWrapping`.
+
+## UPM-экспорт
+- Пакет — `Assets/UIControls`. Подключение: `https://github.com/GladFox/UIControls.git?path=Assets/UIControls`.
+- Метаданные: `package.json` (`0.20.0`), `README.md`, `CHANGELOG.md`, `UIControls.Editor.asmdef`.
+- Зависимости в `package.json`: `com.unity.ugui`, `com.unity.textmeshpro`.
+- `UIControls.Runtime.asmdef` → `UnityEngine.UI`; `DG.Tweening` через
+  `overrideReferences + precompiledReferences: ["DOTween.dll"]`.
+- Сэмпл `Demo Scenes` (`Samples~/DemoScenes`) включает все демо-сцены, разложенные по категорийным
+  подпапкам (`Basics`, `Selection(A)`…`Data(I)`), + sample art (`Art/Slider`).
 
 ## Button Animation Library
-- Путь библиотеки: `Assets/UIControls/Animations/UI/Button`.
-- Профили:
-  - `TapProfile.asset`
-  - `TouchProfile.asset`
-- Предустановленные экшены:
-  - `Tap_DownOffset.action.asset` (аналог Down Transition с `anchoredPosition.y = -10`)
-  - `Tap_ClickPulse.action.asset` (аналог Click scale pulse `1.0 -> 1.1 -> 1.0`)
-  - `Touch_DownPulse.action.asset` (аналог Touch Down pulse)
-- Генератор библиотеки:
-  - `UIControls/Create Button Animation Library`
-  - batch entrypoint: `UIControls.Editor.UIControlsButtonAnimationLibraryBuilder.CreateButtonAnimationLibraryBatch`
+- Путь: `Assets/UIControls/Animations/UI/Button` (Profiles: `TapProfile`/`TouchProfile`; Actions; States).
+- Генератор: `UIControls/Create Button Animation Library`
+  (`UIControlsButtonAnimationLibraryBuilder.CreateButtonAnimationLibraryBatch`).
 
-## Demo-сцены
-- Базовая сцена: `Assets/Scenes/UIControlsDemo.unity`.
-- В сцене заранее размещены `Main Camera`, `Canvas`, `EventSystem` и demo-контролы.
-- Контролы не создаются динамически в runtime.
-- Связи демонстрации настраиваются через сериализуемые поля `UIControlsDemoPresenter`.
-- Отдельная сцена ProgressBar v2: `Assets/Scenes/UIProgressBarDemo.unity`.
-- ProgressBar demo включает полноценный сценарий:
-  - `Damage -12%`, `Heavy -35%`, `Heal +8%`, `Reset`, `Spend 1 Super`;
-  - верхний бар (`Health`): `useSegments + useHitBar`, при уроне основной слой быстро падает и эхо догоняет, при лечении HP обновляется сразу;
-  - нижний бар (`Energy`): авто-набор энергии от `0` до `3` за `6` секунд, `3` сегмента, плавный переход между сегментами с окраской завершенных делений в основной цвет;
-  - кнопка `Spend 1 Super` списывает одно целое деление энергии;
-  - текстуры из `Assets/ThirdParty/Layer Lab/.../Slider_*` в качестве визуального примера;
-  - вывод статусов по событиям `segment/echo` и текстовый индикатор энергии.
-- `UIControlsDemoSceneBuilder` собирает базовую сцену контролов.
-- `UIProgressBarDemoSceneBuilder` собирает специализированную ProgressBar сцену.
-- Оба builder'а автоматически назначают `TapProfile` на demo-кнопки.
-- Для демонстрации расширяемости через SO создается/назначается asset:
-  - `Assets/UIControls/Animations/UI/ProgressBar/Actions/DemoProgressBarDebug.action.asset`
-  - тип: `UIProgressBarDebugLogAction`.
-
-## UPM Экспорт
-- Пакет оформлен прямо в `Assets/UIControls` (без дублирования исходников).
-- Подключение из другого проекта через Unity Package Manager:
-  - `https://github.com/GladFox/UIControls.git?path=Assets/UIControls`
-- Это позволяет продолжать разработку контролов в текущем проекте и одновременно использовать их как UPM-библиотеку.
-- В пакет добавлены:
-  - `Assets/UIControls/package.json`
-  - `Assets/UIControls/README.md`
-  - `Assets/UIControls/CHANGELOG.md`
-  - `Assets/UIControls/Editor/UIControls.Editor.asmdef`
-- В `package.json` явно объявлены зависимости `com.unity.ugui` и `com.unity.textmeshpro`.
-- Примеры для импорта через Package Manager (`Samples`) добавляются в:
-  - `Assets/UIControls/Samples~/...`
-  - текущий набор: `Samples~/DemoScenes` (`UIControlsDemo.unity`, `UIProgressBarDemo.unity`, `UITabSliderDemo.unity`, `UIRubberBandPrototype.unity` + sample art).
-- `UIControls.Runtime.asmdef` ссылается на `UnityEngine.UI` (а не на package-id `Unity.ugui`), чтобы корректно резолвиться в импортированных проектах.
-- Зависимость от `DOTween.Modules` убрана: UI-твины `Graphic/CanvasGroup/RectTransform` реализованы через `DOTween.To(...)` в `UIDOTweenUtility`.
-- Для `DG.Tweening` настроена явная линковка в `UIControls.Runtime.asmdef` через `overrideReferences + precompiledReferences: ["DOTween.dll"]`.
-
-## Пример кастомного действия
+## Пример кастомного SO-действия кнопки
 ```csharp
 using UIControls.Runtime.Controls;
 using UnityEngine;
@@ -160,16 +165,18 @@ public sealed class UIButtonPlaySoundAction : UIButtonCustomAction
 {
     public override void OnClick(UIButtonControl button)
     {
-        // Вызов вашей аудио-библиотеки
         // MyAudioFacade.Instance.Play("ui_click");
     }
 }
 ```
 
 ## Ограничения текущей версии
-- Полная визуальная проверка demo требует запуска сцены в Unity Editor.
+- Полная визуальная проверка demo требует запуска в Unity Editor; для регрессий применяется
+  play-mode зонд (editor-метод + `EnterPlaymode` + логирование позиций/альфы).
+- Сборка сцен требует свободного инстанса Unity (lockfile) — билдеры запускаются по одному с
+  ожиданием выхода процесса.
 
 ## План развития
-- Добавить prefab-набор на базе демо-контролов.
-- Добавить анимированные `Dropdown`, `Tabs`, `Slider`.
-- Добавить editor-валидаторы и контроль обязательных ссылок.
+- Объединить дубли (`UISegmentedControl`/`UITabSliderControl`, `UITabBarControl`).
+- Prefab-набор на базе демо-контролов и editor-валидаторы обязательных ссылок.
+- Опционально: новые категории контролов поверх текущего фундамента.

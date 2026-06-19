@@ -1,159 +1,39 @@
-﻿# Active Context
+# Active Context
+
+## Текущее состояние
+- Библиотека выросла до ~50 контролов по категориям A–I поверх базы
+  (`Button/Toggle/Modal/ProgressBar/TabSlider`). Пакет `0.20.0`.
+- Категории A–E смерджены в `main` отдельными PR. Категории **F, G, H, I**, контрол
+  **`UISideMenu`** и реорганизация демо-сцен по папкам — в ветке `feature/uiCategoryFGHI`
+  (открытый **PR #16**, base `main`, стоит поверх PR #15 = категория E).
+- Все демо-сцены разложены по категорийным подпапкам в `Assets/Scenes/` и `Samples~`.
 
 ## Текущие задачи
-- [x] [REQUIREMENTS_OWNER] Формализовать требования и критерии приемки v0.1
-- [x] [ARCHITECT] Подтвердить архитектуру Core + Controls на uGUI + DOTween
-- [x] [IMPLEMENTER] Реализовать runtime-контролы и общие анимационные примитивы
-- [x] [IMPLEMENTER] Подготовить статичную demo-сцену для UIButtonControl, UIToggleControl, UIProgressBarControl
-- [x] [IMPLEMENTER] Убрать runtime-генерацию UI из demo и перейти на сериализуемые ссылки
-- [x] [IMPLEMENTER] Добавить SO-пресеты визуальных состояний кнопки и SO-хуки для кастомной логики
-- [x] [IMPLEMENTER] Расширить `UIButtonCustomAction` на события hover/down/up/click/submit/state
-- [x] [REVIEWER/QA] Проверить сборку после расширения событий
-- [x] [DOCS_WRITER] Синхронизировать local/README.md, systemPatterns.md, Memory Bank
-- [x] [REQUIREMENTS_OWNER] Подготовить ТЗ для `UIProgressBarControl` v2 (segmented + hitbar echo)
-- [x] [ARCHITECT] Зафиксировать API/события/режимы совместимости для v2 ProgressBar
-- [x] [DOCS_WRITER] Оформить ТЗ в отдельный документ `local/TZ_UIProgressBarControl_Segmented_Hitbar.md`
-- [x] [IMPLEMENTER] Реализовать `UIProgressBarControl` v2 c суммированием `useSegments + useHitBar`
-- [x] [IMPLEMENTER] Добавить `UIProgressBarCustomAction` для value/segment/echo событий
-- [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после реализации ProgressBar v2
-- [x] [REQUIREMENTS_OWNER] Зафиксировать сценарий полноценного demo использования ProgressBar v2
-- [x] [ARCHITECT] Подтвердить статичный demo-flow (контролы на сцене, без runtime создания)
-- [x] [IMPLEMENTER] Обновить `UIControlsDemoPresenter` под сценарий damage/heal/reset/auto-damage
-- [x] [IMPLEMENTER] Пересобрать `UIControlsDemoSceneBuilder` под hitbar + segments + event status
-- [x] [IMPLEMENTER] Добавить пример `UIProgressBarDebugLogAction` и интеграцию в demo builder
-- [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после demo-изменений
-- [x] [REQUIREMENTS_OWNER] Уточнить формат: вынести ProgressBar demo в отдельную сцену
-- [x] [ARCHITECT] Разделить базовый `UIControlsDemo` и специализированный `UIProgressBarDemo`
-- [x] [IMPLEMENTER] Восстановить базовые `UIControlsDemoPresenter/UIControlsDemoSceneBuilder`
-- [x] [IMPLEMENTER] Добавить `UIProgressBarDemoPresenter/UIProgressBarDemoSceneBuilder`
-- [x] [DOCS_WRITER] Синхронизировать README/systemPatterns/Memory Bank под две demo-сцены
-- [x] [REQUIREMENTS_OWNER] Уточнить demo: добавить `Auto Heal` как взаимоисключающий режим с `Auto Damage`
-- [x] [ARCHITECT] Подтвердить стратегию: взаимоисключение на уровне `UIProgressBarDemoPresenter`, два отдельных `UIToggleControl` на сцене
-- [x] [IMPLEMENTER] Расширить `UIProgressBarDemoPresenter` и `UIProgressBarDemoSceneBuilder` под `Auto Damage + Auto Heal`
-- [x] [IMPLEMENTER] Перевести ProgressBar demo на авто-генерацию делений и добавить fallback sprite для `Image.Type.Filled`
-- [x] [IMPLEMENTER] Исправить бесконечное размножение `AutoSegment/AutoDivider` при авто-генерации делений
-- [x] [IMPLEMENTER] Обновить ProgressBar demo так, чтобы пример автонабора энергии был виден сразу при запуске
-- [x] [REQUIREMENTS_OWNER] Пересобрать сценарий ProgressBar demo под два независимых потока: `Health HitBar` + `Energy Charge`
-- [x] [ARCHITECT] Зафиксировать целевое поведение: урон с echo rollback, лечение с мгновенным HP-applied, энергия `0..3` за `6s` с сегментами
-- [x] [IMPLEMENTER] Переработать `UIProgressBarDemoPresenter` под независимую логику `Health` и `Energy`
-- [x] [IMPLEMENTER] Обновить `UIProgressBarDemoSceneBuilder` под новую компоновку и визуализацию energy-режима
-- [x] [IMPLEMENTER] Добавить в `UIProgressBarControl` флаг `useEchoTimingOnIncrease` для echo-анимации при росте
-- [x] [REQUIREMENTS_OWNER] Добавить в ProgressBar demo действие расхода одного супер-деления энергии
-- [x] [IMPLEMENTER] Добавить кнопку `Spend 1 Super` в `UIProgressBarDemoSceneBuilder` и привязку к презентеру
-- [x] [IMPLEMENTER] Реализовать списание одного energy-сегмента в `UIProgressBarDemoPresenter`
-- [x] [IMPLEMENTER] Добавить fallback для старой сцены: `AutoDamage` toggle работает как триггер `Spend 1 Super`, если кнопка не назначена
-- [x] [REQUIREMENTS_OWNER] Подготовить UPM-формат библиотеки для экспорта в другие проекты без ухудшения локальной разработки
-- [x] [ARCHITECT] Подтвердить стратегию: package root в `Assets/UIControls` + подключение через git `?path=Assets/UIControls`
-- [x] [IMPLEMENTER] Добавить UPM metadata (`package.json`, `README`, `CHANGELOG`, `LICENSE`) и `UIControls.Editor.asmdef`
-- [x] [REQUIREMENTS_OWNER] Добавить в UPM пакет импортируемые примеры (`Samples`) со сценами контролов
-- [x] [IMPLEMENTER] Сформировать `Samples~/DemoScenes` с `UIControlsDemo` и `UIProgressBarDemo`
-- [x] [IMPLEMENTER] Развязать GUID sample-ассетов от `Assets/ThirdParty`, чтобы samples были автономными
-- [x] [REQUIREMENTS_OWNER] Исправить импорт UPM в чистый проект: устранить `Assembly Definition Reference = null` для `uGUI`/`DOTween`
-- [x] [IMPLEMENTER] Обновить `UIControls.Runtime.asmdef`: `Unity.ugui` -> `UnityEngine.UI`
-- [x] [IMPLEMENTER] Убрать обязательную ссылку на `DOTween.Modules` через внутренний `UIDOTweenUtility` (`DOTween.To` для UI-компонентов)
-- [x] [REQUIREMENTS_OWNER] Поднять версию UPM-пакета, чтобы пользователи видели обновление в Package Manager
-- [x] [IMPLEMENTER] Обновить `Assets/UIControls/package.json` до `0.1.1` и зафиксировать изменения в `CHANGELOG.md`
-- [x] [REQUIREMENTS_OWNER] Сделать явную линковку на DOTween в asmdef пакета
-- [x] [IMPLEMENTER] Настроить `UIControls.Runtime.asmdef` на `overrideReferences + precompiledReferences: ["DOTween.dll"]`
-- [x] [IMPLEMENTER] Поднять версию пакета до `0.1.2` и обновить changelog
-- [x] [REQUIREMENTS_OWNER] Исправить ошибку импорта `TMPro` в `PackageCache` (Editor demo builders)
-- [x] [IMPLEMENTER] Добавить `Unity.TextMeshPro` reference в `UIControls.Editor.asmdef`
-- [x] [IMPLEMENTER] Добавить dependency `com.unity.textmeshpro` в `package.json`
-- [x] [IMPLEMENTER] Поднять версию пакета до `0.1.3` и обновить changelog
-- [x] [REQUIREMENTS_OWNER] Включить все тестовые сцены в UPM samples
-- [x] [IMPLEMENTER] Добавить `UITabSliderDemo` и `UIRubberBandPrototype` в `Samples~/DemoScenes/Scenes`
-- [x] [IMPLEMENTER] Поднять версию пакета до `0.1.4` и обновить changelog
-- [x] [DOCS_WRITER] Обновить `local/README.md` с инструкцией установки пакета через UPM
-- [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок demo и прогрессбара
-- [x] [DOCS_WRITER] Обновить `local/README.md` и Memory Bank под новый demo-flow
-- [x] [REQUIREMENTS_OWNER] Уточнить доработки demo: убрать echo-артефакт на heal и показать режим плавного заполнения делений
-- [x] [ARCHITECT] Подтвердить решение: два синхронных demo-бара (HitBar + FillBlocks) на одном сценарии ввода
-- [x] [IMPLEMENTER] Расширить `UIProgressBarControl` полями `segmentFillSprite/segmentDividerSprite/hideEchoOnIncrease`
-- [x] [IMPLEMENTER] Обновить `UIProgressBarDemoPresenter` для синхронизации второго demo-бара
-- [x] [IMPLEMENTER] Обновить `UIProgressBarDemoSceneBuilder` с использованием текстур `Slider_HealthBar_Boss`
-- [x] [REVIEWER/QA] Проверить сборку `UIControls.Runtime.csproj` после доработок
-- [x] [DOCS_WRITER] Синхронизировать README и Memory Bank
+- [x] [DOCS_WRITER] Привести `local/README.md` и Memory Bank в соответствие с проделанной работой A–I.
+- [ ] Ожидается ревью/мёрж PR #15 (E), затем PR #16 (F–I + SideMenu) — мёрж выполняет пользователь.
 
-## Последние изменения
-- `UIProgressBarDemoPresenter` расширен вторым toggle:
-  - добавлен `autoHealToggle` и периодический heal-шаг (`autoHealStep`);
-  - `Auto Damage` и `Auto Heal` теперь взаимоисключаются через безопасное переключение без рекурсивных callback.
-- `UIProgressBarDemoSceneBuilder` обновлен:
-  - создаются два toggle-блока (`AutoDamageToggle`, `AutoHealToggle`);
-  - оба toggle привязываются к сериализуемым полям презентера;
-  - верхний demo-bar настроен как `useSegments + useHitBar` в `DividersOnly` с текстурами `Slider_HealthBar_Boss`;
-  - добавлен нижний demo-bar в режиме `FillBlocks` для визуализации плавного заполнения делений;
-  - оба бара синхронизируются от общих кнопок/auto-тогглов.
-- `UIProgressBarControl` доработан для стабильной визуализации:
-  - fallback sprite для `Image.Type.Filled`, чтобы `fillAmount` и echo работали даже при пустом `sprite`;
-  - поддержка авто-генерации сегментов/разделителей и pulse-таргета для `DividersOnly`;
-  - добавлены `segmentFillSprite` и `segmentDividerSprite` для стилизации автогенерации;
-  - добавлен `hideEchoOnIncrease`, чтобы убрать эхо-артефакт при heal;
-  - авто-генерация переведена на отдельный служебный контейнер, добавлена очистка legacy-объектов, устранено бесконечное накопление `AutoSegment/AutoDivider`.
-- `UIProgressBarDemo` обновлен для демонстрации автонабора энергии из коробки:
-  - `Auto Heal` включен по умолчанию;
-  - стартовое значение снижено (`startValue = 0.35`), чтобы рост был виден сразу;
-  - в презентер добавлен fallback-сценарий `enableAutoHealExampleOnStart`.
-- `UIProgressBarDemoPresenter` переписан под отдельные режимы:
-  - `Health` (`Damage/Heavy/Heal/Reset`) работает как hitbar: при уроне visible echo, при лечении HP применяется мгновенно;
-  - `Energy` автоматически заполняется от `0` до `3` за `6` секунд, сегменты фиксируются по событию заполнения;
-  - legacy toggle/label из старой сцены скрываются на старте, чтобы не мешать новому сценарию.
-- `UIProgressBarDemoSceneBuilder` обновлен:
-  - удалены `Auto Damage/Auto Heal` toggle из генерации;
-  - добавлен отдельный `Energy` label;
-  - нижний бар строится как `3` сегмента с echo-поведением на росте.
-- `UIProgressBarControl` расширен полем `useEchoTimingOnIncrease`:
-  - позволяет для роста использовать `echoDelay/echoDuration` вместо обычной `tween` длительности.
-- Добавлен сценарий расхода супер-энергии:
-  - в новом builder-flow создается кнопка `Spend 1 Super` и привязывается к `UIProgressBarDemoPresenter`;
-  - при нажатии списывается ровно один сегмент `1 / energySegments`, а авто-набор продолжает заполнение от обновленной точки;
-  - для текущей (legacy) сцены без новой кнопки включен fallback через `AutoDamage` toggle, переименованный в `Spend 1 Super`.
-- Подготовлен UPM-формат библиотеки без переноса исходников:
-  - package root: `Assets/UIControls`;
-  - добавлены `package.json`, `README.md`, `CHANGELOG.md`, `LICENSE.md`;
-  - добавлен `Assets/UIControls/Editor/UIControls.Editor.asmdef`;
-  - установка из другого проекта: `https://github.com/GladFox/UIControls.git?path=Assets/UIControls`.
-- Добавлены UPM Samples:
-  - `Assets/UIControls/Samples~/DemoScenes/Scenes/UIControlsDemo.unity`;
-  - `Assets/UIControls/Samples~/DemoScenes/Scenes/UIProgressBarDemo.unity`;
-  - `Assets/UIControls/Samples~/DemoScenes/Art/Slider/*` (локальные копии текстур для demo).
-- Для sample-артов сгенерированы новые GUID и обновлены ссылки в `UIProgressBarDemo.unity`, чтобы убрать коллизию с исходными `Assets/ThirdParty/...`.
-- `Assets/UIControls/package.json` дополнен блоком `samples` (`Demo Scenes`).
-- Исправлена совместимость asmdef для UPM-импорта в новый проект:
-  - `UIControls.Runtime.asmdef` теперь использует ссылку `UnityEngine.UI`;
-  - удалена ссылка `DOTween.Modules` из asmdef;
-  - добавлен `UIDOTweenUtility` и заменены `DOAnchorPos/DOColor/DOFade/DOSizeDelta` на `DOTween.To`-адаптеры.
-- Выполнена проверка коммитов от контрольной точки:
-  - `git log 57700e3... --oneline` -> включает `7b675f1 add UPM package layout for uicontrols export` и последующие коммиты в `main`.
-  - `git log a1c5edd... --oneline` -> `481562d add UPM demo scenes sample`.
-  - `git log 481562d... --oneline` -> `12cc6e3 update memory bank checkpoint after samples commit`, `4ad3b18 fix asmdef refs for UPM import and remove DOTween.Modules dependency`.
-  - `git log 4ad3b18... --oneline` -> `70beccb sync memory bank after asmdef compatibility fix`, `31f9feb bump UPM package version to 0.1.1`.
-  - `git log 31f9feb... --oneline` -> `636faab update memory bank checkpoint for 0.1.1 release`, `bfba25e configure explicit DOTween asmdef link and bump package to 0.1.2`.
-  - `git log bfba25e... --oneline` -> `6e993d3 sync memory bank checkpoint after DOTween asmdef link`, `3d8c7b9 fix TMPro references in UPM package and bump to 0.1.3`.
-  - `git log 3d8c7b9... --oneline` -> `0b0cb6b sync memory bank checkpoint after TMPro fix`, `ddb7433 include all test scenes in UPM samples and bump to 0.1.4`.
-- Поднята версия UPM-пакета до `0.1.1`:
-  - обновлен `Assets/UIControls/package.json`;
-  - обновлен `Assets/UIControls/CHANGELOG.md` с перечнем исправлений UPM-совместимости и samples.
-- Явно настроена линковка DOTween:
-  - `UIControls.Runtime.asmdef` использует `precompiledReferences: ["DOTween.dll"]` при `overrideReferences: true`;
-  - зависимость от `DOTween.Modules.asmdef` по-прежнему не требуется.
-- Версия UPM-пакета повышена до `0.1.2` с записью в `CHANGELOG.md`.
-- Исправлена UPM-совместимость для TextMeshPro:
-  - `UIControls.Editor.asmdef` теперь явно ссылается на `Unity.TextMeshPro`;
-  - `package.json` дополнен зависимостью `com.unity.textmeshpro: 3.0.6`;
-  - версия пакета повышена до `0.1.3`.
-- В UPM sample `DemoScenes` добавлены все актуальные тестовые сцены:
-  - `UIControlsDemo.unity`
-  - `UIProgressBarDemo.unity`
-  - `UITabSliderDemo.unity`
-  - `UIRubberBandPrototype.unity`
-- Версия пакета повышена до `0.1.4` с записью в changelog.
+## Последние изменения (ветка feature/uiCategoryFGHI)
+- **F (gameplay):** VirtualJoystick, RadialMenu, Knob, NumberTicker, ReorderableList(+Item), SwipeCard.
+- **G (navigation):** TabBar, Pagination, Breadcrumbs, WizardSteps, FloatingActionButton, SideMenu.
+- **H (forms):** Dropdown, WheelPicker, PasswordField, TagInput, ValueSlider.
+- **I (data/overlay):** ContextMenu, TreeView (`UITreeNodeControl`), Gauge, Avatar, EmptyState, Banner.
+- Добавлен общий `UIDemoSceneFactory` для билдеров E–I (+ хелпер `InputField`).
+- Реорганизация: 26 старых демо-сцен (A–E + Basics) перенесены `git mv` в папки категорий;
+  поправлены `ScenePath` билдеров и пути в `EditorBuildSettings.asset`.
+- Фиксы:
+  - `UIBannerControl` — видимость через `CanvasGroup`, не `SetActive` на собственном объекте.
+  - `UISideMenu` — backdrop перекрывал триггер → `SetActive(false)` в закрытом состоянии.
+  - `UISideMenu` — **закоммичены пропавшие `.meta`** (была причина «missing script» у пользователя).
+  - `UISideMenu` — тайминги под Brawl-Stars (OutBack + pop-scale + плотный stagger).
+  - `UISideMenu` — поддержка всех 4 краёв с адаптивной раскладкой колонка↔строка.
 
 ## Следующие шаги
-- Пересобрать сцену `Assets/Scenes/UIProgressBarDemo.unity` через меню:
-  - `UIControls/Create ProgressBar Demo Scene`
-- Визуально проверить в Unity Editor новую конфигурацию `UIProgressBarDemo`:
-  - верхний `Health` бар (damage/heal semantics);
-  - нижний `Energy` бар (`0..3` за `6s`, сегментная фиксация цветов).
-- Проверить импорт UPM-пакета в чистом Unity-проекте через git URL с `?path=Assets/UIControls`.
-- Проверить импорт sample `Demo Scenes` через `Package Manager > Samples`.
+- После мёржа #15 и #16 обновить `last_checked_commit` в `progress.md` на свежий `main`.
+- Возможный рефактор: устранить дубли `Segmented`/`TabSlider`/`TabBar`.
+- При желании пользователя — новые категории контролов поверх текущего фундамента.
+
+## Дисциплина (из AGENTS.md)
+- Один PR = одна ветка, обязателен worktree, работа не завершена без `git push`.
+- Перед задачей читать Memory Bank; при изменении архитектуры/API — обновлять `local/README.md`
+  и при необходимости `systemPatterns.md`/`techContext.md`.
+- **`.meta` всегда коммитить вместе с `.cs`/сценой** (иначе «missing script» на чужой машине).

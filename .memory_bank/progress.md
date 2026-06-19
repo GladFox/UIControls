@@ -112,18 +112,58 @@
 - Выполнена проверка сборки после изменений:
   - `dotnet build UIControls.Runtime.csproj` (успешно, с известными предупреждениями Unity/SDK).
 
+### Категории контролов A–I (пакет до 0.20.0)
+- Проект апгрейднут до Unity `6000.4.9f1`; демо-сцены генерируются editor-билдерами через
+  `-batchmode -executeMethod ...Create<Xxx>DemoSceneBatch`.
+- **A — selection/sliders:** `UISegmentedControl`, `UIChipGroup`, `UIStepperControl`,
+  `UIRangeSliderControl` (+ базовый `UITabSliderControl`).
+- **B — overlays:** `UIBottomSheetControl`, `UIToastControl`, `UIAccordionControl`,
+  `UITooltipControl` (+ `UITooltipTrigger`).
+- **C — scrolling:** `UIPullToRefreshControl`, `UIVirtualListControl`, `UICarouselControl`
+  (свайп-флик + autoplay ping-pong), `UIInfiniteScrollControl`.
+- **D — input:** `UIOTPInputControl`, `UISearchFieldControl`, `UIDatePickerControl`
+  (навигация месяц/год), `UIStarRatingControl`, `UIColorPickerControl` (pivot-независимый курсор).
+- **E — feedback:** `UISkeletonLoaderControl`, `UICircularProgressControl`, `UIBadgeControl`,
+  `UIRippleEffectControl`, `UIMarqueeControl`.
+- **F — gameplay:** `UIVirtualJoystickControl`, `UIRadialMenuControl`, `UIKnobControl`,
+  `UINumberTickerControl`, `UIReorderableListControl` (+ `UIReorderableItem`), `UISwipeCardControl`.
+- **G — navigation:** `UITabBarControl`, `UIPaginationControl`, `UIBreadcrumbsControl`,
+  `UIWizardStepsControl`, `UIFloatingActionButtonControl`, `UISideMenuControl` (4 края, адаптивная
+  раскладка колонка↔строка, Brawl-Stars pop).
+- **H — forms:** `UIDropdownControl`, `UIWheelPickerControl`, `UIPasswordFieldControl`,
+  `UITagInputControl`, `UIValueSliderControl`.
+- **I — data/overlay:** `UIContextMenuControl`, `UITreeNodeControl`, `UIGaugeControl`,
+  `UIAvatarControl`, `UIEmptyStateControl`, `UIBannerControl`.
+- Введён общий `UIDemoSceneFactory` (camera/canvas/panel, Text/Button/Image/InputField, SetRef*).
+- Все демо-сцены (A–I + Basics) разложены по категорийным подпапкам в `Assets/Scenes/` и `Samples~`;
+  поправлены `ScenePath` билдеров и пути в `EditorBuildSettings.asset`.
+- Категории A–E смерджены в `main`; F/G/H/I + SideMenu + реорг — в открытом PR #16 (поверх PR #15=E).
+
 ## Известные проблемы
 - Полноценная визуальная проверка UX demo-сцены требует запуска в Unity Editor.
-- `dotnet build` выводит предупреждения по конфликтам `System.Net.Http`/`System.Security.Cryptography.*` в Unity окружении.
-- Невозможно выполнить Unity `-batchmode` для этого проекта, пока он открыт во втором инстансе Unity.
-- Локальная `dotnet build` проверка сейчас также зависит от доступности Unity SourceGenerators DLL в установленном Editor.
+- Билдеры нельзя запускать параллельно: lockfile `Temp/UnityLockfile` и лицензионный хендшейк дают
+  read-only / rc=1. Запуск строго по одному с ожиданием выхода процесса.
+- Модульные DOTween-шорткаты (`DOAnchorPos*`, `DOSizeDelta`, `Graphic.DOColor`) недоступны →
+  только `UIDOTweenUtility`.
+- `dotnet build` выводит предупреждения по конфликтам `System.Net.Http`/`System.Security.Cryptography.*`.
+
+### Усвоенные уроки (по багам)
+- `.meta` обязательно коммитить вместе с `.cs`/сценой — иначе на чужой машине новый GUID и
+  «missing script» (кейс `UISideMenuControl`: панель «не выезжала» именно из-за этого).
+- Контрол не должен прятать собственный объект `SetActive(false)` в `OnEnable` — реактивация
+  повторно вызывает `OnEnable` (кейс `UIBannerControl`: сообщения не появлялись). Видимость — через
+  `CanvasGroup`; бэкдропы — на отдельном объекте.
+- `UIButtonControl` — только на graphic-less корне + дочерний `Bg` (иначе белый-override на Normal).
+- MonoBehaviour = один файл по имени класса (кейс `UITooltipTrigger`).
 
 ## Развитие решений
-- Пересобрать `UIProgressBarDemo.unity` через `UIControls/Create ProgressBar Demo Scene` и визуально проверить оба demo-бара.
-- После визуального прохода в Unity Editor зафиксировать финальные значения размеров/отступов для обеих demo-сцен.
-- Добавить prefab-набор для типовых сценариев ProgressBar v2 (segmented, hitbar, combined).
+- После мёржа PR #15 (E) и PR #16 (F–I + SideMenu) обновить `last_checked_commit` на свежий `main`.
+- Устранить дубли `UISegmentedControl`/`UITabSliderControl`/`UITabBarControl`.
+- Добавить prefab-набор и editor-валидаторы обязательных ссылок.
 - Прогнать проверку импорта samples в чистом Unity-проекте через `Package Manager > Samples`.
 
 ## Контроль изменений
-- last_checked_commit: ddb7433
-- last_checked_date: 2026-05-20
+- last_checked_commit: 94a7988
+- last_checked_date: 2026-06-20
+- Диапазон с прошлой отметки: `git log ddb7433..94a7988` — 46 коммитов (категории A3→I, SideMenu,
+  фиксы, реорганизация демо-сцен по папкам, версии пакета до 0.20.0).
