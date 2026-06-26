@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.20.1 - 2026-06-26
+
+### UIProgressBarControl — editor scene pollution fix
+
+Three bugs combined caused `AutoDivider_*` / `AutoSegment_*` objects to accumulate
+in the root of the editor scene and persist after stopping Play mode:
+
+- **`delayCall` accumulation** — `OnValidate` added `OnValidateDelayed` to
+  `EditorApplication.delayCall` with `+=` every call without first removing it,
+  so N Inspector changes before the next frame triggered N full rebuilds.
+  Fixed by doing `delayCall -= OnValidateDelayed` before `+=`.
+- **Deferred callback survived Play→Edit transition** — a `delayCall` registered
+  during Play mode could fire after Unity restored the Edit-mode scene, running
+  `EnsureSegmentVisuals()` in an edit context and creating `new GameObject` objects
+  that then persisted permanently. Fixed by calling `EnsureSegmentVisuals()` inline
+  (no deferral) when `Application.isPlaying` is true during `OnValidate`.
+- **No `OnDestroy` cleanup** — removing the component or its GameObject in the
+  Editor left all generated child objects alive. Added `OnDestroy` that cancels
+  any pending `delayCall` subscription and calls `ClearGeneratedVisuals()`.
+
 ## 0.20.0 - 2026-06-08
 
 Categories F–I (22 new controls) and a shared `UIDemoSceneFactory` backing the

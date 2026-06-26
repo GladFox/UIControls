@@ -187,7 +187,22 @@ namespace UIControls.Runtime.Controls
             EnsureFilledImageSprite(echoFillImage);
 
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.delayCall += OnValidateDelayed;
+            // During play mode apply immediately — deferred callbacks can outlive play mode
+            // and fire after scene restoration, creating persistent editor objects.
+            if (Application.isPlaying)
+            {
+                SyncFillImageMode(fillImage);
+                SyncFillImageMode(primaryFillImage);
+                SyncFillImageMode(echoFillImage);
+                EnsureSegmentVisuals();
+            }
+            else
+            {
+                // -= before += prevents accumulation when OnValidate fires multiple times
+                // before delayCall fires (each += would schedule an extra rebuild).
+                UnityEditor.EditorApplication.delayCall -= OnValidateDelayed;
+                UnityEditor.EditorApplication.delayCall += OnValidateDelayed;
+            }
 #else
             EnsureSegmentVisuals();
 #endif
@@ -220,6 +235,15 @@ namespace UIControls.Runtime.Controls
         {
             KillAllTweens();
             controlSegmentStateAnimator.Kill();
+        }
+
+        private void OnDestroy()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall -= OnValidateDelayed;
+#endif
+            ClearGeneratedVisuals();
+            generatedSegmentsContainer = null;
         }
 
         public void SetUseSegments(bool enabled, bool syncVisual = true)
