@@ -68,6 +68,8 @@ namespace UIControls.Runtime.Controls
         [SerializeField] private BarFillMode fillMode = BarFillMode.ImageFill;
         [SerializeField] private TMP_Text valueLabel;
         [SerializeField] private string valueFormat = "{0:0%}";
+        [Min(1f)]
+        [SerializeField] private float maxValue = 100f;
 
         [Range(0f, 1f)]
         [SerializeField] private float value = 1f;
@@ -753,7 +755,14 @@ namespace UIControls.Runtime.Controls
                 return;
             }
 
-            valueLabel.text = string.Format(CultureInfo.InvariantCulture, valueFormat, currentValue);
+            // {0} = normalized 0–1, {1} = current absolute, {2} = maxValue
+            // e.g. "{1:0}/{2:0}" → "750/1000",  "{0:0%}" → "75%"
+            valueLabel.text = string.Format(
+                CultureInfo.InvariantCulture,
+                valueFormat,
+                currentValue,
+                currentValue * maxValue,
+                maxValue);
         }
 
         private void ResetSegmentTracking()

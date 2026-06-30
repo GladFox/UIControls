@@ -15,6 +15,7 @@ namespace UIControls.Editor
         SerializedProperty _valueFormat;
         SerializedProperty _value;
         SerializedProperty _animateLabel;
+        SerializedProperty _maxValue;
         SerializedProperty _tween;
 
         // Segments
@@ -66,6 +67,7 @@ namespace UIControls.Editor
             _valueFormat = serializedObject.FindProperty("valueFormat");
             _value       = serializedObject.FindProperty("value");
             _animateLabel = serializedObject.FindProperty("animateLabel");
+            _maxValue    = serializedObject.FindProperty("maxValue");
             _tween       = serializedObject.FindProperty("tween");
 
             _useSegments          = serializedObject.FindProperty("useSegments");
@@ -136,7 +138,9 @@ namespace UIControls.Editor
             if (_valueLabel.objectReferenceValue != null)
             {
                 EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(_maxValue);
                 EditorGUILayout.PropertyField(_valueFormat);
+                EditorGUILayout.HelpBox("{0} = normalized (0–1)   {1} = current × maxValue   {2} = maxValue\nExamples:  {0:0%} → \"75%\"     {1:0}/{2:0} → \"750/1000\"", MessageType.None);
                 EditorGUILayout.PropertyField(_animateLabel);
                 EditorGUI.indentLevel--;
             }
