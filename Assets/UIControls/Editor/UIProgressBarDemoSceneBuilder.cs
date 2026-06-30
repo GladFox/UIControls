@@ -47,64 +47,64 @@ namespace UIControls.Editor
             var canvas = CreateCanvas();
             var panel = CreatePanel(canvas.transform as RectTransform);
 
-            var title = CreateText("Title", panel, new Vector2(0f, 295f), new Vector2(760f, 50f),
-                "UIControls ProgressBar Demo", 34, FontStyles.Bold, TextAlignmentOptions.Center);
+            // Panel: 980 × 820  →  y range −410 … +410
+            // Vertical rhythm: 40 px gap between sections, 20 px inside section.
+            var title = CreateText("Title", panel, new Vector2(0f, 370f), new Vector2(820f, 58f),
+                "UIControls ProgressBar Demo", 36, FontStyles.Bold, TextAlignmentOptions.Center);
             title.color = new Color(0.92f, 0.95f, 1f, 1f);
 
-            var subtitle = CreateText("Subtitle", panel, new Vector2(0f, 258f), new Vector2(900f, 36f),
-                "Top: Health HitBar · Middle: Energy segments · Bottom: plain segmented bar", 20, FontStyles.Italic, TextAlignmentOptions.Center);
+            var subtitle = CreateText("Subtitle", panel, new Vector2(0f, 320f), new Vector2(900f, 40f),
+                "Top: Health HitBar  ·  Middle: Energy segments  ·  Bottom: plain segmented bar",
+                20, FontStyles.Italic, TextAlignmentOptions.Center);
             subtitle.color = new Color(0.73f, 0.82f, 0.95f, 1f);
 
             var sliderBackgroundSprite = AssetDatabase.LoadAssetAtPath<Sprite>(SliderBackgroundSpritePath);
             var sliderFillSprite = AssetDatabase.LoadAssetAtPath<Sprite>(SliderFillSpritePath);
             var sliderDividerSprite = AssetDatabase.LoadAssetAtPath<Sprite>(SliderDividerSpritePath);
 
+            // ── HitBar ──────────────────────────────────────────────────── y ≈ 215
             var progressBar = CreateHitBarProgressBar(
-                panel,
-                new Vector2(0f, 170f),
-                sliderBackgroundSprite,
-                sliderFillSprite,
-                sliderDividerSprite);
+                panel, new Vector2(0f, 215f),
+                sliderBackgroundSprite, sliderFillSprite, sliderDividerSprite);
 
+            // ── Energy bar ──────────────────────────────────────────────── y ≈ 80
             var segmentFillBar = CreateEnergyProgressBar(
-                panel,
-                new Vector2(0f, 70f),
-                sliderBackgroundSprite,
-                sliderFillSprite,
-                sliderDividerSprite);
+                panel, new Vector2(0f, 80f),
+                sliderBackgroundSprite, sliderFillSprite, sliderDividerSprite);
 
             var segmentModeLabel = CreateText(
-                "SegmentModeLabel", panel, new Vector2(0f, 34f), new Vector2(860f, 28f),
-                "Energy recharge: 0 → 3 in 6s, each completed segment locks to main color.",
-                17, FontStyles.Italic, TextAlignmentOptions.Center);
+                "SegmentModeLabel", panel, new Vector2(0f, 30f), new Vector2(860f, 32f),
+                "Energy recharge: 0 → 3 in 6 s, each completed segment locks to green.",
+                18, FontStyles.Italic, TextAlignmentOptions.Center);
             segmentModeLabel.color = new Color(0.8f, 0.88f, 0.98f, 1f);
 
-            var energyLabel = CreateText("EnergyValue", panel, new Vector2(0f, 6f), new Vector2(460f, 28f),
-                "Energy 0.00/3", 19, FontStyles.Bold, TextAlignmentOptions.Center);
+            var energyLabel = CreateText("EnergyValue", panel, new Vector2(0f, -8f), new Vector2(460f, 32f),
+                "Energy 0.00 / 3", 20, FontStyles.Bold, TextAlignmentOptions.Center);
             energyLabel.color = new Color(0.98f, 0.92f, 0.55f, 1f);
 
+            // ── Simple segmented ─────────────────────────────────────────  y ≈ −80
             var simpleBar = CreateSimpleSegmentedProgressBar(
-                panel,
-                new Vector2(0f, -48f),
-                sliderBackgroundSprite,
-                sliderFillSprite,
-                sliderDividerSprite);
+                panel, new Vector2(0f, -80f),
+                sliderBackgroundSprite, sliderFillSprite, sliderDividerSprite);
 
             var simpleBarLabel = CreateText(
-                "SimpleBarLabel", panel, new Vector2(0f, -85f), new Vector2(860f, 26f),
+                "SimpleBarLabel", panel, new Vector2(0f, -128f), new Vector2(860f, 30f),
                 "Plain segmented bar — 5 segments, no echo, no text label.",
-                16, FontStyles.Italic, TextAlignmentOptions.Center);
+                18, FontStyles.Italic, TextAlignmentOptions.Center);
             simpleBarLabel.color = new Color(0.65f, 0.75f, 0.9f, 1f);
 
-            var damageButton = CreateActionButton(panel, "DamageButton", new Vector2(-255f, -145f), "Damage -12%", new Color(0.85f, 0.28f, 0.28f, 1f));
-            var heavyDamageButton = CreateActionButton(panel, "HeavyDamageButton", new Vector2(-85f, -145f), "Heavy -35%", new Color(0.75f, 0.17f, 0.17f, 1f));
-            var healButton = CreateActionButton(panel, "HealButton", new Vector2(85f, -145f), "Heal +8%", new Color(0.2f, 0.62f, 0.35f, 1f));
-            var resetButton = CreateActionButton(panel, "ResetButton", new Vector2(255f, -145f), "Reset", new Color(0.24f, 0.47f, 0.82f, 1f));
-            var spendSuperButton = CreateActionButton(panel, "SpendSuperButton", new Vector2(0f, -207f), "Spend 1 Super", new Color(0.92f, 0.74f, 0.18f, 1f));
-            ConfigureButtonSize(spendSuperButton, new Vector2(220f, 54f), 20);
+            // ── Buttons ──────────────────────────────────────────────────  y ≈ −210
+            var damageButton      = CreateActionButton(panel, "DamageButton",      new Vector2(-255f, -210f), "Damage -12%",  new Color(0.85f, 0.28f, 0.28f, 1f));
+            var heavyDamageButton = CreateActionButton(panel, "HeavyDamageButton", new Vector2( -85f, -210f), "Heavy -35%",   new Color(0.75f, 0.17f, 0.17f, 1f));
+            var healButton        = CreateActionButton(panel, "HealButton",        new Vector2(  85f, -210f), "Heal +8%",     new Color(0.2f,  0.62f, 0.35f, 1f));
+            var resetButton       = CreateActionButton(panel, "ResetButton",       new Vector2( 255f, -210f), "Reset",        new Color(0.24f, 0.47f, 0.82f, 1f));
+            var spendSuperButton  = CreateActionButton(panel, "SpendSuperButton",  new Vector2(   0f, -292f), "Spend 1 Super", new Color(0.92f, 0.74f, 0.18f, 1f));
+            ConfigureButtonSize(spendSuperButton, new Vector2(230f, 58f), 21);
 
-            var statusLabel = CreateText("Status", panel, new Vector2(0f, -258f), new Vector2(860f, 44f),
-                "HitBar: damage has echo, heal updates HP immediately. Energy recharges automatically.", 18, FontStyles.Normal, TextAlignmentOptions.Center);
+            // ── Status ───────────────────────────────────────────────────  y ≈ −368
+            var statusLabel = CreateText("Status", panel, new Vector2(0f, -368f), new Vector2(860f, 48f),
+                "HitBar: damage has echo, heal updates HP immediately. Energy recharges automatically.",
+                19, FontStyles.Normal, TextAlignmentOptions.Center);
             statusLabel.color = new Color(0.98f, 0.86f, 0.5f, 1f);
 
             var presenter = panel.gameObject.AddComponent<UIProgressBarDemoPresenter>();
@@ -186,7 +186,7 @@ namespace UIControls.Editor
             rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = new Vector2(980f, 620f);
+            rect.sizeDelta = new Vector2(980f, 820f);
 
             var image = panelGo.GetComponent<Image>();
             image.color = new Color(0.08f, 0.11f, 0.17f, 0.94f);
