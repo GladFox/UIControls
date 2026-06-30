@@ -263,7 +263,6 @@ namespace UIControls.Editor
 
         void DrawCustomActions()
         {
-            EditorGUILayout.LabelField("Custom Actions", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_customActions);
         }
 
