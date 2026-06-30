@@ -129,6 +129,9 @@ namespace UIControls.Editor
             EditorGUILayout.PropertyField(_fillImage);
             EditorGUILayout.PropertyField(_fillMode);
             EditorGUILayout.PropertyField(_value);
+            EditorGUILayout.PropertyField(_tween);
+
+            EditorGUILayout.Space(2f);
             EditorGUILayout.PropertyField(_valueLabel);
             if (_valueLabel.objectReferenceValue != null)
             {
@@ -137,7 +140,6 @@ namespace UIControls.Editor
                 EditorGUILayout.PropertyField(_animateLabel);
                 EditorGUI.indentLevel--;
             }
-            EditorGUILayout.PropertyField(_tween);
         }
 
         void DrawSegments()
