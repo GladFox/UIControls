@@ -89,7 +89,7 @@ namespace UIControls.Editor
 
             var simpleBarLabel = CreateText(
                 "SimpleBarLabel", panel, new Vector2(0f, -128f), new Vector2(860f, 30f),
-                "Plain segmented bar — 5 segments, no echo, no text label.",
+                "Plain segmented bar — 5 segments, no echo, value label: {1:0}/{2:0}",
                 18, FontStyles.Italic, TextAlignmentOptions.Center);
             simpleBarLabel.color = new Color(0.65f, 0.75f, 0.9f, 1f);
 
@@ -431,15 +431,25 @@ namespace UIControls.Editor
             Sprite dividerSprite)
         {
             const int segmentCount = 5;
+            const float maxVal = 500f;
 
-            var progressGo = CreateProgressBarRoot("DemoSimpleSegmentedProgress", parent, anchoredPosition, new Vector2(820f, 44f), backgroundSprite);
+            var progressGo = CreateProgressBarRoot("DemoSimpleSegmentedProgress", parent, anchoredPosition, new Vector2(820f, 52f), backgroundSprite);
             var rect = progressGo.GetComponent<RectTransform>();
             var primaryFill = CreateFillLayer(rect, "Fill", new Color(0.35f, 0.65f, 1f, 1f), fillSprite, 3f);
+
+            var valueText = CreateText("ValueText", rect, Vector2.zero, rect.sizeDelta,
+                "300/500", 22, FontStyles.Bold, TextAlignmentOptions.Center);
+            valueText.color = Color.white;
+            valueText.raycastTarget = false;
 
             var progressControl = progressGo.GetComponent<UIProgressBarControl>();
             SetObjectReference(progressControl, "fillImage", primaryFill);
             SetObjectReference(progressControl, "primaryFillImage", primaryFill);
             SetFloat(progressControl, "value", 0.6f);
+            SetObjectReference(progressControl, "valueLabel", valueText);
+            SetFloat(progressControl, "maxValue", maxVal);
+            SetString(progressControl, "valueFormat", "{1:0}/{2:0}");
+            SetBool(progressControl, "animateLabel", false);
             SetBool(progressControl, "useSegments", true);
             SetInt(progressControl, "segmentsCount", segmentCount);
             SetBool(progressControl, "autoGenerateSegments", true);
@@ -641,6 +651,13 @@ namespace UIControls.Editor
         {
             var serializedObject = new SerializedObject(target);
             serializedObject.FindProperty(propertyName).intValue = value;
+            serializedObject.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetString(UnityEngine.Object target, string propertyName, string value)
+        {
+            var serializedObject = new SerializedObject(target);
+            serializedObject.FindProperty(propertyName).stringValue = value;
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
 
