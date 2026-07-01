@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.21.0 - 2026-07-01
+
+### UIProgressBarControl — custom Inspector & maxValue label format
+
+**Custom Editor (`UIProgressBarControlEditor`)**
+
+- Segments block collapses entirely when `useSegments` is off. Sub-fields are
+  further conditional: sprite/gap fields only when `autoGenerate + FillBlocks`;
+  divider colour/sprite only when `dividerWidth > 0`; manual `segmentFills`
+  array only when `autoGenerate` is off; pulse and state fields only when their
+  respective toggles are on.
+- HitBar block collapses entirely when `useHitBar` is off. `echoFillImage`
+  GameObject is automatically toggled active/inactive when the toggle changes.
+  `useEchoTimingOnIncrease` is greyed out when it has no effect.
+- Value Label sub-fields (`valueFormat`, `maxValue`, `animateLabel`) are hidden
+  when no `TMP_Text` is assigned to `valueLabel`; a format hint box is shown.
+- Events: `onSegmentCompleted` hidden without segments;
+  `onEchoStarted/Completed` hidden without HitBar.
+- `tween` moved above the label block — it controls bar-fill animation and is
+  always relevant, independent of the label.
+
+**`maxValue` field + multi-argument label format**
+
+- New `[Min(1)] float maxValue` field (default 100).
+- `UpdateLabel` now passes three arguments to `string.Format`:
+  - `{0}` — normalised value (0–1), e.g. `{0:0%}` → "75%"
+  - `{1}` — absolute current value (`value × maxValue`), e.g. `{1:0}` → "750"
+  - `{2}` — max value, e.g. `{2:0}` → "1000"
+  - Example: `{1:0}/{2:0}` → "750/1000"
+- Existing `{0:0%}` format is fully backward-compatible.
+
+### UIProgressBarDemo — layout & new bar
+
+- Panel expanded from 980 × 620 to 980 × 820; all elements respaced with
+  ~40 px section gaps.
+- Added **plain segmented bar** (`DemoSimpleSegmentedProgress`): 5 segments,
+  `DividersOnly`, no echo, value label using `{1:0}/{2:0}` format (300/500).
+
 ## 0.20.1 - 2026-06-26
 
 ### UIProgressBarControl — editor scene pollution fix
