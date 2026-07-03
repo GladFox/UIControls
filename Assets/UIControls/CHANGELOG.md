@@ -1,24 +1,5 @@
 # Changelog
 
-## 0.22.0 - 2026-07-02
-
-### UIStickyListControl — sticky section headers (Variant B)
-
-New controls for ScrollRect lists with iOS-style sticky items:
-
-- **`UIStickyListControl`** — attach to a ScrollRect root. Evaluates sticky items every
-  `LateUpdate`. Supports N simultaneous sticky-top and N sticky-bottom items with push
-  behaviour: when a later header scrolls up to the current one it pushes it toward the
-  edge, matching classic iOS section-header feel.
-  Fields: `stickyTopZone`, `stickyBottomZone` (overlay `RectTransform` containers).
-- **`UIStickyItemControl`** — attach to any direct child of the content
-  `VerticalLayoutGroup`. Field: `edge` (`Top` / `Bottom`).
-  The control re-parents the stuck item into the zone and leaves a same-size
-  `LayoutElement` placeholder in the content so the layout never collapses.
-- **`UIStickyListDemo`** — demo scene (`Scrolling(C)/UIStickyListDemo.unity`) with
-  5 lettered sections (Alpha–Epsilon), each containing 4 fruit rows. Headers stick to
-  the top as you scroll; the zone has a subtle accent border.
-
 ## 0.21.0 - 2026-07-01
 
 ### UIProgressBarControl — custom Inspector & maxValue label format
