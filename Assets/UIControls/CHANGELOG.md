@@ -10,8 +10,11 @@
   edge as it arrives (iOS section-header behaviour).
   - Zero wiring: overlay layers are auto-created under the viewport (or assign
     `topLayer` / `bottomLayer` manually).
-  - Zero registration: the control re-scans the content children every frame, so
-    rows added/removed/reordered at runtime just work.
+  - Zero registration: the control watches the content for child-list changes and
+    re-scans on demand, so rows added/removed/reordered at runtime just work.
+  - Hardened for runtime churn: destroying a pinned row reclaims its slot, scene
+    teardown is order-safe, pinned rows keep the exact horizontal footprint of
+    the list (layout padding, narrow content).
   - A pinned row is moved to the overlay and a pooled same-size placeholder parks
     in its slot, so the `VerticalLayoutGroup` never reflows.
 - **`UIStickyItemControl`** — declarative marker, one field: `edge` (`Top`/`Bottom`).

@@ -2,15 +2,20 @@
 
 ## Текущее состояние
 - Библиотека выросла до ~50 контролов по категориям A–I поверх базы
-  (`Button/Toggle/Modal/ProgressBar/TabSlider`). Пакет `0.20.0`.
-- Категории A–E смерджены в `main` отдельными PR. Категории **F, G, H, I**, контрол
-  **`UISideMenu`** и реорганизация демо-сцен по папкам — в ветке `feature/uiCategoryFGHI`
-  (открытый **PR #16**, base `main`, стоит поверх PR #15 = категория E).
+  (`Button/Toggle/Modal/ProgressBar/TabSlider`). Пакет `0.22.0`, всё в `main`.
 - Все демо-сцены разложены по категорийным подпапкам в `Assets/Scenes/` и `Samples~`.
+- `0.20.1` — фикс засорения сцены `AutoDivider_*` (delayCall-баги в `UIProgressBarControl.OnValidate`).
+- `0.21.0` — кастомный инспектор `UIProgressBarControlEditor`, поле `maxValue` +
+  формат лейбла `{1:0}/{2:0}`, просторный лайаут `UIProgressBarDemo`.
+- `0.22.0` — **`UIStickyListControl`/`UIStickyItemControl`**: sticky-строки в ScrollRect
+  с iOS push-out. Финальная реализация — clean-room v2 (ветка `feature/stickyListScratch`,
+  смерджена в `main`; первая версия отреверчена). Архитектура: пассивный маркер, скан
+  content по `OnTransformChildrenChanged` (не каждый кадр), автосоздание overlay-слоёв,
+  пул плейсхолдеров, устойчивость к Destroy запиненной строки и teardown сцены.
+  Демо `Scrolling(C)/UIStickyListDemo` (заголовки Top + итоговая строка Bottom).
 
 ## Текущие задачи
-- [x] [DOCS_WRITER] Привести `local/README.md` и Memory Bank в соответствие с проделанной работой A–I.
-- [ ] Ожидается ревью/мёрж PR #15 (E), затем PR #16 (F–I + SideMenu) — мёрж выполняет пользователь.
+- (нет активных — очередная задача от пользователя)
 
 ## Последние изменения (ветка feature/uiCategoryFGHI)
 - **F (gameplay):** VirtualJoystick, RadialMenu, Knob, NumberTicker, ReorderableList(+Item), SwipeCard.
