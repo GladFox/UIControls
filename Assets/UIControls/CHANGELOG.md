@@ -7,11 +7,10 @@
 New controls for ScrollRect lists with iOS-style sticky items:
 
 - **`UIStickyListControl`** — attach to a ScrollRect root. Evaluates sticky items every
-  `LateUpdate`. An item pins to the viewport edge once its natural position scrolls
-  past it; when the next sticky item approaches, it pushes the pinned one out by the
-  overlap (classic iOS section-header push-out). Any number of items can be marked
-  sticky per edge. Fields: `stickyTopZone`, `stickyBottomZone` (overlay
-  `RectTransform` containers inside the viewport).
+  `LateUpdate`. Supports N simultaneous sticky-top and N sticky-bottom items with push
+  behaviour: when a later header scrolls up to the current one it pushes it toward the
+  edge, matching classic iOS section-header feel.
+  Fields: `stickyTopZone`, `stickyBottomZone` (overlay `RectTransform` containers).
 - **`UIStickyItemControl`** — attach to any direct child of the content
   `VerticalLayoutGroup`. Field: `edge` (`Top` / `Bottom`).
   The control re-parents the stuck item into the zone and leaves a same-size
