@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.22.0 - 2026-07-03
+
+### UIStickyListControl — sticky rows for ScrollRect lists
+
+- **`UIStickyListControl`** — drop on a vertical `ScrollRect`. Rows marked with
+  `UIStickyItemControl` pin to the top or bottom of the viewport once their natural
+  position scrolls past that edge; the next sticky row pushes a pinned one off the
+  edge as it arrives (iOS section-header behaviour).
+  - Zero wiring: overlay layers are auto-created under the viewport (or assign
+    `topLayer` / `bottomLayer` manually).
+  - Zero registration: the control re-scans the content children every frame, so
+    rows added/removed/reordered at runtime just work.
+  - A pinned row is moved to the overlay and a pooled same-size placeholder parks
+    in its slot, so the `VerticalLayoutGroup` never reflows.
+- **`UIStickyItemControl`** — declarative marker, one field: `edge` (`Top`/`Bottom`).
+- **`UIStickyListDemo`** (`Scrolling(C)`) — inventory-style list: five sections with
+  sticky-top headers plus a sticky-bottom "Total items" row.
+
 ## 0.21.0 - 2026-07-01
 
 ### UIProgressBarControl — custom Inspector & maxValue label format
