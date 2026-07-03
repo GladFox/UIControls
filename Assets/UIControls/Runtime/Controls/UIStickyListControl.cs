@@ -10,8 +10,8 @@ namespace UIControls.Runtime.Controls
     /// pins to the top or bottom of the viewport once its natural position scrolls past
     /// that edge. When the next sticky row reaches a pinned one it pushes it off the
     /// edge (iOS section-header behaviour). Works with any number of marked rows and
-    /// with rows added or removed at runtime — the control re-scans the content every
-    /// frame, no registration required.
+    /// with rows added or removed at runtime — the control watches the content for
+    /// child-list changes and re-scans on demand, no registration required.
     ///
     /// Pinning is implemented by moving the row into an overlay layer above the list and
     /// parking a placeholder of the same size in its slot, so the layout group never
@@ -50,6 +50,7 @@ namespace UIControls.Runtime.Controls
             public bool Pinned;
             public RectTransform Placeholder; // pooled: created once, toggled active
             public float Height;              // row height captured at pin time
+            public float LeftInset, RightInset; // horizontal footprint in viewport space
             public Vector2 AnchorMin, AnchorMax, Pivot, SizeDelta; // pose to restore
         }
 
@@ -71,12 +72,27 @@ namespace UIControls.Runtime.Controls
 
         private void OnDisable()
         {
-            // Give every pinned row back to the layout before we stop driving them
+            // Give every pinned row back to the layout before we stop driving them.
+            // During scene teardown destruction order is arbitrary, so rows and
+            // placeholders may already be gone — Unpin guards against that.
             foreach (var pair in _states)
             {
-                if (pair.Value.Pinned)
+                if (pair.Value.Pinned && pair.Key != null)
                     Unpin(pair.Key, pair.Value);
             }
+        }
+
+        private void OnDestroy()
+        {
+            // Pooled placeholders are our objects living in someone else's hierarchy —
+            // don't leave them behind when the control goes away
+            foreach (var pair in _states)
+            {
+                if (pair.Value.Placeholder != null)
+                    Destroy(pair.Value.Placeholder.gameObject);
+            }
+
+            _states.Clear();
         }
 
         private void LateUpdate()
@@ -147,6 +163,15 @@ namespace UIControls.Runtime.Controls
                 UIStickyItemControl row = null;
                 if (child.TryGetComponent<PlaceholderTag>(out var tag))
                 {
+                    // Orphaned placeholder — its row was destroyed while pinned; the
+                    // watcher can't see that (the row lived in the overlay), so this
+                    // is the spot to reclaim the slot it still occupies
+                    if (tag.Owner == null)
+                    {
+                        Destroy(child.gameObject);
+                        continue;
+                    }
+
                     // Inactive placeholder = pooled leftover of an unpinned row; skip it,
                     // the row itself is elsewhere in the child list
                     if (child.gameObject.activeSelf)
@@ -178,8 +203,22 @@ namespace UIControls.Runtime.Controls
             {
                 var i     = atTop ? n : rows.Count - 1 - n;
                 var row   = rows[i];
+
+                // Row destroyed since the last scan. A pinned row dies in the overlay,
+                // which the content watcher can't observe — release its placeholder
+                // and state here so no orphan slot is left in the layout.
                 if (row == null)
+                {
+                    if (_states.TryGetValue(row, out var dead))
+                    {
+                        if (dead.Placeholder != null)
+                            Destroy(dead.Placeholder.gameObject);
+                        _states.Remove(row);
+                    }
+
+                    _contentDirty = true;
                     continue;
+                }
 
                 var state = GetState(row);
 
@@ -242,18 +281,35 @@ namespace UIControls.Runtime.Controls
             state.AnchorMax = rect.anchorMax;
             state.Pivot     = rect.pivot;
             state.SizeDelta = rect.sizeDelta;
+            CaptureHorizontalFootprint(rect, state);
 
             var ph = EnsurePlaceholder(row, state);
             ph.SetParent(rect.parent, false);
             ph.SetSiblingIndex(rect.GetSiblingIndex());
+            // preferred/min sizes drive layouts that control child sizes; sizeDelta
+            // covers layouts that don't (childControlWidth/Height = false)
             var element = ph.GetComponent<LayoutElement>();
             element.preferredWidth  = rect.rect.width;
             element.preferredHeight = state.Height;
             element.minHeight       = state.Height;
+            ph.sizeDelta = new Vector2(rect.rect.width, state.Height);
             ph.gameObject.SetActive(true);
 
             rect.SetParent(layer, false);
             state.Pinned = true;
+        }
+
+        // Remembers where the row's left/right edges sit relative to the viewport, so
+        // the pinned copy keeps the exact width of the list rows (content padding,
+        // content narrower than viewport, etc.) instead of stretching edge to edge.
+        private void CaptureHorizontalFootprint(RectTransform rect, PinState state)
+        {
+            var viewport = ViewportRect;
+            rect.GetWorldCorners(Corners);
+            var left  = viewport.InverseTransformPoint(Corners[0]).x;
+            var right = viewport.InverseTransformPoint(Corners[2]).x;
+            state.LeftInset  = left - viewport.rect.xMin;
+            state.RightInset = viewport.rect.xMax - right;
         }
 
         private void Unpin(UIStickyItemControl row, PinState state)
@@ -261,7 +317,9 @@ namespace UIControls.Runtime.Controls
             var rect = (RectTransform)row.transform;
             var ph   = state.Placeholder;
 
-            if (ph != null)
+            // ph.parent can be gone mid-teardown; reparenting to null would drop the
+            // row at the scene root, so only restore while the slot is still valid
+            if (ph != null && ph.parent != null)
             {
                 rect.SetParent(ph.parent, false);
                 rect.SetSiblingIndex(ph.GetSiblingIndex());
@@ -286,9 +344,14 @@ namespace UIControls.Runtime.Controls
             rect.anchorMin = new Vector2(0f, y);
             rect.anchorMax = new Vector2(1f, y);
             rect.pivot     = new Vector2(0.5f, y);
-            rect.sizeDelta = new Vector2(0f, state.Height);
-            // slideOut ≥ 0 pushes the row past its edge (up for top, down for bottom)
-            rect.anchoredPosition = new Vector2(0f, atTop ? slideOut : -slideOut);
+
+            // Horizontal: reproduce the footprint the row had inside the list (the
+            // overlay layer itself spans the whole viewport). Vertical: own height,
+            // slid past the edge by slideOut ≥ 0 (up for top rows, down for bottom).
+            var top    = atTop ? slideOut : state.Height - slideOut;
+            var bottom = atTop ? slideOut - state.Height : -slideOut;
+            rect.offsetMin = new Vector2(state.LeftInset, bottom);
+            rect.offsetMax = new Vector2(-state.RightInset, top);
         }
 
         // ── Geometry ──────────────────────────────────────────────────────────────
