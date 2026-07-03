@@ -85,31 +85,77 @@ namespace UIControls.Runtime.Controls
             if (content == null)
                 return;
 
-            ScanContent(content);
+            if (content != _watchedContent)
+                WatchContent(content);
+            if (_contentDirty)
+                ScanContent(content);
+
             EvaluateEdge(_topRows, atTop: true);
             EvaluateEdge(_bottomRows, atTop: false);
         }
 
         // ── Content scan ──────────────────────────────────────────────────────────
 
+        /// <summary>
+        /// Forces a re-scan of the content children on the next frame. Called
+        /// automatically when children are added/removed/reordered; call it manually
+        /// only after changes the watcher can't see (e.g. toggling a row's active
+        /// state while it is pinned from another script).
+        /// </summary>
+        public void Refresh() => _contentDirty = true;
+
+        private RectTransform _watchedContent;
+        private bool _contentDirty = true;
+
+        // Attaches a watcher to the content so the scan runs only when the child list
+        // actually changes, instead of every frame.
+        private void WatchContent(RectTransform content)
+        {
+            if (!content.TryGetComponent<ContentWatcher>(out var watcher))
+                watcher = content.gameObject.AddComponent<ContentWatcher>();
+            watcher.Owner = this;
+            _watchedContent = content;
+            _contentDirty = true;
+        }
+
+        /// <summary>Invalidates the scan when the content's child list changes.</summary>
+        private sealed class ContentWatcher : MonoBehaviour
+        {
+            public UIStickyListControl Owner;
+
+            private void OnTransformChildrenChanged()
+            {
+                if (Owner != null)
+                    Owner._contentDirty = true;
+            }
+        }
+
         // Collects sticky rows in visual (sibling) order. A pinned row lives in the
-        // overlay, so its placeholder represents it in the content order.
+        // overlay, so its (active) placeholder represents it in the content order.
+        // Rows currently inactive are still collected — activity is checked during
+        // evaluation, so a SetActive toggle doesn't need a re-scan.
         private void ScanContent(RectTransform content)
         {
+            _contentDirty = false;
             _topRows.Clear();
             _bottomRows.Clear();
 
             for (var i = 0; i < content.childCount; i++)
             {
                 var child = content.GetChild(i);
-                if (!child.gameObject.activeSelf)
-                    continue;
 
                 UIStickyItemControl row = null;
                 if (child.TryGetComponent<PlaceholderTag>(out var tag))
-                    row = tag.Owner;
+                {
+                    // Inactive placeholder = pooled leftover of an unpinned row; skip it,
+                    // the row itself is elsewhere in the child list
+                    if (child.gameObject.activeSelf)
+                        row = tag.Owner;
+                }
                 else
+                {
                     child.TryGetComponent(out row);
+                }
 
                 if (row == null)
                     continue;
@@ -132,7 +178,17 @@ namespace UIControls.Runtime.Controls
             {
                 var i     = atTop ? n : rows.Count - 1 - n;
                 var row   = rows[i];
+                if (row == null)
+                    continue;
+
                 var state = GetState(row);
+
+                if (!row.gameObject.activeSelf)
+                {
+                    if (state.Pinned)
+                        Unpin(row, state);
+                    continue;
+                }
 
                 var protrusion = Protrusion(NaturalRect(row, state), atTop);
 
@@ -145,10 +201,9 @@ namespace UIControls.Runtime.Controls
                     continue;
 
                 var slideOut = 0f;
-                var pusherIndex = atTop ? i + 1 : i - 1;
-                if (pusherIndex >= 0 && pusherIndex < rows.Count)
+                var pusher = NextActiveRow(rows, i, atTop ? +1 : -1);
+                if (pusher != null)
                 {
-                    var pusher = rows[pusherIndex];
                     var gap = -Protrusion(NaturalRect(pusher, GetState(pusher)), atTop);
                     // gap = distance left until the pusher reaches the edge
                     if (gap < state.Height)
@@ -157,6 +212,20 @@ namespace UIControls.Runtime.Controls
 
                 Place(row, state, atTop, slideOut);
             }
+        }
+
+        // Closest active sticky row toward the list interior — the potential pusher.
+        private static UIStickyItemControl NextActiveRow(
+            List<UIStickyItemControl> rows, int from, int step)
+        {
+            for (var i = from + step; i >= 0 && i < rows.Count; i += step)
+            {
+                var row = rows[i];
+                if (row != null && row.gameObject.activeSelf)
+                    return row;
+            }
+
+            return null;
         }
 
         // ── Pin / Unpin ───────────────────────────────────────────────────────────
