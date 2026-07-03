@@ -6,32 +6,44 @@ namespace UIControls.Runtime.Controls
 {
     /// <summary>
     /// Wraps a vertical <see cref="ScrollRect"/> and makes items marked with
-    /// <see cref="UIStickyItemControl"/> stick to the top or bottom of the viewport,
-    /// pushing each other when they collide (classic iOS section-header behaviour).
+    /// <see cref="UIStickyItemControl"/> stick to the top or bottom of the viewport.
+    /// When the next sticky item scrolls into the pinned one it pushes it out —
+    /// classic iOS section-header behaviour.
     ///
     /// Setup:
     ///   • Place this component on the same GameObject as the <see cref="ScrollRect"/>.
-    ///   • Assign <see cref="stickyTopZone"/> and <see cref="stickyBottomZone"/> — two
-    ///     overlay RectTransforms anchored to the top and bottom edges of the viewport.
+    ///   • Assign <see cref="stickyTopZone"/> / <see cref="stickyBottomZone"/> — overlay
+    ///     RectTransforms inside the viewport, anchored to its top / bottom edge.
     ///   • Add <see cref="UIStickyItemControl"/> to any direct children of the content
     ///     VerticalLayoutGroup that should stick.
     ///
-    /// The component re-parents a stuck item into the zone and leaves a same-size
-    /// placeholder in its original position so the layout does not collapse.
+    /// While an item is stuck it is re-parented into the zone and a same-size
+    /// placeholder keeps its slot in the layout, so nothing shifts. The placeholder
+    /// also marks the item's "natural position" for the stick/unstick test.
     /// </summary>
     [RequireComponent(typeof(ScrollRect))]
     public sealed class UIStickyListControl : MonoBehaviour
     {
         [Header("Targets")]
         [SerializeField] private ScrollRect scrollRect;
-        [Tooltip("Overlay container anchored to the top of the viewport.")]
+        [Tooltip("Overlay container inside the viewport, anchored to its top edge.")]
         [SerializeField] private RectTransform stickyTopZone;
-        [Tooltip("Overlay container anchored to the bottom of the viewport.")]
+        [Tooltip("Overlay container inside the viewport, anchored to its bottom edge.")]
         [SerializeField] private RectTransform stickyBottomZone;
 
-        // Items registered by UIStickyItemControl.OnEnable, in content sibling order
+        // Registered by UIStickyItemControl.OnEnable, kept in content sibling order
         private readonly List<UIStickyItemControl> _topItems    = new List<UIStickyItemControl>();
         private readonly List<UIStickyItemControl> _bottomItems = new List<UIStickyItemControl>();
+
+        private RectTransform Viewport
+        {
+            get
+            {
+                if (scrollRect == null) return null;
+                if (scrollRect.viewport != null) return scrollRect.viewport;
+                return (RectTransform)scrollRect.transform;
+            }
+        }
 
         // ── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -41,25 +53,32 @@ namespace UIControls.Runtime.Controls
                 scrollRect = GetComponent<ScrollRect>();
         }
 
-        private void LateUpdate()
+        private void OnDisable()
         {
-            if (scrollRect == null || scrollRect.content == null) return;
-
-            EvaluateTopItems();
-            EvaluateBottomItems();
+            // Return everything to the layout so the hierarchy stays sane
+            for (var i = 0; i < _topItems.Count; i++) Unstick(_topItems[i]);
+            for (var i = 0; i < _bottomItems.Count; i++) Unstick(_bottomItems[i]);
         }
 
-        // ── Registration ─────────────────────────────────────────────────────────
+        private void LateUpdate()
+        {
+            if (scrollRect == null || scrollRect.content == null || Viewport == null)
+                return;
+
+            EvaluateEdge(_topItems, stickyTopZone, top: true);
+            EvaluateEdge(_bottomItems, stickyBottomZone, top: false);
+        }
+
+        // ── Registration (called by UIStickyItemControl) ─────────────────────────
 
         public void Register(UIStickyItemControl item)
         {
             var list = item.Edge == UIStickyItemControl.StickyEdge.Top ? _topItems : _bottomItems;
             if (!list.Contains(item))
+            {
                 list.Add(item);
-
-            // Keep lists in top-to-bottom sibling order for push logic
-            _topItems.Sort(SiblingOrder);
-            _bottomItems.Sort(SiblingOrder);
+                list.Sort(SiblingOrder);
+            }
         }
 
         public void Unregister(UIStickyItemControl item)
@@ -71,88 +90,59 @@ namespace UIControls.Runtime.Controls
 
         // ── Evaluation ───────────────────────────────────────────────────────────
 
-        private void EvaluateTopItems()
+        // Top edge: an item sticks while its natural top edge is scrolled above the
+        // viewport top (edge distance < 0). The next sticky item below acts as the
+        // pusher: as its own edge distance shrinks under the pinned item's height, the
+        // pinned item slides out by the difference. Bottom edge is fully mirrored.
+        private void EvaluateEdge(List<UIStickyItemControl> items, RectTransform zone, bool top)
         {
-            if (stickyTopZone == null) return;
+            if (zone == null || items.Count == 0) return;
 
-            // Accumulated height of already-stuck top items (push offset for the next one)
-            float stackedHeight = 0f;
-
-            for (var i = 0; i < _topItems.Count; i++)
+            var count = items.Count;
+            for (var k = 0; k < count; k++)
             {
-                var item = _topItems[i];
+                var i    = top ? k : count - 1 - k;
+                var item = items[i];
                 if (!IsValid(item)) continue;
 
-                var source     = GetSourceRect(item);
-                var itemHeight = source.rect.height;
-
-                // World-space top-Y of the item's natural position
-                var naturalTopY = GetContentTopY(source);
-
-                // The item should stick when its natural top would scroll above the zone top
-                var zoneTopY = GetZoneTopY();
-                var threshold = zoneTopY - stackedHeight;
-
-                bool shouldStick = naturalTopY > threshold;
+                var edgeDistance = EdgeDistance(item, top);
+                // Small epsilon so an item resting exactly on the edge doesn't flicker
+                var shouldStick  = edgeDistance < -0.05f;
 
                 if (shouldStick && !item.IsStuck)
-                    Stick(item, source);
+                    Stick(item, zone);
                 else if (!shouldStick && item.IsStuck)
                     Unstick(item);
 
-                if (item.IsStuck)
+                if (!item.IsStuck) continue;
+
+                var itemHeight = item.StuckHeight;
+
+                // Push-out: the next sticky item toward the list interior shoves this
+                // one off the edge as it approaches (0 = fully pinned, -height = gone)
+                var pushOut = 0f;
+                var pusher  = NextValid(items, i, top ? +1 : -1);
+                if (pusher != null)
                 {
-                    // Position within the top zone, stacked below previous stuck items
-                    PositionInZone(item, stickyTopZone, stackedHeight, itemHeight, isTop: true);
-                    stackedHeight += itemHeight;
+                    var pusherDistance = EdgeDistance(pusher, top);
+                    // Clamp at -height: fully hidden items park just past the edge
+                    pushOut = Mathf.Clamp(pusherDistance - itemHeight, -itemHeight, 0f);
                 }
-            }
-        }
 
-        private void EvaluateBottomItems()
-        {
-            if (stickyBottomZone == null) return;
-
-            float stackedHeight = 0f;
-
-            // Evaluate in reverse order (lowest item first for bottom sticking)
-            for (var i = _bottomItems.Count - 1; i >= 0; i--)
-            {
-                var item = _bottomItems[i];
-                if (!IsValid(item)) continue;
-
-                var source     = GetSourceRect(item);
-                var itemHeight = source.rect.height;
-
-                var naturalBottomY = GetContentBottomY(source);
-                var zoneBottomY    = GetZoneBottomY();
-                var threshold      = zoneBottomY + stackedHeight;
-
-                bool shouldStick = naturalBottomY < threshold;
-
-                if (shouldStick && !item.IsStuck)
-                    Stick(item, source);
-                else if (!shouldStick && item.IsStuck)
-                    Unstick(item);
-
-                if (item.IsStuck)
-                {
-                    PositionInZone(item, stickyBottomZone, stackedHeight, itemHeight, isTop: false);
-                    stackedHeight += itemHeight;
-                }
+                PositionInZone(item, pushOut, itemHeight, top);
             }
         }
 
         // ── Stick / Unstick ──────────────────────────────────────────────────────
 
-        private void Stick(UIStickyItemControl item, RectTransform source)
+        private void Stick(UIStickyItemControl item, RectTransform zone)
         {
-            var zone = item.Edge == UIStickyItemControl.StickyEdge.Top ? stickyTopZone : stickyBottomZone;
-            if (zone == null) return;
+            var source = (RectTransform)item.transform;
 
-            // Create placeholder with the same size so the layout doesn't shift
-            var ph = new GameObject($"[StickyPlaceholder_{item.name}]", typeof(RectTransform), typeof(LayoutElement));
-            var phRect = ph.GetComponent<RectTransform>();
+            // Placeholder keeps the layout slot and marks the natural position
+            var ph = new GameObject($"[StickyPlaceholder] {item.name}",
+                typeof(RectTransform), typeof(LayoutElement));
+            var phRect = (RectTransform)ph.transform;
             phRect.SetParent(source.parent, false);
             phRect.SetSiblingIndex(source.GetSiblingIndex());
 
@@ -164,115 +154,96 @@ namespace UIControls.Runtime.Controls
 
             item.Placeholder = phRect;
             item.IsStuck     = true;
+            item.SaveLayoutPose(source);
 
-            // Re-parent into the zone; layout group no longer owns this transform
-            source.SetParent(zone, true);
+            source.SetParent(zone, false);
         }
 
         private void Unstick(UIStickyItemControl item)
         {
-            if (!item.IsStuck) return;
+            if (item == null || !item.IsStuck) return;
 
             var source = (RectTransform)item.transform;
 
             if (item.Placeholder != null)
             {
-                // Return item to its original position in the content list
-                source.SetParent(item.Placeholder.parent, true);
+                source.SetParent(item.Placeholder.parent, false);
                 source.SetSiblingIndex(item.Placeholder.GetSiblingIndex());
 
-                Object.Destroy(item.Placeholder.gameObject);
+                // Deactivate before the deferred Destroy so the layout doesn't count
+                // both the item and its placeholder for one frame
+                item.Placeholder.gameObject.SetActive(false);
+                Destroy(item.Placeholder.gameObject);
                 item.Placeholder = null;
             }
 
+            item.RestoreLayoutPose(source);
             item.IsStuck = false;
+
+            if (source.parent is RectTransform parentRect)
+                LayoutRebuilder.MarkLayoutForRebuild(parentRect);
         }
 
         // ── Positioning ──────────────────────────────────────────────────────────
 
-        private static void PositionInZone(UIStickyItemControl item, RectTransform zone,
-            float stackOffset, float itemHeight, bool isTop)
+        private static void PositionInZone(UIStickyItemControl item, float pushOut,
+            float itemHeight, bool top)
         {
-            var rect = (RectTransform)item.transform;
+            var rect    = (RectTransform)item.transform;
+            var anchorY = top ? 1f : 0f;
 
-            // Stretch width to fill the zone
-            rect.anchorMin = new Vector2(0f, isTop ? 1f : 0f);
-            rect.anchorMax = new Vector2(1f, isTop ? 1f : 0f);
-            rect.pivot     = new Vector2(0.5f, isTop ? 1f : 0f);
-            rect.offsetMin = new Vector2(0f, 0f);
-            rect.offsetMax = new Vector2(0f, 0f);
+            rect.anchorMin = new Vector2(0f, anchorY);
+            rect.anchorMax = new Vector2(1f, anchorY);
+            rect.pivot     = new Vector2(0.5f, anchorY);
             rect.sizeDelta = new Vector2(0f, itemHeight);
+            // pushOut ≤ 0: top items slide up (+y), bottom items slide down (−y)
+            rect.anchoredPosition = new Vector2(0f, top ? -pushOut : pushOut);
+        }
 
-            if (isTop)
-                rect.anchoredPosition = new Vector2(0f, -stackOffset);
-            else
-                rect.anchoredPosition = new Vector2(0f, stackOffset);
+        // ── Geometry ─────────────────────────────────────────────────────────────
+
+        private static readonly Vector3[] CornersBuffer = new Vector3[4];
+
+        // Distance from the viewport edge to the item's natural leading edge, measured
+        // into the viewport: 0 when the edges coincide, positive while the item is
+        // inside, negative once it has scrolled past the edge.
+        private float EdgeDistance(UIStickyItemControl item, bool top)
+        {
+            var viewport = Viewport;
+            var natural  = NaturalRect(item);
+            natural.GetWorldCorners(CornersBuffer);
+            // Corners: 0 = bottom-left, 1 = top-left
+            var world = top ? CornersBuffer[1] : CornersBuffer[0];
+            var local = viewport.InverseTransformPoint(world);
+            return top
+                ? viewport.rect.yMax - local.y
+                : local.y - viewport.rect.yMin;
         }
 
         // ── Helpers ──────────────────────────────────────────────────────────────
 
-        // Returns the rect that represents the item's "natural" position in the content.
-        // While stuck, the placeholder occupies that natural position.
-        private RectTransform GetSourceRect(UIStickyItemControl item)
+        // While stuck the item lives in the zone; its placeholder marks the natural rect.
+        private static RectTransform NaturalRect(UIStickyItemControl item)
         {
-            // While stuck the item lives in the zone; its placeholder is the natural rect
-            if (item.IsStuck && item.Placeholder != null)
-                return item.Placeholder;
-            return (RectTransform)item.transform;
+            return item.IsStuck && item.Placeholder != null
+                ? item.Placeholder
+                : (RectTransform)item.transform;
         }
 
-        // Top edge of the source rect in viewport local-space Y (up = positive).
-        private float GetContentTopY(RectTransform source)
+        private static UIStickyItemControl NextValid(List<UIStickyItemControl> items, int from, int step)
         {
-            var viewport   = scrollRect.viewport ?? scrollRect.GetComponentInChildren<RectMask2D>()?.rectTransform;
-            if (viewport == null) return 0f;
-
-            // Convert top-left of source to viewport local space
-            var worldTopLeft = source.TransformPoint(new Vector3(-source.rect.width * source.pivot.x,
-                source.rect.height * (1f - source.pivot.y), 0f));
-            var local = viewport.InverseTransformPoint(worldTopLeft);
-
-            // In uGUI viewport local space, positive Y is up and the top is at +height/2
-            // We want distance from the top edge: positive when BELOW the top, negative when above
-            return viewport.rect.height * 0.5f - local.y;
-        }
-
-        // Bottom edge Y relative to viewport (positive = below viewport top)
-        private float GetContentBottomY(RectTransform source)
-        {
-            var viewport = scrollRect.viewport ?? scrollRect.GetComponentInChildren<RectMask2D>()?.rectTransform;
-            if (viewport == null) return 0f;
-
-            var worldBottomLeft = source.TransformPoint(new Vector3(-source.rect.width * source.pivot.x,
-                -source.rect.height * source.pivot.y, 0f));
-            var local = viewport.InverseTransformPoint(worldBottomLeft);
-
-            return viewport.rect.height * 0.5f - local.y;
-        }
-
-        // Distance from top of viewport to bottom of stickyTopZone (= height of zone)
-        private float GetZoneTopY()
-        {
-            return stickyTopZone != null ? stickyTopZone.rect.height : 0f;
-        }
-
-        // Distance from top of viewport to top of stickyBottomZone
-        private float GetZoneBottomY()
-        {
-            var viewport = scrollRect.viewport;
-            if (viewport == null || stickyBottomZone == null) return 0f;
-            return viewport.rect.height - stickyBottomZone.rect.height;
+            for (var i = from + step; i >= 0 && i < items.Count; i += step)
+            {
+                if (IsValid(items[i]))
+                    return items[i];
+            }
+            return null;
         }
 
         private static bool IsValid(UIStickyItemControl item)
-            => item != null && item.gameObject.activeSelf;
+            => item != null && item.gameObject.activeInHierarchy;
 
         private static int SiblingOrder(UIStickyItemControl a, UIStickyItemControl b)
-        {
-            // Compare by placeholder when stuck, otherwise by transform
-            var ra = a.IsStuck && a.Placeholder != null ? a.Placeholder : (RectTransform)a.transform;
-            var rb = b.IsStuck && b.Placeholder != null ? b.Placeholder : (RectTransform)b.transform;
-            return ra.GetSiblingIndex().CompareTo(rb.GetSiblingIndex());
-        }
+            => NaturalRect(a).GetSiblingIndex().CompareTo(NaturalRect(b).GetSiblingIndex());
     }
 }
