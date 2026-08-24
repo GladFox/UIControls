@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.23.0 - 2026-08-24
+
+### Asset GUIDs no longer collide with Layer Lab GUI Pro
+
+The Slider sprites shipped in `ResourcesData` still carried the **exact GUIDs of
+the Layer Lab "GUI Pro - CasualGame" pack** they were originally taken from.
+Importing UIControls into a project that also has that pack installed made the
+two assets fight over the same GUID, and Unity resolved only one of them —
+breaking sprite references on either side.
+
+Regenerated to fresh, unique GUIDs (references in `UIProgressBarDemo.unity` were
+rewritten in the same pass, so the scene is unaffected):
+
+| Asset | old (Layer Lab) | new |
+| --- | --- | --- |
+| `Slider_Basic04_Bg.png` | `0842d492…53faf` | `3b401eba…835f` |
+| `Slider_Basic04_DividerLine.png` | `af4b637d…97d4` | `695c2d5b…9785` |
+| `Slider_Icon04_Fill_Red.png` | `78b3e960…156a` | `eb7ee450…a1be` |
+
+The three **folder** metas along `ResourcesData/Sprites/Slider` carried Layer Lab
+folder GUIDs as well and were regenerated too (nothing referenced them).
+
+The `Samples~` copies of these sprites already had unique GUIDs and were left
+untouched.
+
+> **Upgrading:** if you referenced these three sprites directly from your own
+> scenes or prefabs, re-assign them — their identity changed. Everything inside
+> the package and its demo scenes is already consistent.
+
 ## 0.22.1 - 2026-08-24
 
 ### UIProgressBarControl — scene-root pollution, real root cause
