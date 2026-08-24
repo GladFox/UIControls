@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.22.1 - 2026-08-24
+
+### UIProgressBarControl — scene-root pollution, real root cause
+
+The 0.20.1 fix addressed `delayCall` accumulation but missed the mechanism that
+actually strands objects in the **scene root**:
+
+- **Generation ran on prefab assets.** `OnValidate` fires on a prefab asset too —
+  on import, on domain reload, and on Inspector edits in the Project view. The
+  deferred rebuild then called `new GameObject(...)`, which is born in whatever
+  scene happens to be open, and `SetParent()` into an asset transform is refused
+  by Unity. The object was left at the scene root, saved with the scene, and
+  survived play mode. Every subsequent `OnValidate` added another batch.
+  Fixed by `CanGenerateVisuals()`: visuals are only generated for a component
+  that actually lives in a valid scene and is not persistent.
+- **Belt-and-braces:** all generated objects now go through
+  `CreateGeneratedObject()`, which verifies the re-parent actually took and
+  destroys the object instead of leaving it stranded if it did not.
+- **`DestroyImmediate` from `OnDestroy` is illegal** and could abort cleanup
+  midway. Edit-mode teardown now hands the objects to a deferred sweep, which
+  also removes the `AutoSegments` container itself (previously leaked).
+- Added **`UIControls/Cleanup Orphaned ProgressBar Objects (open scenes)`** to
+  remove root-level `AutoSegments` / `AutoSegment_*` / `AutoDivider_*` left in
+  already-polluted scenes. Root level only — generated visuals under a progress
+  bar are legitimate and untouched. Undoable.
+
 ## 0.22.0 - 2026-07-03
 
 ### UIStickyListControl — sticky rows for ScrollRect lists

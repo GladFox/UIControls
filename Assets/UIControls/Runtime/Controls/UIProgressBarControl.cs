@@ -243,10 +243,71 @@ namespace UIControls.Runtime.Controls
         {
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.delayCall -= OnValidateDelayed;
+
+            if (!Application.isPlaying)
+            {
+                // DestroyImmediate is illegal from OnDestroy. Hand the objects to a
+                // deferred sweep while the references are still valid.
+                ScheduleDeferredCleanup();
+                generatedSegmentsContainer = null;
+                return;
+            }
 #endif
             ClearGeneratedVisuals();
             generatedSegmentsContainer = null;
         }
+
+#if UNITY_EDITOR
+        // Collects everything this instance generated and destroys it on the next
+        // editor tick, when DestroyImmediate is legal again.
+        private void ScheduleDeferredCleanup()
+        {
+            var doomed = new List<GameObject>();
+
+            for (var i = 0; i < generatedSegmentImages.Count; i++)
+            {
+                if (generatedSegmentImages[i] != null)
+                {
+                    doomed.Add(generatedSegmentImages[i].gameObject);
+                }
+            }
+
+            for (var i = 0; i < generatedDividers.Count; i++)
+            {
+                if (generatedDividers[i] != null)
+                {
+                    doomed.Add(generatedDividers[i].gameObject);
+                }
+            }
+
+            var container = generatedSegmentsContainer != null
+                ? generatedSegmentsContainer
+                : FindExistingSegmentsContainer();
+            if (container != null)
+            {
+                doomed.Add(container.gameObject);
+            }
+
+            generatedSegmentImages.Clear();
+            generatedDividers.Clear();
+
+            if (doomed.Count == 0)
+            {
+                return;
+            }
+
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                for (var i = 0; i < doomed.Count; i++)
+                {
+                    if (doomed[i] != null)
+                    {
+                        DestroyImmediate(doomed[i]);
+                    }
+                }
+            };
+        }
+#endif
 
         public void SetUseSegments(bool enabled, bool syncVisual = true)
         {
@@ -789,9 +850,54 @@ namespace UIControls.Runtime.Controls
             completedSegments = new bool[count];
         }
 
+        /// <summary>
+        /// Generated visuals may only be created for a component that actually lives in
+        /// a loaded scene. On a prefab asset (OnValidate fires there on import, on domain
+        /// reload and on Inspector edits in the Project view) `new GameObject` would be
+        /// born in whatever scene happens to be open, and re-parenting it into the asset
+        /// is refused by Unity — leaving AutoDivider_* / AutoSegment_* stranded in the
+        /// scene root, where they get saved with the scene and outlive play mode.
+        /// </summary>
+        private bool CanGenerateVisuals()
+        {
+#if UNITY_EDITOR
+            if (UnityEditor.EditorUtility.IsPersistent(this))
+            {
+                return false;
+            }
+#endif
+            return gameObject.scene.IsValid();
+        }
+
+        // Creates a generated object directly under `parent`, and refuses to leave it
+        // behind if the engine declines the re-parent (asset target, cross-context edit).
+        private GameObject CreateGeneratedObject(string objectName, Transform parent, params Type[] components)
+        {
+            if (parent == null)
+            {
+                return null;
+            }
+
+            var go = new GameObject(objectName, components);
+            go.transform.SetParent(parent, false);
+
+            if (go.transform.parent != parent)
+            {
+                DestroyGeneratedObject(go);
+                return null;
+            }
+
+            return go;
+        }
+
         private void EnsureSegmentVisuals()
         {
             if (segmentVisualsRebuildInProgress)
+            {
+                return;
+            }
+
+            if (!CanGenerateVisuals())
             {
                 return;
             }
@@ -965,9 +1071,14 @@ namespace UIControls.Runtime.Controls
 
             for (var i = 0; i < count; i++)
             {
-                var segmentGo = new GameObject($"{AutoSegmentPrefix}{i + 1}", typeof(RectTransform), typeof(Image));
+                var segmentGo = CreateGeneratedObject($"{AutoSegmentPrefix}{i + 1}", root,
+                    typeof(RectTransform), typeof(Image));
+                if (segmentGo == null)
+                {
+                    continue;
+                }
+
                 var segmentRect = segmentGo.GetComponent<RectTransform>();
-                segmentRect.SetParent(root, false);
 
                 var minX = i / (float)count;
                 var maxX = (i + 1f) / count;
@@ -1017,9 +1128,14 @@ namespace UIControls.Runtime.Controls
             var sprite = segmentDividerSprite != null ? segmentDividerSprite : ResolveFilledSpriteCandidate();
             for (var i = 1; i < count; i++)
             {
-                var dividerGo = new GameObject($"{AutoDividerPrefix}{i}", typeof(RectTransform), typeof(Image));
+                var dividerGo = CreateGeneratedObject($"{AutoDividerPrefix}{i}", root,
+                    typeof(RectTransform), typeof(Image));
+                if (dividerGo == null)
+                {
+                    continue;
+                }
+
                 var dividerRect = dividerGo.GetComponent<RectTransform>();
-                dividerRect.SetParent(root, false);
 
                 var x = i / (float)count;
                 dividerRect.anchorMin = new Vector2(x, 0f);
@@ -1097,9 +1213,13 @@ namespace UIControls.Runtime.Controls
                 return generatedSegmentsContainer;
             }
 
-            var rootGo = new GameObject(AutoSegmentsRootName, typeof(RectTransform));
+            var rootGo = CreateGeneratedObject(AutoSegmentsRootName, anchor, typeof(RectTransform));
+            if (rootGo == null)
+            {
+                return null;
+            }
+
             var rootRect = rootGo.GetComponent<RectTransform>();
-            rootRect.SetParent(anchor, false);
             rootRect.anchorMin = Vector2.zero;
             rootRect.anchorMax = Vector2.one;
             rootRect.pivot = new Vector2(0.5f, 0.5f);
